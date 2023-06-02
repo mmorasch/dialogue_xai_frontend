@@ -8,7 +8,7 @@
 
 ### How to run
 
-1. npm install
+1. npm install (after every pull plsss)
 2. start the backend (python server)
 3. npm run dev
 
@@ -20,6 +20,6 @@
 
 ## Problems
 
-### Endpoint is hardcoded
+### backend endpoint is hardcoded
 
-The endpoint is hardcoded in the file `/src/lib/settings.ts` -> BACKEND. `localhost` sometimes does not work, so I set it to my machines IP address. If you want to run it on your machine, you have to change it to your IP address. The python app prints the IP address when it starts.
+The backend endpoint is hardcoded in the file `/src/lib/settings.ts` -> BACKEND. `localhost` sometimes does not work, so I set it to my machines IP address. If you want to run it on your machine, you have to change it to your IP address. The python app prints the IP address when it starts.
