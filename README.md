@@ -1,38 +1,25 @@
-# create-svelte
+# dialogue_xai_frontend - intro für dimi
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+## Installation
 
-## Creating a project
+### Requirements
 
-If you're seeing this, you've probably already done this step. Congrats!
+- node version 18.14.1
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+### How to run
 
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+1. npm install
+2. start the backend (python server)
+3. npm run dev
 
-## Developing
+## Paths
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+- `/` currently the intro
+- `/experiment` the chatbot experiment
+- `/exit` the exit questionnaire, sometimes not working
 
-```bash
-npm run dev
+## Problems
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+### Endpoint is hardcoded
 
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+The endpoint is hardcoded in the file `/src/lib/settings.ts` -> BACKEND. `localhost` sometimes does not work, so I set it to my machines IP address. If you want to run it on your machine, you have to change it to your IP address. The python app prints the IP address when it starts.
