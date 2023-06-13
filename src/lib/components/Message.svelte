@@ -7,7 +7,8 @@
 
 <div class="flex items-end mb-2.5 {message.isUser ?  "right-msg" : "left-msg"}">
 	<div class="msg-bubble">
-		{message.text}
+		{@html message.text}
+		<span class="float-right"></span>
 	</div>
 </div>
 

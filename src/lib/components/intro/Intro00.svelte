@@ -1,14 +1,16 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { RadioGroup, RadioItem, RangeSlider, Step, Stepper } from '@skeletonlabs/skeleton';
 
 	export let gender: string = 'm';
 	export let fam_ml_val: number = 5;
 	export let fam_cr_val: number = 5;
 	export let max: number = 10;
+
 </script>
 
 <h1 class="text text-4xl">Dear Participant, welcome to the study!</h1>
-<Stepper buttonCompleteLabel="Start experiment" on:complete={()=>{}}>
+<Stepper buttonCompleteLabel="Start experiment" on:complete={() => goto("/experiment")}>
 	<Step>
 		<p>
 			We are excited to welcome you to our study on understanding decisions of machine learning
