@@ -24,6 +24,8 @@
 			Your responses will be kept confidential, and we will only use them to help us analyze the
 			results of our study. <br /> <br />
 
+			The study takes approximately 25 min and you will get 10€ upon completion. +1€ per correct answer. <br /> <br />
+
 			Thank you for your participation. We appreciate your time and effort in contributing to our
 			research. <br /><br />
 			Sincerely, <br /><br />
@@ -35,6 +37,11 @@
 		<p>
 			Before we begin, we would like to gather some information about you that will help us better
 			understand the results of our study. <br /> <br>
+
+			This information will not be used to evaluate the results but will help us
+            to ensure a diverse set of participants.  It will be anonymised and deleted after the study is done.
+            <br /> <br />
+
 			Please take a moment to answer the following questions:
 		</p>
 		<hr class="bd-4">
@@ -53,14 +60,25 @@
 					</RadioGroup>
 				</div>
 			</label>
-			<label for="educationalBackground" class="label text-center col-span-2">
-				<span> What is your educational background, e.g. what do you study? </span>
+			<label for="educationalBackground" class="label text-center col-span-1">
+				<span> What is your highest degree? </span>
 				<select class="select mb-8">
-					<option value="1">Option 1</option>
-					<option value="2">Option 2</option>
-					<option value="3">Option 3</option>
-					<option value="4">Option 4</option>
-					<option value="5">Option 5</option>
+				    <option value="1">- Select -</option>
+					<option value="1">High School</option>
+					<option value="2">Bachelor</option>
+					<option value="3">Master</option>
+					<option value="4">Doctor</option>
+				</select>
+			</label>
+			<label for="educationalBackground" class="label text-center col-span-1">
+				<span> What is your general field of studies? </span>
+				<select class="select mb-8">
+				    <option value="1">- Select -</option>
+					<option value="1">Maths</option>
+					<option value="2">Computer Science</option>
+					<option value="3">Biology</option>
+					<option value="4">Economy</option>
+					<option value="5">Social Sciences</option>
 				</select>
 			</label>
 			<label for="familiarityML" class="label text-center">
@@ -86,14 +104,37 @@
 	</Step>
 	<Step>
 		<h2 class="text-2xl">
-			This study aims to understand how people understand machine learning models and their
-			predictions with the help of explainable AI
+			This study aims to assess what helps humans to understand machine learning models and their predictions
+			with the help of explainable AI
 		</h2>
 		<p>
-			Our Machine Learning Model is trained on a collection of loan application data. <br />
-			It can predict whether a loan application will be approved or not. <br /><br />
-
-			For example, given an applicant with the following attributes
+			The ML model used in this study is like a smart computer program that has been trained using a bunch of
+			loan application data. Its job is to predict if someone applying for a loan is likely to be a high risk
+			customer or a low risk customer. <br /><br />
+		</p>
+		<p>
+			To train the model, we gathered a bunch of information about loan applicants, like their age, gender, job
+			level, and more. We also labeled each applicant as either high risk or low risk based on their history.
+			The model then analyzed all of this information and tried to find patterns and connections between the
+			different characteristics and the risk levels.
+		</p>
+		<p>
+            It learned which combinations of information were more likely to indicate a high risk or low risk applicant.
+            This "learning" happened by looking at many examples and adjusting its settings to make better predictions
+            based on the patterns it discovered.
+        </p>
+        <p>
+            Once the model was trained, it could use what it learned to make predictions about new loan applications
+            that it hadn't seen before. It could tell us the chances of someone being a high risk customer based on the
+            patterns it learned from the training data.
+        </p>
+	</Step>
+	<Step>
+	    <h2 class="text-2xl">
+			Example
+		</h2>
+		<p>
+		    For example, given an applicant with the following attributes:
 		</p>
 		<ul class="list">
 			<li><span class="flex-auto">- Age: 30 </span></li>
@@ -107,9 +148,46 @@
 			<li><span class="flex-auto">- Purpose: Car</li>
 		</ul>
 		<p>
-			The model would give the prediction that this is a high risk customer and the loan should not
-			be approved. Such a model can also provide its confidence in the prediction. In this case, the
-			model is 99% confident in its prediction.
+			The model would give the prediction that this is a high risk customer.
 		</p>
+	</Step>
+	<Step>
+	    <h2 class="text-2xl">
+			Study Introduction
+		</h2>
+	    <h3 class="text-xl">
+			Chatbot Interaction
+		</h3>
+	    <p>
+	        In the following, you will see an applicant at a time and you will need to give an initial prediction for
+	        how you think the ML model would decide for this applicant. After that, you will then be able to ask
+	        questions about the prediction and the model behaviour to understand the model better. To end the
+	        interaction with the applicant, you will need to give a final prediction for how you think the model would
+	        decide for this applicant.
+	    </p>
+        <h3 class="text-xl">
+			Phase 1 - Understanding the Model.
+		</h3>
+		<p>
+		    In the first phase you will be shown 10 applicants with their attributes and the model's prediction.
+		    For each applicant, you will have the possibility to ask predefined questions about the prediction that will
+		    be answered by techniques from explainable AI. Feel free to provide your own questions if you can't find it
+		    in the provided collection.
+		</p>
+        <h3 class="text-xl">
+			Phase 2: Classifying Applicants
+		</h3>
+		<p>
+		    In the second phase you will see new applicants, and you will be asked to guess whether the model would
+		    predict it a high risk or low risk customer.
+		</p>
+        <h3 class="text-xl">
+            Phase 3: Final Questionaire
+        </h3>
+        <p>
+            In the final questionaire, we will ask you some questions about your experience with the study.
+            We are interested in your opinion about the questions and answers and how you understood the models'
+            behaviour.
+        </p>
 	</Step>
 </Stepper>
