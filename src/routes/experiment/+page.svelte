@@ -10,7 +10,7 @@
 
 	let messages: TChatMessage[] = [
 		{
-			text: 'Hello, I am a chatbot. How can I help you?',
+			text: 'Hello, what would you like to know about the ML prediction?',
 			isUser: false
 		}
 	];

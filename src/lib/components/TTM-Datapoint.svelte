@@ -13,7 +13,7 @@
 		'Do you think the model will predict the applicant as high risk or low risk?';
 	export let prediction_two_question =
 		'Make your final prediction whether the model  will predict the applicant as high risk or low risk?';
-	const options = ['High Risk', 'Low Risk'];
+	const options = ['Definitely High Risk', 'Rather High Risk', "I don't know", 'Rather Low Risk', 'Definitely Low Risk'];
 
 	// get event categories
 	export let selected_prediction_one: string | null = null;
@@ -34,6 +34,9 @@
 		<RadioGroup active="variant-filled-primary" hover="hover:variant-soft-primary">
 			<RadioItem bind:group={selected_prediction_one} name="justify" value={options[0]}>{options[0]}</RadioItem>
 			<RadioItem bind:group={selected_prediction_one} name="justify" value={options[1]}>{options[1]}</RadioItem>
+			<RadioItem bind:group={selected_prediction_one} name="justify" value={options[2]}>{options[2]}</RadioItem>
+			<RadioItem bind:group={selected_prediction_one} name="justify" value={options[3]}>{options[3]}</RadioItem>
+			<RadioItem bind:group={selected_prediction_one} name="justify" value={options[4]}>{options[4]}</RadioItem>
 		</RadioGroup>
 	</div>
 
@@ -44,12 +47,18 @@
 			<RadioGroup active="variant-filled-primary" hover="hover:variant-soft-primary">
 				<RadioItem bind:group={selected_prediction_two} name="justify" value={options[0]}>{options[0]}</RadioItem>
 				<RadioItem bind:group={selected_prediction_two} name="justify" value={options[1]}>{options[1]}</RadioItem>
+				<RadioItem bind:group={selected_prediction_two} name="justify" value={options[2]}>{options[2]}</RadioItem>
+				<RadioItem bind:group={selected_prediction_two} name="justify" value={options[3]}>{options[3]}</RadioItem>
+				<RadioItem bind:group={selected_prediction_two} name="justify" value={options[4]}>{options[4]}</RadioItem>
 			</RadioGroup>
 		</div>
 	{/if}
 
 	{#if selected_prediction_two}
 		<div class="mt-8">
+		    <p>
+		        If you are do not have any more questions and want to stay with your decision, click next.
+		    </p>
 			<div class="btn variant-filled"><p>NEXT! (not working yet)</p></div>
 		</div>
 	{/if}
