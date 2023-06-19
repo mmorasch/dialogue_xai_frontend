@@ -50,7 +50,7 @@
 		});
 
 		messages = messages;
-		backend.get_response(question, feature).then((response) => {
+		backend.xai.get_response(question, feature).then((response) => {
 			response.text().then((text) => {
 				messages.push({
 					text: text,

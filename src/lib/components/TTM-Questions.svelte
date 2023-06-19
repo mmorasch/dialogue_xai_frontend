@@ -45,7 +45,7 @@
 </script>
 
 <div
-	class="inputarea max-w-[500px] h-[calc(100%_-_10px)] border-[length:var(--border)] shadow-[0_15px_15px_-5px_rgba(0,0,0,0.2)] text-center mx-2.5 my-0 rounded-[5px]"
+	class="inputarea max-w-[500px] border-[length:var(--border)] shadow-[0_15px_15px_-5px_rgba(0,0,0,0.2)] text-center mx-2.5 my-0 rounded-[5px]"
 >
 	<form class="grid">
 		<div class="row-[1]">
