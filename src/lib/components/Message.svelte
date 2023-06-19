@@ -1,14 +1,25 @@
 <script lang="ts">
+	import LikeButton from './LikeButton.svelte';
+	import DislikeButton from './DislikeButton.svelte';
+	import CommentButton from './CommentButton.svelte';
+
 	export let message = {
 		text: '',
 		isUser: false
 	};
 </script>
 
-<div class="flex items-end mb-2.5 {message.isUser ?  "right-msg" : "left-msg"}">
+<div class="flex items-end mb-2.5 {message.isUser ? 'right-msg' : 'left-msg'}">
 	<div class="msg-bubble">
 		{@html message.text}
-		<span class="float-right"></span>
+		{#if !message.isUser}
+			<br />
+			<span class="float-right flex flex-wrap">
+				<LikeButton />
+				<DislikeButton />
+				<CommentButton />
+			</span>
+		{/if}
 	</div>
 </div>
 
