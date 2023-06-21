@@ -50,7 +50,7 @@
 	<form class="grid">
 		<div class="row-[1]">
 			<Header>
-				<p>Generelle Fragen</p>
+				<p>General Questions</p>
 			</Header>
 			{#each general_questions as question}
 				<button
@@ -64,7 +64,7 @@
 		<hr class="m-5 border-t-[3px] border-t-[#bbb] border-solid" />
 		<div class="row-[2]">
 			<Header>
-				<p>Feature Fragen</p>
+				<p>Attribute Related Questions</p>
 			</Header>
 			{#each feature_questions as question}
 				<button
@@ -90,7 +90,7 @@
 			<hr style="border-top: 3px solid #bbb; margin: 20px;" />
 			<input
 				type="submit"
-				value="Frage stellen!"
+				value="Ask Question!"
 				style="width: 80%;"
 				on:click|preventDefault={submitFunction}
 			/>

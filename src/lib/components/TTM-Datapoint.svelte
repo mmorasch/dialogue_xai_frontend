@@ -11,17 +11,14 @@
 
 	export let prediction_one_question =
 		'Do you think the model will predict the applicant as high risk or low risk?';
-	export let prediction_two_question =
-		'Make your final prediction whether the model  will predict the applicant as high risk or low risk?';
-	const options = ['Definitely High Risk', 'Rather High Risk', "I don't know", 'Rather Low Risk', 'Definitely Low Risk'];
+	const options = ['Surely High Risk', 'Rather High Risk', "I don't know", 'Rather Low Risk', 'Surely Low Risk'];
 
 	// get event categories
 	export let selected_prediction_one: string | null = null;
-	export let selected_prediction_two: string | null = null;
 </script>
 
 <div class="col-[1] h-[calc(100%_-_10px)] flex-1 overflow-y-auto border-[length:var(--border)] shadow-[0_15px_15px_-5px_rgba(0,0,0,0.2)] rounded-[5px]">
-	<Header>Datapoint</Header>
+	<Header>Applicant</Header>
 	<main>
 		{#each Object.entries(data) as [key, value]}
 			<p class="mx-2.5 my-[5px]">{key}: <span class="float-right">{value}</span></p>
@@ -30,8 +27,7 @@
 
 	<div class="mt-8">
 		<p>{prediction_one_question}</p>
-
-		<RadioGroup active="variant-filled-primary" hover="hover:variant-soft-primary">
+		<RadioGroup active="variant-filled-primary" hover="hover:variant-soft-primary" display="flex-col">
 			<RadioItem bind:group={selected_prediction_one} name="justify" value={options[0]}>{options[0]}</RadioItem>
 			<RadioItem bind:group={selected_prediction_one} name="justify" value={options[1]}>{options[1]}</RadioItem>
 			<RadioItem bind:group={selected_prediction_one} name="justify" value={options[2]}>{options[2]}</RadioItem>
@@ -42,24 +38,10 @@
 
 	{#if selected_prediction_one}
 		<div class="mt-8">
-			<p>{prediction_two_question}</p>
-
-			<RadioGroup active="variant-filled-primary" hover="hover:variant-soft-primary">
-				<RadioItem bind:group={selected_prediction_two} name="justify" value={options[0]}>{options[0]}</RadioItem>
-				<RadioItem bind:group={selected_prediction_two} name="justify" value={options[1]}>{options[1]}</RadioItem>
-				<RadioItem bind:group={selected_prediction_two} name="justify" value={options[2]}>{options[2]}</RadioItem>
-				<RadioItem bind:group={selected_prediction_two} name="justify" value={options[3]}>{options[3]}</RadioItem>
-				<RadioItem bind:group={selected_prediction_two} name="justify" value={options[4]}>{options[4]}</RadioItem>
-			</RadioGroup>
-		</div>
-	{/if}
-
-	{#if selected_prediction_two}
-		<div class="mt-8">
 		    <p>
-		        If you are do not have any more questions and want to stay with your decision, click next.
+		        If you want to log in your prediction, click next.
 		    </p>
-			<div class="btn variant-filled"><p>NEXT! (not working yet)</p></div>
+			<div class="btn variant-filled"><p>Next!</p></div>
 		</div>
 	{/if}
 </div>

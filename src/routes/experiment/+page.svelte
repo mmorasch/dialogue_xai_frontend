@@ -10,7 +10,8 @@
 
 	let messages: TChatMessage[] = [
 		{
-			text: 'Hello, what would you like to know about the ML prediction?',
+			text:
+			'Hello, what would you like to know about the ML prediction? Pick a question from the right. You can find general questions in the upper half and questions that only work in combination with selecting a feature from the drop down box in the lower part. Once selected, press **Ask question**.',
 			isUser: false
 		}
 	];
