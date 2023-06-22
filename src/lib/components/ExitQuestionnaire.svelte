@@ -1,12 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import {
-		RadioGroup,
-		RadioItem,
-		Step,
-		Stepper,
-		tableMapperValues,
-	} from '@skeletonlabs/skeleton';
+	import { RadioGroup, RadioItem, Step, Stepper, tableMapperValues } from '@skeletonlabs/skeleton';
 	import type { TableSource } from '@skeletonlabs/skeleton';
 	import Table from '../../routes/exit/Table.svelte';
 
@@ -112,12 +106,14 @@
 				Among the following features, which one is the _most_ important in influencing our machine
 				learning model's prediction (that is, variations in the value of that feature will most
 				likely change the model's prediction)?
+			</span>
+			<div class="w-fit mx-auto">
 				<RadioGroup rounded="rounded-container-token" display="flex-col">
 					<RadioItem bind:group={value} name="justify" value={0}>Checking account</RadioItem>
 					<RadioItem bind:group={value} name="justify" value={1}>Job Level</RadioItem>
 					<RadioItem bind:group={value} name="justify" value={2}>Age Group</RadioItem>
 				</RadioGroup>
-			</span>
+			</div>
 		</Step>
 		<!-- Step 2 -->
 		<Step>
@@ -126,11 +122,13 @@
 				learning model's prediction (that is, variations in the value of that feature will least
 				likely change the model's prediction)?
 			</span>
-			<RadioGroup rounded="rounded-container-token" display="flex-col">
-				<RadioItem bind:group={value} name="justify" value={0}>Gender</RadioItem>
-				<RadioItem bind:group={value} name="justify" value={1}>Credit amount</RadioItem>
-				<RadioItem bind:group={value} name="justify" value={2}>Credit Duration</RadioItem>
-			</RadioGroup>
+			<div class="w-fit mx-auto">
+				<RadioGroup rounded="rounded-container-token" display="flex-col">
+					<RadioItem bind:group={value} name="justify" value={0}>Gender</RadioItem>
+					<RadioItem bind:group={value} name="justify" value={1}>Credit amount</RadioItem>
+					<RadioItem bind:group={value} name="justify" value={2}>Credit Duration</RadioItem>
+				</RadioGroup>
+			</div>
 		</Step>
 		<!-- Step 3 -->
 		<Step>
@@ -143,17 +141,19 @@
 				accounts_ is most likely to change our model's prediction (i.e., make the model predict the
 				person will **good credit risk**)?
 			</span>
-			<RadioGroup rounded="rounded-container-token" display="flex-col">
-				<RadioItem bind:group={question3.value} name="justify" value={0}
-					>Change Saving accounts to rich
-				</RadioItem>
-				<RadioItem bind:group={question3.value} name="justify" value={1}
-					>Change Saving accounts to NA
-				</RadioItem>
-				<RadioItem bind:group={question3.value} name="justify" value={2}
-					>Change Saving accounts to little
-				</RadioItem>
-			</RadioGroup>
+			<div class="w-fit mx-auto">
+				<RadioGroup rounded="rounded-container-token" display="flex-col">
+					<RadioItem bind:group={question3.value} name="justify" value={0}
+						>Change Saving accounts to rich
+					</RadioItem>
+					<RadioItem bind:group={question3.value} name="justify" value={1}
+						>Change Saving accounts to NA
+					</RadioItem>
+					<RadioItem bind:group={question3.value} name="justify" value={2}
+						>Change Saving accounts to little
+					</RadioItem>
+				</RadioGroup>
+			</div>
 		</Step>
 		<!-- Step 4 -->
 		<Step>
@@ -166,23 +166,25 @@
 				following changes is going to change our model's prediction (i.e., make the model predict
 				the person is good credit risk)? Please check all that apply.
 			</span>
-			<RadioGroup rounded="rounded-container-token" display="flex-col">
-				<RadioItem bind:group={question4.value} name="justify" value={0}
-					>Change Saving accounts to quite rich</RadioItem
-				>
-				<RadioItem bind:group={question4.value} name="justify" value={1}
-					>Change Checking account to rich</RadioItem
-				>
-				<RadioItem bind:group={question4.value} name="justify" value={2}
-					>Change Credit amount to ADD_VALUE_HERE</RadioItem
-				>
-				<RadioItem bind:group={question4.value} name="justify" value={3}
-					>Change Gender to female</RadioItem
-				>
-				<RadioItem bind:group={question4.value} name="justify" value={4}
-					>Change Credit Duration to 12</RadioItem
-				>
-			</RadioGroup>
+			<div class="w-fit mx-auto">
+				<RadioGroup rounded="rounded-container-token" display="flex-col">
+					<RadioItem bind:group={question4.value} name="justify" value={0}
+						>Change Saving accounts to quite rich</RadioItem
+					>
+					<RadioItem bind:group={question4.value} name="justify" value={1}
+						>Change Checking account to rich</RadioItem
+					>
+					<RadioItem bind:group={question4.value} name="justify" value={2}
+						>Change Credit amount to ADD_VALUE_HERE</RadioItem
+					>
+					<RadioItem bind:group={question4.value} name="justify" value={3}
+						>Change Gender to female</RadioItem
+					>
+					<RadioItem bind:group={question4.value} name="justify" value={4}
+						>Change Credit Duration to 12</RadioItem
+					>
+				</RadioGroup>
+			</div>
 		</Step>
 		<!-- Step 5 -->
 		<Step>
@@ -190,14 +192,16 @@
 			<Table header={question5.tableData.head} body={question5.tableData.body} />
 			<br /><br />
 			<span>What do you think our machine learning model will predict for this person?</span>
-			<RadioGroup rounded="rounded-container-token" display="flex-col">
-				<RadioItem bind:group={question5.value} name="justify" value={0}
-					>The model will predict this person will bad credit risk.</RadioItem
-				>
-				<RadioItem bind:group={question5.value} name="justify" value={1}
-					>The model will predict this person will good credit risk.</RadioItem
-				>
-			</RadioGroup>
+			<div class="w-fit mx-auto">
+				<RadioGroup rounded="rounded-container-token" display="flex-col">
+					<RadioItem bind:group={question5.value} name="justify" value={0}
+						>The model will predict this person will bad credit risk.</RadioItem
+					>
+					<RadioItem bind:group={question5.value} name="justify" value={1}
+						>The model will predict this person will good credit risk.</RadioItem
+					>
+				</RadioGroup>
+			</div>
 		</Step>
 		<!-- Step 6 -->
 		<Step>
@@ -208,11 +212,13 @@
 				For one of these three people, our machine learning model predicts that the person is bad
 				credit risk. Which one do you think is this defendant?
 			</span>
-			<RadioGroup rounded="rounded-container-token" display="flex-col">
-				<RadioItem bind:group={question6.value} name="justify" value={0}>Person 1</RadioItem>
-				<RadioItem bind:group={question6.value} name="justify" value={1}>Person 2</RadioItem>
-				<RadioItem bind:group={question6.value} name="justify" value={2}>Person 3</RadioItem>
-			</RadioGroup>
+			<div class="w-fit mx-auto">
+				<RadioGroup rounded="rounded-container-token" display="flex-col">
+					<RadioItem bind:group={question6.value} name="justify" value={0}>Person 1</RadioItem>
+					<RadioItem bind:group={question6.value} name="justify" value={1}>Person 2</RadioItem>
+					<RadioItem bind:group={question6.value} name="justify" value={2}>Person 3</RadioItem>
+				</RadioGroup>
+			</div>
 		</Step>
 	</Stepper>
 </div>

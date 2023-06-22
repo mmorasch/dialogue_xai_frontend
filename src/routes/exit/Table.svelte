@@ -3,7 +3,7 @@
   export let body: string[][];
 </script>
 
-<div class="table-container">
+<div class="table-container w-[80%] mx-auto">
   <table class="table table-hover">
 		<thead>
 			<tr>
