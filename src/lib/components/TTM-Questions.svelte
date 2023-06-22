@@ -5,8 +5,6 @@
 
 	const dispatch = createEventDispatcher();
 
-
-
 	export let general_questions: TGeneralQuestion[];
 	export let feature_questions: TFeatureQuestion[];
 	export let feature_questions_dropdown: TFeatureName[];

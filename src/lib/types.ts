@@ -13,6 +13,7 @@ type TFeatureName = {
 type TChatMessage = {
   text: string;
   isUser: boolean;
+  feedback: boolean;
 };
 
 export type {
