@@ -5,11 +5,10 @@
 		RadioItem,
 		Step,
 		Stepper,
-		Table,
 		tableMapperValues,
-		tableSourceMapper
 	} from '@skeletonlabs/skeleton';
 	import type { TableSource } from '@skeletonlabs/skeleton';
+	import Table from '../../routes/exit/Table.svelte';
 
 	export let value: number = 0;
 
@@ -106,7 +105,7 @@
 </script>
 
 <div>
-	<Stepper stepTerm="Question" on:complete={() => goto('/feedback')}>
+	<Stepper stepTerm="Question" on:complete={() => goto('/exit/feedback')}>
 		<!-- Step 1 -->
 		<Step>
 			<span>
@@ -136,7 +135,7 @@
 		<!-- Step 3 -->
 		<Step>
 			<span> Consider a person with the following profile: </span>
-			<Table source={question3.tableData} />
+			<Table header={question3.tableData.head} body={question3.tableData.body} />
 			<br /><br />
 			<span>
 				Our machine learning model currently predicts this person will bad credit risk. When all
@@ -159,7 +158,7 @@
 		<!-- Step 4 -->
 		<Step>
 			<span>Consider a person with the following profile:</span>
-			<Table source={question4.tableData} />
+			<Table header={question4.tableData.head} body={question4.tableData.body} />
 			<br /><br />
 			<span>
 				Our machine learning model currently predicts this person is bad credit risk. If we change
@@ -188,7 +187,7 @@
 		<!-- Step 5 -->
 		<Step>
 			<span>Consider a person with the following profile:</span>
-			<Table source={question5.tableData} />
+			<Table header={question5.tableData.head} body={question5.tableData.body} />
 			<br /><br />
 			<span>What do you think our machine learning model will predict for this person?</span>
 			<RadioGroup rounded="rounded-container-token" display="flex-col">
@@ -203,7 +202,7 @@
 		<!-- Step 6 -->
 		<Step>
 			<span>Consider three people with the following profiles:</span>
-			<Table source={question6.tableData} />
+			<Table header={question6.tableData.head} body={question6.tableData.body} />
 			<br /><br />
 			<span>
 				For one of these three people, our machine learning model predicts that the person is bad
@@ -217,14 +216,3 @@
 		</Step>
 	</Stepper>
 </div>
-
-<style>
-	.table tbody td {
-		padding-top: 0.125rem;
-		padding-bottom: 0.125rem;
-	}
-
-	table {
-		margin-bottom: 0.5rem;
-	}
-</style>
