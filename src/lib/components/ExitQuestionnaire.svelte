@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import {
 		RadioGroup,
 		RadioItem,
@@ -105,7 +106,7 @@
 </script>
 
 <div>
-	<Stepper stepTerm="Question">
+	<Stepper stepTerm="Question" on:complete={() => goto('/feedback')}>
 		<!-- Step 1 -->
 		<Step>
 			<span>
@@ -136,7 +137,7 @@
 		<Step>
 			<span> Consider a person with the following profile: </span>
 			<Table source={question3.tableData} />
-			<br><br>
+			<br /><br />
 			<span>
 				Our machine learning model currently predicts this person will bad credit risk. When all
 				other features are kept the same, which of the following changes on the attribute _Saving
@@ -159,7 +160,7 @@
 		<Step>
 			<span>Consider a person with the following profile:</span>
 			<Table source={question4.tableData} />
-			<br><br>
+			<br /><br />
 			<span>
 				Our machine learning model currently predicts this person is bad credit risk. If we change
 				only one feature of this profile but leave all other features unchanged, which of the
@@ -188,7 +189,7 @@
 		<Step>
 			<span>Consider a person with the following profile:</span>
 			<Table source={question5.tableData} />
-			<br><br>
+			<br /><br />
 			<span>What do you think our machine learning model will predict for this person?</span>
 			<RadioGroup rounded="rounded-container-token" display="flex-col">
 				<RadioItem bind:group={question5.value} name="justify" value={0}
@@ -203,7 +204,7 @@
 		<Step>
 			<span>Consider three people with the following profiles:</span>
 			<Table source={question6.tableData} />
-			<br><br>
+			<br /><br />
 			<span>
 				For one of these three people, our machine learning model predicts that the person is bad
 				credit risk. Which one do you think is this defendant?
