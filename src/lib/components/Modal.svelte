@@ -1,5 +1,7 @@
 <script lang="ts">
+	type TModalType = 'positive' | 'negative' | 'neutral';
 	export let showModal: boolean;
+	export let type: TModalType;
 
 	let dialog: HTMLDialogElement;
 

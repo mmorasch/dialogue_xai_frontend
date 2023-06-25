@@ -28,7 +28,7 @@
 		class="ttm flex justify-between w-full h-full border-[length:var(--border)] shadow-[0_15px_15px_-5px_rgba(0,0,0,0.2)] rounded-[5px]"
 	>
 		<Header>Chat Window</Header>
-		<main class="col-[2] flex-1 overflow-y-auto h-full p-2.5">
+		<main class="col-[2] flex-1 overflow-y-auto h-full p-2.5 justify-end">
 			{#each messages as message}
 				<Message {message} />
 			{/each}

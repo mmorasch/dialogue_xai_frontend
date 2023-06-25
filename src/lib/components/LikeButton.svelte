@@ -2,7 +2,7 @@
 	import like from '$lib/assets/like.png';
 	import Modal from './Modal.svelte';
 
-	let showModal = true;
+	let showModal = false;
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
