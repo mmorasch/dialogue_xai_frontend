@@ -8,7 +8,7 @@
 
 	let messages: TChatMessage[] = [
 		{
-			text: 'Hello, what would you like to know about the ML prediction? Pick a question from the right. You can find general questions in the upper half and questions that only work in combination with selecting a feature from the drop down box in the lower part. Once selected, press **Ask question**.',
+			text: 'Hello, the model prediction is <b>high risk</b>. You can select any amount of questions from the right panels and <i>click</i> on <b>Ask question</b>.',
 			isUser: false,
 			feedback: false
 		}
@@ -78,7 +78,7 @@
 		datapoint_answer_selected = null;
 		messages = [
 			{
-				text: 'Hello, what would you like to know about the ML prediction? Pick a question from the right. You can find general questions in the upper half and questions that only work in combination with selecting a feature from the drop down box in the lower part. Once selected, press **Ask question**.',
+				text: 'Hello, the correct prediction is high risk. You can select questions from the right panel and click on <b>Ask question</b> to get an answer.',
 				isUser: false,
 				feedback: false
 			}
