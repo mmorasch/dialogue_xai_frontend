@@ -20,7 +20,7 @@ const config = {
 	plugins: [
 		// 3. Append the Skeleton plugin to the end of this list
 		require('@tailwindcss/forms'),
-		skeleton
+		skeleton({ themes: { preset: ["skeleton", "modern", "crimson"], } })
 	]
 } satisfies Config;
 

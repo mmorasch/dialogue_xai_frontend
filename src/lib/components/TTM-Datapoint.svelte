@@ -15,6 +15,8 @@
 	export let prediction_question =
 		'Do you think the model will predict the applicant as high risk or low risk?';
 
+	export let datapoint_count: number | null = null;
+
 	const options = [
 		'Surely High Risk',
 		'Rather High Risk',
@@ -40,7 +42,7 @@
 </script>
 
 <div
-	class="h-full flex-1 overflow-y-auto border-[length:var(--border)]"
+	class="h-full flex-1 overflow-y-auto border-[length:var(--border)] shadow-[0_15px_15px_-5px_rgba(0,0,0,0.2)]"
 >
 	<Header>Applicant</Header>
 	<main>
@@ -84,6 +86,13 @@
 			</div>
 		{/if}
 	</form>
+	{#if datapoint_count}
+		<div>
+			<p class="text-center text-[#999] text-[10px] mt-8">
+				{datapoint_count} of 5 datapoints
+			</p>
+		</div>
+	{/if}
 </div>
 
 <style lang="postcss">

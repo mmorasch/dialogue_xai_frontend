@@ -5,6 +5,7 @@
 	import type { TChatMessage, TFeatureName, TFeatureQuestion, TGeneralQuestion } from '$lib/types';
 	import backend from '$lib/backend';
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 
 	let messages: TChatMessage[] = [
 		{
@@ -15,7 +16,9 @@
 	];
 
 	let datapoint_promise: Promise<any>;
+	let prediction_promise: Promise<any>;
 	let questions_promise: Promise<any>;
+	let datapoint_count: number = 1;
 
 	let datapoint_answer_selected: string | null = null;
 
@@ -76,6 +79,11 @@
 	async function handleNext(e: any) {
 		console.log('/experiment/+page.svelte > handleNext');
 		datapoint_answer_selected = null;
+		if (datapoint_count !== 5) {
+			datapoint_count++;
+		} else {
+			goto('/experiment/test');
+		}
 		messages = [
 			{
 				text: 'Hello, what would you like to know about the ML prediction? Pick a question from the right. You can find general questions in the upper half and questions that only work in combination with selecting a feature from the drop down box in the lower part. Once selected, press **Ask question**.',
@@ -91,12 +99,16 @@
 
 	onMount(async () => {
 		datapoint_promise = backend.xai.get_datapoint().then((response) => {
-			return response.json();
-		});
-		questions_promise = backend.xai.get_questions().then((response) => {
+			prediction_promise = backend.xai.get_current_prediction().then((response) => {
+				return response.json();
+			});
+			questions_promise = backend.xai.get_questions().then((response) => {
+				return response.json();
+			});
 			return response.json();
 		});
 	});
+
 </script>
 
 <div class="col-start-1 col-end-2 h-full">
@@ -106,6 +118,7 @@
 		<TTMDatapoint
 			data={datapoint}
 			bind:selected_prediction={datapoint_answer_selected}
+			bind:datapoint_count={datapoint_count}
 			on:next={handleNext}
 		/>
 	{:catch error}
