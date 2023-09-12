@@ -9,6 +9,7 @@
 </script>
 
 <h1 class="text text-4xl">Dear Participant, welcome to the study!</h1>
+<!-- https://www.skeleton.dev/components/steppers -->
 <Stepper buttonCompleteLabel="Start experiment" on:complete={() => goto('/experiment')}>
 	<Step>
 		<p>

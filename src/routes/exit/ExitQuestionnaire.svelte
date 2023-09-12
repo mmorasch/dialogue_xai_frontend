@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { RadioGroup, RadioItem, Step, Stepper, tableMapperValues } from '@skeletonlabs/skeleton';
 	import type { TableSource } from '@skeletonlabs/skeleton';
-	import Table from '../../routes/exit/Table.svelte';
+	import Datapoint from '$lib/components/Datapoint.svelte';
 
 	export let value: number = 0;
 
@@ -67,7 +67,6 @@
 	let question3: TQuestion = {
 		tableData: {
 			head: ['Attribute', 'Value'],
-			// The data visibly shown in your table body UI.
 			body: tableMapperValues(question3TableSource, ['attribute', 'value'])
 		},
 		value: 0
@@ -99,6 +98,7 @@
 </script>
 
 <div>
+	<!-- https://www.skeleton.dev/components/steppers -->
 	<Stepper stepTerm="Question" on:complete={() => goto('/exit/feedback')}>
 		<!-- Step 1 -->
 		<Step>
@@ -133,7 +133,7 @@
 		<!-- Step 3 -->
 		<Step>
 			<span> Consider a person with the following profile: </span>
-			<Table header={question3.tableData.head} body={question3.tableData.body} />
+			<Datapoint header={question3.tableData.head} body={question3.tableData.body} />
 			<br /><br />
 			<span>
 				Our machine learning model currently predicts this person will bad credit risk. When all
@@ -158,7 +158,7 @@
 		<!-- Step 4 -->
 		<Step>
 			<span>Consider a person with the following profile:</span>
-			<Table header={question4.tableData.head} body={question4.tableData.body} />
+			<Datapoint header={question4.tableData.head} body={question4.tableData.body} />
 			<br /><br />
 			<span>
 				Our machine learning model currently predicts this person is bad credit risk. If we change
@@ -189,7 +189,7 @@
 		<!-- Step 5 -->
 		<Step>
 			<span>Consider a person with the following profile:</span>
-			<Table header={question5.tableData.head} body={question5.tableData.body} />
+			<Datapoint header={question5.tableData.head} body={question5.tableData.body} />
 			<br /><br />
 			<span>What do you think our machine learning model will predict for this person?</span>
 			<div class="w-fit mx-auto">
@@ -206,7 +206,7 @@
 		<!-- Step 6 -->
 		<Step>
 			<span>Consider three people with the following profiles:</span>
-			<Table header={question6.tableData.head} body={question6.tableData.body} />
+			<Datapoint header={question6.tableData.head} body={question6.tableData.body} />
 			<br /><br />
 			<span>
 				For one of these three people, our machine learning model predicts that the person is bad

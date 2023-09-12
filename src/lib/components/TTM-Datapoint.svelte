@@ -14,6 +14,7 @@
 
 	export let prediction_question =
 		'Do you think the model will predict the applicant as high risk or low risk?';
+
 	const options = [
 		'Surely High Risk',
 		'Rather High Risk',
@@ -39,7 +40,7 @@
 </script>
 
 <div
-	class="col-[1] h-[calc(100%_-_10px)] flex-1 overflow-y-auto border-[length:var(--border)] shadow-[0_15px_15px_-5px_rgba(0,0,0,0.2)] rounded-[5px]"
+	class="h-full flex-1 overflow-y-auto border-[length:var(--border)]"
 >
 	<Header>Applicant</Header>
 	<main>
@@ -50,7 +51,7 @@
 
 	<form>
 		<div class="mt-8">
-			<p>{prediction_question}</p>
+			<p class="mb-6">{prediction_question}</p>
 			<div class="variant-ghost-surface w-fit mx-auto">
 				<ListBox
 					active="variant-filled-primary"
