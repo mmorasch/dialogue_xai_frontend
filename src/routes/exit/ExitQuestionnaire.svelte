@@ -103,7 +103,7 @@
 		<!-- Step 1 -->
 		<Step>
 			<span>
-				Among the following features, which one is the _most_ important in influencing our machine
+				Among the following features, which one is the <b>most important</b> in influencing our machine
 				learning model's prediction (that is, variations in the value of that feature will most
 				likely change the model's prediction)?
 			</span>
@@ -118,7 +118,7 @@
 		<!-- Step 2 -->
 		<Step>
 			<span>
-				Among the following features, which one is the _least_ important in influencing our machine
+				Among the following features, which one is the <b>least important</b> in influencing our machine
 				learning model's prediction (that is, variations in the value of that feature will least
 				likely change the model's prediction)?
 			</span>
@@ -209,8 +209,8 @@
 			<Datapoint header={question6.tableData.head} body={question6.tableData.body} />
 			<br /><br />
 			<span>
-				For one of these three people, our machine learning model predicts that the person is bad
-				credit risk. Which one do you think is this defendant?
+				For one of these three people, our machine learning model predicts that the person is <b>high
+				credit risk</b>. Which one is it?
 			</span>
 			<div class="w-fit mx-auto">
 				<RadioGroup rounded="rounded-container-token" display="flex-col">

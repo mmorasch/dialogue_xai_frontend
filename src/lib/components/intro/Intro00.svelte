@@ -23,8 +23,7 @@
 			Your responses will be kept confidential, and we will only use them to help us analyze the
 			results of our study. You have the right to withdraw from the study at any time.<br /> <br />
 
-			Upon successful completion, you will get 10€. You can earn further +1€ per correct answer in
-			the final questionnaire that consists of 10 questions. <br /> <br />
+			Upon successful completion, you will get 10€. <br /><br />
 
 			Thank you for your participation! <br /><br />
 
@@ -36,10 +35,13 @@
 	<Step>
 		<p>
 			Before we begin, we would like to gather information about you that will help us better
-			understand the representativeness of our study and have a diverse set of participants. The
+			understand the representativeness of our study and have a diverse set of participants. <br /><br />
+
+			The
 			personal information (questions 1-4) will not be used to evaluate the results. It will be
 			anonymized and randomized after the study is done, so that there is no way to link it back to
 			you and your answers in the study.
+
 			<br /> <br />
 			Please take a moment to answer the following questions:
 		</p>
@@ -111,38 +113,44 @@
 	</Step>
 	<Step>
 		<h2 class="text-2xl">
-			This study seeks to explore how people can better grasp the concepts and predictions of
-			machine learning models.
+			Welcome to the world of Artificial Intelligence (AI) that impacts the daily life of people -
+			in credit risk assessments!
 		</h2>
 		<p>
-			We used a machine learning program and trained on loan application data, to predict the risk
-			level of applicants. By analyzing characteristics like age, gender, and job level, the program
-			identified patterns to improve its predictions and distinguish between high and low risk
-			applicants. It can now assess the likelihood of someone being a high-risk customer for new
-			loan applications. <br />
+		Have you ever wondered how banks and financial institutions determine who they can trust to borrow money?
+		Well, that's where the power of AI and machine learning comes into play! <br><br>
+
+		In this experiment, you gain access to explore how machine learning algorithms help analyze vast amounts of
+		historical data to predict whether an individual is likely to repay a loan or poses a higher credit risk.
+		It's like a virtual detective that carefully examines an applicant's financial background and behaviors to
+		make informed decisions. <br><br>
+
+		By analyzing characteristics like age, gender, and job level, the AI identified patterns and can now assess
+		the likelihood of someone being a high-risk customer for new loan applications. <br />
 		</p>
 		<p>For example, given an applicant with the following attributes:</p>
 		<ul class="list">
-			<li><span class="flex-auto">- Age: 30 </span></li>
+			<li><span class="flex-auto">- Age Group: 30 </span></li>
 			<li><span class="flex-auto">- Gender: Male</span></li>
-			<li><span class="flex-auto">- Job-Level: Skilled</span></li>
-			<li><span class="flex-auto">- Housing: Free</span></li>
-			<li><span class="flex-auto">- Saving Account: Moderate</span></li>
-			<li><span class="flex-auto">- Checking Account: Moderate</span></li>
-			<li><span class="flex-auto">- Credit Amount: 2862€</span></li>
-			<li><span class="flex-auto">- Duration: 36 months</span></li>
-			<li><span class="flex-auto">- Purpose: Car</span></li>
+			<li><span class="flex-auto">- Job Level: Skilled</span></li>
+			<li><span class="flex-auto">- Housing Type: Free</span></li>
+			<li><span class="flex-auto">- Saving accounts: Moderate</span></li>
+			<li><span class="flex-auto">- Checking account: Moderate</span></li>
+			<li><span class="flex-auto">- Credit Amount: 2862 DM</span></li>
+			<li><span class="flex-auto">- Credit Duration: 36 months</span></li>
+			<li><span class="flex-auto">- Credit Purpose: Car</span></li>
 		</ul>
-		<p>The model would give the prediction that this is a high risk customer.</p>
+		<p>The model would give the prediction that this is a <b>high risk</b> customer,
+		meaning that it is likely that the applicant will not repay the loan in time.</p>
 	</Step>
 	<Step>
 		<h2 class="text-2xl">Study Introduction</h2>
 		<h3 class="text-xl">How will the model predict the risk level of new applicants?</h3>
 		<p>
-			You'll see one applicant at a time, and your job is to make an initial guess about how the ML
-			model would decide for that applicant. Then, you can ask questions about the prediction and
-			how the model works to understand it better. As you learn more, you can update your initial
-			guess if you want. If you are sure about your guess, click on "Next" to see the next applicant
+			You will be shown one applicant at a time, and your task is to make an initial guess about how the ML
+			model would decide for that applicant. Then, you will see the models prediction and you can ask questions
+			about the prediction and how the model works to understand it better. As you learn more, you can update
+			your initial guess if you want. If you are sure about your guess, click on "Next" to see the next applicant
 			and repeat the process.<br /><br />
 
 			Here, the goal isn't to be right about whether someone is a high or low risk customer. It's

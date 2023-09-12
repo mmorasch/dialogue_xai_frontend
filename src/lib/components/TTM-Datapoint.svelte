@@ -81,7 +81,7 @@
 
 		{#if selected_prediction}
 			<div class="mt-8 justify-center">
-				<p>If you want to log in your prediction, click next.</p>
+				<p>Click next to get to the testing step.</p>
 				<input type="submit" value="Next" style="width: 100%;" on:click|preventDefault={next} />
 			</div>
 		{/if}
