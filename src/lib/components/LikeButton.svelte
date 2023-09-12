@@ -6,5 +6,6 @@
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <img class="mr-2.5 mt-2" src={like} alt="" width="20" height="20" on:click={() => showModal = !showModal}/>
 <Modal type={"positive"} showModal={showModal} />

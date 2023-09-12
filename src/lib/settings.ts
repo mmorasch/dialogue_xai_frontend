@@ -1,3 +1,3 @@
 export default {
-  BACKEND: 'http://127.0.0.1:5000/'
+  BACKEND: 'http://192.168.178.63:4455/'
 }
