@@ -6,6 +6,7 @@
 	import backend from '$lib/backend';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { fade } from 'svelte/transition';
 
 	let messages: TChatMessage[] = [
 		{
@@ -98,6 +99,9 @@
 		}
 
 		datapoint_promise = backend.xai.get_datapoint().then((response) => {
+			prediction_promise = backend.xai.get_current_prediction().then((response) => {
+				return response.json();
+			});
 			return response.json();
 		});
 	}
@@ -107,9 +111,9 @@
 			prediction_promise = backend.xai.get_current_prediction().then((response) => {
 				return response.json();
 			});
-			questions_promise = backend.xai.get_questions().then((response) => {
-				return response.json();
-			});
+			return response.json();
+		});
+		questions_promise = backend.xai.get_questions().then((response) => {
 			return response.json();
 		});
 	});
@@ -131,10 +135,10 @@
 	{/await}
 </div>
 {#if datapoint_answer_selected && test_or_teaching === 'teaching'}
-	<div class="col-start-2 col-end-3 h-full overflow-y-scroll">
+	<div class="col-start-2 col-end-3 h-full overflow-y-scroll" transition:fade={{ delay: 150, duration: 300 }}>
 		<TTMChat {messages} />
 	</div>
-	<div class="col-auto h-full overflow-y-scroll">
+	<div class="col-auto h-full overflow-y-scroll" transition:fade={{ delay: 150, duration: 300 }}>
 		{#await questions_promise}
 			<p>...waiting</p>
 		{:then { general_questions, feature_questions, feature_names }}
