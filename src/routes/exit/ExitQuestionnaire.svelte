@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import { RadioGroup, RadioItem, Step, Stepper, tableMapperValues } from '@skeletonlabs/skeleton';
 	import type { TableSource } from '@skeletonlabs/skeleton';
 	import Datapoint from '$lib/components/Datapoint.svelte';
@@ -11,7 +12,14 @@
 		value: any;
 	};
 
-	const question3TableSource = [
+	type TTableSourceItem = {
+		attribute: string;
+		[key: string]: string | number;
+	};
+
+	type TTableSource = TTableSourceItem[];
+
+	const question3TableSource: TTableSource = [
 		{ attribute: 'Age Group', value: 'young' },
 		{ attribute: 'Gender', value: 'male' },
 		{ attribute: 'Job Level', value: 'unskilled and resident' },
@@ -23,7 +31,7 @@
 		{ attribute: 'Credit Purpose', value: 'furniture/equipment' }
 	];
 
-	const question4TableSource = [
+	const question4TableSource: TTableSource = [
 		{ attribute: 'Age Group', value: 'adult' },
 		{ attribute: 'Gender', value: 'male' },
 		{ attribute: 'Job Level', value: 'skilled' },
@@ -35,7 +43,7 @@
 		{ attribute: 'Credit Purpose', value: 'education' }
 	];
 
-	const question5TableSource = [
+	const question5TableSource: TTableSource = [
 		{ attribute: 'Age Group', value: 'student' },
 		{ attribute: 'Gender', value: 'female' },
 		{ attribute: 'Job Level', value: 'highly skilled' },
@@ -47,7 +55,7 @@
 		{ attribute: 'Credit Purpose', value: 'radio/tv' }
 	];
 
-	const question6TableSource = [
+	const question6TableSource: TTableSource = [
 		{ attribute: 'Age Group', person1: 'adult', person2: 'senior', person3: 'senior' },
 		{ attribute: 'Gender', person1: 'male', person2: 'female', person3: 'female' },
 		{ attribute: 'Job Level', person1: 'highly skilled', person2: 'skilled', person3: 'skilled' },
@@ -99,7 +107,7 @@
 
 <div>
 	<!-- https://www.skeleton.dev/components/steppers -->
-	<Stepper stepTerm="Question" on:complete={() => goto('/exit/feedback')}>
+	<Stepper stepTerm="Question" on:complete={() => goto(`${base}/exit/feedback`)}>
 		<!-- Step 1 -->
 		<Step>
 			<span>

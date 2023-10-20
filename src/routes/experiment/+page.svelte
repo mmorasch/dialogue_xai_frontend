@@ -6,7 +6,9 @@
 	import backend from '$lib/backend';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import { fade } from 'svelte/transition';
+	import { userId } from '$lib/shared';
 
 	let messages: TChatMessage[] = [
 		{
@@ -16,9 +18,11 @@
 		}
 	];
 
+	let mock: boolean = false;
 	let datapoint_promise: Promise<any>;
 	let prediction_promise: Promise<any>;
 	let questions_promise: Promise<any>;
+	let user_id: string;
 	let datapoint_count: number = 1;
 	let datapoint_answer_selected: string | null = null;
 	let test_or_teaching: 'teaching' | 'test' = 'teaching';
@@ -63,7 +67,7 @@
 		});
 
 		messages = messages;
-		backend.xai.get_response(question, feature).then((response) => {
+		backend.xai(user_id).get_response(question, feature).then((response) => {
 			response.text().then((text) => {
 				messages.push({
 					text: text,
@@ -92,14 +96,14 @@
 		} else {
 			test_or_teaching = 'teaching';
 			if (datapoint_count === 5) {
-				goto('/exit');
+				goto(`${base}/exit`);
 			} else {
 				datapoint_count++;
 			}
 		}
 
-		datapoint_promise = backend.xai.get_datapoint().then((response) => {
-			prediction_promise = backend.xai.get_current_prediction().then((response) => {
+		datapoint_promise = backend.xai(user_id).get_datapoint().then((response) => {
+			prediction_promise = backend.xai(user_id).get_current_prediction().then((response) => {
 				return response.json();
 			});
 			return response.json();
@@ -107,13 +111,14 @@
 	}
 
 	onMount(async () => {
-		datapoint_promise = backend.xai.get_datapoint().then((response) => {
-			prediction_promise = backend.xai.get_current_prediction().then((response) => {
+		user_id = userId.get()!;
+		datapoint_promise = backend.xai(user_id).get_datapoint().then((response) => {
+			prediction_promise = backend.xai(user_id).get_current_prediction().then((response) => {
 				return response.json();
 			});
 			return response.json();
 		});
-		questions_promise = backend.xai.get_questions().then((response) => {
+		questions_promise = backend.xai(user_id).get_questions().then((response) => {
 			return response.json();
 		});
 	});
@@ -132,13 +137,14 @@
 		/>
 	{:catch error}
 		<p style="color: red">{error.message}</p>
+		<button on:click={() => mock != mock}>Continue with mock</button>
 	{/await}
 </div>
 {#if datapoint_answer_selected && test_or_teaching === 'teaching'}
-	<div class="col-start-2 col-end-3 h-full overflow-y-scroll" transition:fade={{ delay: 150, duration: 300 }}>
+	<div class="col-start-2 col-end-3 h-full overflow-y-scroll" transition:fade={{ delay: 250, duration: 500 }}>
 		<TTMChat {messages} />
 	</div>
-	<div class="col-auto h-full overflow-y-scroll" transition:fade={{ delay: 150, duration: 300 }}>
+	<div class="col-auto h-full overflow-y-scroll" transition:fade={{ delay: 250, duration: 500 }}>
 		{#await questions_promise}
 			<p>...waiting</p>
 		{:then { general_questions, feature_questions, feature_names }}
