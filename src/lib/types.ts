@@ -16,9 +16,44 @@ type TChatMessage = {
   feedback: boolean;
 };
 
+type TDatapoint = {
+  [key: string]: string
+};
+
+type TDatapointResult = TDatapoint & {
+  current_prediction: string;
+  initial_prompt: string;
+};
+
+type TInitResult = {
+  questions: TQuestionResult;
+  tooltips: { [key: string]: string };
+}
+
+type TQuestionResult = {
+  general_questions: TGeneralQuestion[];
+  feature_questions: TFeatureQuestion[];
+  feature_names: TFeatureName[];
+};
+
+type TTestingQuestion = {
+  id: number;
+  question: string;
+  answer: string;
+  feature_id: number;
+};
+
+type TTestOrTeaching = 'test' | 'teaching';
+
 export type {
   TChatMessage,
-  TGeneralQuestion,
+  TDatapointResult,
+  TDatapoint,
+  TFeatureName,
   TFeatureQuestion,
-  TFeatureName
+  TGeneralQuestion,
+  TInitResult,
+  TQuestionResult,
+  TTestingQuestion,
+  TTestOrTeaching,
 }

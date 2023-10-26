@@ -2,15 +2,12 @@
 	import { ListBox, ListBoxItem } from '@skeletonlabs/skeleton';
 	import Header from './Header.svelte';
 	import { createEventDispatcher } from 'svelte';
+	import Datapoint from './Datapoint.svelte';
+	import { PUBLIC_TEACH_TEST_CYCLES } from '$env/static/public';
 
 	const dispatch = createEventDispatcher();
 
-	export let data = {
-		Name: 'First Last',
-		Age: 25,
-		SthSth: 'SthSth',
-		Sth: 'SthSth'
-	};
+	export let data: {[key: string]: string};
 
 	export let prediction_question =
 		'Do you think the model will predict the applicant as high risk or low risk?';
@@ -42,15 +39,13 @@
 </script>
 
 <div
-	class="h-full flex-1 overflow-y-auto border-[length:var(--border)] shadow-[0_15px_15px_-5px_rgba(0,0,0,0.2)]"
+	class="inputarea h-full flex-1 overflow-y-auto border-[length:var(--border)] shadow-[0_15px_15px_-5px_rgba(0,0,0,0.2)] mx-2.5 my-0 rounded-[5px]"
 >
 	<Header>Applicant</Header>
 	<main>
-		{#each Object.entries(data) as [key, value]}
-			<p class="mx-2.5 my-[5px]">{key}: <span class="float-right">{value}</span></p>
-		{/each}
+		<Datapoint header={['Attribute', 'Value']} body={Object.keys(data).map((key) => [key, data[key].toString()])}/>
 	</main>
-
+	<hr class="!border-t-4 my-4" />
 	<form>
 		<div class="mt-8">
 			<p class="mb-6">{prediction_question}</p>
@@ -78,7 +73,7 @@
 				</ListBox>
 			</div>
 		</div>
-
+		<hr class="!border-t-4 my-4" />
 		{#if selected_prediction}
 			<div class="mt-8 justify-center">
 				{#if datapoint_count === 5}
@@ -93,13 +88,16 @@
 	{#if datapoint_count}
 		<div>
 			<p class="text-center text-[#999] text-[10px] mt-8">
-				{datapoint_count} of 5 datapoints
+				{datapoint_count} of {PUBLIC_TEACH_TEST_CYCLES} datapoints
 			</p>
 		</div>
 	{/if}
 </div>
 
 <style lang="postcss">
+	.inputarea {
+		background: var(--questions-bg);
+	}
 	input[type='submit'] {
 		@apply bg-[black] text-[white] rounded-lg cursor-pointer mx-0 my-[5px] px-5 py-3.5 border-[none];
 	}

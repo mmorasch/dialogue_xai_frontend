@@ -1,7 +1,7 @@
 <script lang="ts">
 	export let header: string[];
 	export let body: string[][];
-	export let tooltips: { string: string };
+	// export let tooltips: { string: string };
 </script>
 
 <div class="table-container w-[80%] mx-auto">
