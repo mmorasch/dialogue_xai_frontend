@@ -40,6 +40,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@types/dom-view-transitions": "1.0.3"
+		"@types/dom-view-transitions": "1.0.3",
+		"random-word-slugs": "^0.1.7"
 	}
 }

@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
+	import backend from '$lib/backend';
 	import { RangeSlider, Step, Stepper } from '@skeletonlabs/skeleton';
+	import { generateSlug } from "random-word-slugs";
 
 	let gender: string = 'm';
 	let gender_self_identify = '';
@@ -13,19 +15,21 @@
 	let fam_cr_val: number = 5;
 	let max: number = 10;
 
-	function onComplete() {
+	async function onComplete() {
+		const user_id = generateSlug()
 		// TODO log data
-		goto(`${base}/experiment`);
+		goto(`${base}/experiment?user_id=${user_id}`);
 	}
 
 	function onStepHandler(e: {
 		detail: { state: { current: number; total: number }; step: number };
 	}): void {
+		// TODO validate var's
 		console.log('event:step', e);
 	}
 </script>
 
-<div class="col-start-2 col-end-2 space-y-4 p-6 sm:p-8 md:space-y-6">
+<div class="col-start-2 col-end-2 space-y-4 p-2 sm:p-2 md:space-y-6">
 	<h1 class="text text-4xl">Dear Participant, welcome to the study!</h1>
 	<!-- https://www.skeleton.dev/components/steppers -->
 	<Stepper buttonCompleteLabel="Start experiment" on:complete={onComplete} on:step={onStepHandler}>

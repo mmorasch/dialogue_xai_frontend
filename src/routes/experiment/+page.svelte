@@ -2,27 +2,34 @@
 	import TTMDatapoint from '$lib/components/TTM-Datapoint.svelte';
 	import TTMChat from '$lib/components/TTM-Chat.svelte';
 	import TTMQuestions from '$lib/components/TTM-Questions.svelte';
-	import type { TChatMessage, TFeatureName, TFeatureQuestion, TGeneralQuestion } from '$lib/types';
+	import type {
+		TChatMessage,
+		TDatapoint,
+		TDatapointResult,
+		TFeatureName,
+		TFeatureQuestion,
+		TGeneralQuestion,
+		TQuestionResult
+	} from '$lib/types';
 	import backend from '$lib/backend';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
 	import { fade } from 'svelte/transition';
-	import { userId } from '$lib/shared';
+	import type { PageData } from './$types';
 
-	let messages: TChatMessage[] = [
-		{
-			text: 'Hello, what would you like to know about the ML prediction? Pick a question from the right. You can find general questions in the upper half and questions that only work in combination with selecting a feature from the drop down box in the lower part. Once selected, press **Ask question**.',
-			isUser: false,
-			feedback: false
-		}
-	];
+	/**
+	 * Data provided by the `+page.ts` load function in the same folder
+	 */
+	export let data: PageData;
 
-	let mock: boolean = false;
-	let datapoint_promise: Promise<any>;
-	let prediction_promise: Promise<any>;
-	let questions_promise: Promise<any>;
-	let user_id: string;
+	//-----------------------------------------------------------------
+
+	let messages: TChatMessage[] = [{ isUser: false, feedback: false, text: data.initial_prompt }];
+	let current_datapoint: TDatapoint = data.datapoint;
+	let current_prediction: string = data.current_prediction;
+	let current_questions: TQuestionResult = data.questions;
+	let user_id: string = data.user_id;
 	let datapoint_count: number = 1;
 	let datapoint_answer_selected: string | null = null;
 	let test_or_teaching: 'teaching' | 'test' = 'teaching';
@@ -39,7 +46,7 @@
 			general_questions: TGeneralQuestion[];
 			feature_questions: TFeatureQuestion[];
 			feature_names: TFeatureName[];
-		} = await questions_promise;
+		} = await current_questions;
 		let text = ((): string => {
 			for (let i = 0; i < general_questions.length; i++) {
 				if (general_questions[i].id === question) {
@@ -67,85 +74,45 @@
 		});
 
 		messages = messages;
-		backend.xai(user_id).get_response(question, feature).then((response) => {
-			response.text().then((text) => {
-				messages.push({
-					text: text,
-					isUser: false,
-					feedback: true
+		backend
+			.xai(user_id)
+			.get_response(question, feature)
+			.then((response) => {
+				response.text().then((text) => {
+					messages.push({
+						text: text,
+						isUser: false,
+						feedback: true
+					});
+					setTimeout(() => {
+						messages = messages;
+					}, 600);
 				});
-				setTimeout(() => {
-					messages = messages;
-				}, 600);
 			});
-		});
 	}
 
 	async function handleNext(e: any) {
 		console.log('/experiment/+page.svelte > handleNext');
-		datapoint_answer_selected = null;
-		if (test_or_teaching === 'teaching') {
-			test_or_teaching = 'test';
-			messages = [
-				{
-					text: 'Hello, what would you like to know about the ML prediction? Pick a question from the right. You can find general questions in the upper half and questions that only work in combination with selecting a feature from the drop down box in the lower part. Once selected, press **Ask question**.',
-					isUser: false,
-					feedback: false
-				}
-			];
-		} else {
-			test_or_teaching = 'teaching';
-			if (datapoint_count === 5) {
-				goto(`${base}/exit`);
-			} else {
-				datapoint_count++;
-			}
-		}
-
-		datapoint_promise = backend.xai(user_id).get_datapoint().then((response) => {
-			prediction_promise = backend.xai(user_id).get_current_prediction().then((response) => {
-				return response.json();
-			});
-			return response.json();
-		});
 	}
-
-	onMount(async () => {
-		user_id = userId.get()!;
-		datapoint_promise = backend.xai(user_id).get_datapoint().then((response) => {
-			prediction_promise = backend.xai(user_id).get_current_prediction().then((response) => {
-				return response.json();
-			});
-			return response.json();
-		});
-		questions_promise = backend.xai(user_id).get_questions().then((response) => {
-			return response.json();
-		});
-	});
-
 </script>
 
 <div class="col-start-1 col-end-2 h-full">
-	{#await datapoint_promise}
-		<p>...waiting</p>
-	{:then datapoint}
-		<TTMDatapoint
-			data={datapoint}
-			bind:selected_prediction={datapoint_answer_selected}
-			bind:datapoint_count={datapoint_count}
-			on:next={handleNext}
-		/>
-	{:catch error}
-		<p style="color: red">{error.message}</p>
-		<button on:click={() => mock != mock}>Continue with mock</button>
-	{/await}
+	<TTMDatapoint
+		data={current_datapoint}
+		bind:selected_prediction={datapoint_answer_selected}
+		bind:datapoint_count
+		on:next={handleNext}
+	/>
 </div>
 {#if datapoint_answer_selected && test_or_teaching === 'teaching'}
-	<div class="col-start-2 col-end-3 h-full overflow-y-scroll" transition:fade={{ delay: 250, duration: 500 }}>
+	<div
+		class="col-start-2 col-end-3 h-full overflow-y-scroll"
+		transition:fade={{ delay: 250, duration: 500 }}
+	>
 		<TTMChat {messages} />
 	</div>
 	<div class="col-auto h-full overflow-y-scroll" transition:fade={{ delay: 250, duration: 500 }}>
-		{#await questions_promise}
+		{#await current_questions}
 			<p>...waiting</p>
 		{:then { general_questions, feature_questions, feature_names }}
 			<TTMQuestions

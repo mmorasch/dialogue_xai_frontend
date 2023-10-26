@@ -14,6 +14,6 @@
 	});
 </script>
 
-<main class="grid grid-cols-[1fr_2fr_1fr] gap-x-2 items-center h-[98vh] mt-4">
+<main class="grid grid-cols-[1fr_2fr_1fr] gap-x-2 h-[98vh] mt-4">
 	<slot />
 </main>
