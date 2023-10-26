@@ -2,19 +2,9 @@
 	import TTMDatapoint from '$lib/components/TTM-Datapoint.svelte';
 	import TTMChat from '$lib/components/TTM-Chat.svelte';
 	import TTMQuestions from '$lib/components/TTM-Questions.svelte';
-	import type {
-		TChatMessage,
-		TDatapoint,
-		TDatapointResult,
-		TFeatureName,
-		TFeatureQuestion,
-		TGeneralQuestion,
-		TQuestionResult
-	} from '$lib/types';
+	import TTMTest from '$lib/components/TTM-Test.svelte';
+	import type { TChatMessage, TDatapoint, TQuestionResult, TTestOrTeaching } from '$lib/types';
 	import backend from '$lib/backend';
-	import { onMount } from 'svelte';
-	import { goto } from '$app/navigation';
-	import { base } from '$app/paths';
 	import { fade } from 'svelte/transition';
 	import type { PageData } from './$types';
 
@@ -25,28 +15,38 @@
 
 	//-----------------------------------------------------------------
 
-	let messages: TChatMessage[] = [{ isUser: false, feedback: false, text: data.initial_prompt }];
+	/**
+	 * Datapoint relevant
+	 */
 	let current_datapoint: TDatapoint = data.datapoint;
 	let current_prediction: string = data.current_prediction;
-	let current_questions: TQuestionResult = data.questions;
-	let user_id: string = data.user_id;
 	let datapoint_count: number = 1;
 	let datapoint_answer_selected: string | null = null;
-	let test_or_teaching: 'teaching' | 'test' = 'teaching';
+
+	//-----------------------------------------------------------------
+
+	/**
+	 * Chat relevant
+	 */
+	let messages: TChatMessage[] = [{ isUser: false, feedback: false, text: data.initial_prompt }];
+
+	//-----------------------------------------------------------------
+
+	/**
+	 * Test relevant
+	 */
+	let prediction: string = '';
+	let confidence: number = 50;
+	let explanation: string = '';
+	//-----------------------------------------------------------------
+
+	let { feature_names, feature_questions, general_questions }: TQuestionResult = data.questions;
+	let user_id: string = data.user_id;
+	let test_or_teaching: TTestOrTeaching = 'teaching';
 
 	async function submitQuestion(e: any) {
-		console.log(e.detail);
 		let question: number = parseInt(e.detail.question);
 		let feature: number = parseInt(e.detail.feature);
-		let {
-			general_questions,
-			feature_questions,
-			feature_names
-		}: {
-			general_questions: TGeneralQuestion[];
-			feature_questions: TFeatureQuestion[];
-			feature_names: TFeatureName[];
-		} = await current_questions;
 		let text = ((): string => {
 			for (let i = 0; i < general_questions.length; i++) {
 				if (general_questions[i].id === question) {
@@ -93,6 +93,32 @@
 
 	async function handleNext(e: any) {
 		console.log('/experiment/+page.svelte > handleNext');
+
+		// log: datapoint_answer_selected,
+
+		/**
+		 * Change from test to teach or vice versa
+		 */
+		let id: string = '';
+		let initial_prompt: string = '';
+		let new_datapoint: TDatapoint;
+		if (test_or_teaching === 'test') {
+			({ id, current_prediction, initial_prompt, ...new_datapoint } = await (
+				await backend.xai(user_id).get_test_datapoint()
+			).json());
+			test_or_teaching = 'teaching';
+		} else {
+			({ id, current_prediction, initial_prompt, ...new_datapoint } = await (
+				await backend.xai(user_id).get_train_datapoint()
+			).json());
+			test_or_teaching = 'test';
+		}
+		messages = [{ isUser: false, feedback: false, text: initial_prompt }];
+		current_datapoint = new_datapoint;
+		datapoint_count++;
+
+		//-----------------------------------------------------------------
+		datapoint_answer_selected = null;
 	}
 </script>
 
@@ -104,23 +130,28 @@
 		on:next={handleNext}
 	/>
 </div>
-{#if datapoint_answer_selected && test_or_teaching === 'teaching'}
-	<div
-		class="col-start-2 col-end-3 h-full overflow-y-scroll"
-		transition:fade={{ delay: 250, duration: 500 }}
-	>
-		<TTMChat {messages} />
-	</div>
-	<div class="col-auto h-full overflow-y-scroll" transition:fade={{ delay: 250, duration: 500 }}>
-		{#await current_questions}
-			<p>...waiting</p>
-		{:then { general_questions, feature_questions, feature_names }}
+<div class="col-start-2 col-end-3 mx-auto -z-10 row-start-1 row-end-2">
+	<header class="text-lg">{test_or_teaching === 'test' ? 'Test' : 'Teaching'}</header>
+</div>
+{#if datapoint_answer_selected}
+	{#if test_or_teaching === 'teaching'}
+		<div
+			class="col-start-2 col-end-3 h-full overflow-y-scroll row-start-1 row-end-2"
+			transition:fade={{ delay: 250, duration: 500 }}
+		>
+			<TTMChat {messages} />
+		</div>
+		<div class="col-auto h-full overflow-y-scroll" transition:fade={{ delay: 250, duration: 500 }}>
 			<TTMQuestions
 				{feature_questions}
 				{general_questions}
 				feature_questions_dropdown={feature_names}
 				on:submit={submitQuestion}
 			/>
-		{/await}
-	</div>
+		</div>
+	{:else}
+		<div class="col-start-2 col-end-3 w-10/12 row-start-1 row-end-2 mt-12 mx-auto">
+			<TTMTest {confidence} {prediction} {explanation} />
+		</div>
+	{/if}
 {/if}

@@ -3,15 +3,11 @@
 	import Header from './Header.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import Datapoint from './Datapoint.svelte';
+	import { PUBLIC_TEACH_TEST_CYCLES } from '$env/static/public';
 
 	const dispatch = createEventDispatcher();
 
-	export let data: {[key: string]: string} = {
-		Name: 'First Last',
-		Age: "25",
-		SthSth: 'SthSth',
-		Sth: 'SthSth'
-	};
+	export let data: {[key: string]: string};
 
 	export let prediction_question =
 		'Do you think the model will predict the applicant as high risk or low risk?';
@@ -92,7 +88,7 @@
 	{#if datapoint_count}
 		<div>
 			<p class="text-center text-[#999] text-[10px] mt-8">
-				{datapoint_count} of 5 datapoints
+				{datapoint_count} of {PUBLIC_TEACH_TEST_CYCLES} datapoints
 			</p>
 		</div>
 	{/if}

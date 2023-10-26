@@ -20,8 +20,7 @@ type TDatapoint = {
   [key: string]: string
 };
 
-type TDatapointResult = {
-  datapoint: TDatapoint;
+type TDatapointResult = TDatapoint & {
   current_prediction: string;
   initial_prompt: string;
 };
@@ -44,6 +43,8 @@ type TTestingQuestion = {
   feature_id: number;
 };
 
+type TTestOrTeaching = 'test' | 'teaching';
+
 export type {
   TChatMessage,
   TDatapointResult,
@@ -54,4 +55,5 @@ export type {
   TInitResult,
   TQuestionResult,
   TTestingQuestion,
+  TTestOrTeaching,
 }
