@@ -57,7 +57,7 @@
 				if (feature_questions[i].id === question) {
 					for (let j = 0; j < feature_names.length; j++) {
 						if (feature_names[j].id === feature) {
-							return feature_questions[i].question.replace(/\[feature X\]/, function (i, match) {
+							return feature_questions[i].question.replace(/\[feature selection\]/, function (i, match) {
 								return feature_names[j].feature_name;
 							});
 						}
@@ -145,6 +145,7 @@
 			<TTMQuestions
 				{feature_questions}
 				{general_questions}
+				{current_prediction}
 				feature_questions_dropdown={feature_names}
 				on:submit={submitQuestion}
 			/>
