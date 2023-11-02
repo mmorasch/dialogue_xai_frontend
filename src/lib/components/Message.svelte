@@ -12,7 +12,10 @@
 </script>
 
 <div class="flex items-end mb-2.5 {message.isUser ? 'right-msg' : 'left-msg'}">
-    <div class="msg-bubble max-w-md p-2.5 rounded-2xl" use:typewriter={50}>
+    <div
+        class="msg-bubble max-w-md p-2.5 rounded-2xl"
+        use:typewriter={message.isUser ? null : 50}
+    >
         {@html message.text}
         {#if !message.isUser}
             {#if message.feedback}
