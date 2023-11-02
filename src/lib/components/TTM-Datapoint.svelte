@@ -80,9 +80,9 @@
                     {#if datapoint_count === 5}
                         <p>Click next to get to the testing step.</p>
                     {:else}
-                        <p>Click next to get to the next datapoint.</p>
+                        <p>Click next to get to the test.</p>
                     {/if}
-                    <input type="submit" value="Next" style="width: 100%;" on:click|preventDefault={next} />
+                    <input type="submit" value="Go to test" style="width: 100%;" on:click|preventDefault={next} />
                 </div>
             {/if}
         </form>
