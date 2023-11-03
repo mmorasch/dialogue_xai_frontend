@@ -7,6 +7,9 @@
 	import backend from '$lib/backend';
 	import { fade } from 'svelte/transition';
 	import type { PageData } from './$types';
+	import { PUBLIC_TEACH_TEST_CYCLES } from '$env/static/public';
+	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 
 	/**
 	 * Data provided by the `+page.ts` load function in the same folder
@@ -22,6 +25,8 @@
 	let current_prediction: string = data.current_prediction;
 	let datapoint_count: number = 1;
 	let datapoint_answer_selected: string | null = null;
+	let feature_tooltip = data.feature_tooltip
+	console.log({feature_tooltip})
 
 	//-----------------------------------------------------------------
 
@@ -103,6 +108,10 @@
 		let initial_prompt: string = '';
 		let new_datapoint: TDatapoint;
 		if (test_or_teaching === 'test') {
+			if (datapoint_count === parseInt(PUBLIC_TEACH_TEST_CYCLES)) {
+				goto(`${base}/exit?user_id=${user_id}`);
+			}
+			datapoint_count++;
 			({ id, current_prediction, initial_prompt, ...new_datapoint } = await (
 				await backend.xai(user_id).get_test_datapoint()
 			).json());
@@ -115,7 +124,6 @@
 		}
 		messages = [{ isUser: false, feedback: false, text: initial_prompt }];
 		current_datapoint = new_datapoint;
-		datapoint_count++;
 
 		//-----------------------------------------------------------------
 		datapoint_answer_selected = null;
