@@ -1,12 +1,26 @@
 <script lang="ts">
   export let prediction: string;
-  export let confidence: number;
+  export let top_attribute: number;
   export let explanation: string;
 </script>
 
 <form>
+   <label for="top_attribute" class="label">
+    <span>Among the following features, which one is the most important in influencing our machine learning model’s
+    prediction (that is, variations in the value of that feature will most likely change the model’s prediction)?</span>
+    <input
+      type="text"
+      name="important-attribute"
+      id="important_attribute"
+      class="input"
+      min="0"
+      max="200"
+      bind:value={top_attribute}
+    />
+  </label>
   <label for="prediction" class="label">
-    <span>What do you think the model will predict?</span>
+    <span>Among the following features, which one is the least important in influencing our machine learning model’s
+    prediction (that is, variations in the value of that feature will most unlikely change the model’s prediction)?</span>
     <input
       type="text"
       name="prediction"
@@ -15,20 +29,8 @@
       bind:value={prediction}
     />
   </label>
-  <label for="confidence" class="label">
-    <span>How confident are you in your prediction?</span>
-    <input
-      type="range"
-      name="confidence"
-      id="confidence"
-      class="input range"
-      min="0"
-      max="100"
-      bind:value={confidence}
-    />
-  </label>
   <label for="explanation" class="label">
-    <span>Why do you think the model will predict this?</span>
+    <span>Which changes to this patient would result in a different model prediction?</span>
     <textarea
       name="explanation"
       id="explanation"
