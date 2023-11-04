@@ -2,32 +2,29 @@
 	import LikeButton from './LikeButton.svelte';
 	import DislikeButton from './DislikeButton.svelte';
 	import CommentButton from './CommentButton.svelte';
-	import { typewriter } from './typewriter.ts';
+	import { typewriter } from '../typewriter';
+	import type { TChatMessage } from '$lib/types';
+	import { fade } from 'svelte/transition';
 
-	export let message = {
-		text: '',
-		isUser: false,
-		feedback: true
-	};
+	export let message: TChatMessage;
 </script>
 
 <div class="flex items-end mb-2.5 {message.isUser ? 'right-msg' : 'left-msg'}">
-    <div
-        class="msg-bubble max-w-md p-2.5 rounded-2xl"
-        use:typewriter={message.isUser ? null : 50}
-    >
-        {@html message.text}
-        {#if !message.isUser}
-            {#if message.feedback}
-                <br />
-                <span class="float-right flex flex-wrap">
-                    <LikeButton />
-                    <DislikeButton />
-                    <CommentButton />
-                </span>
-            {/if}
-        {/if}
-    </div>
+	<div class="msg-bubble max-w-md p-2.5 rounded-2xl">
+		<div use:typewriter={message.isUser ? 0 : 50}>
+			{@html message.text}
+		</div>
+		{#if !message.isUser}
+			{#if message.feedback}
+				<br />
+				<span class="float-right flex flex-wrap" in:fade={{delay: 1000, duration: 250}}>
+					<LikeButton />
+					<DislikeButton />
+					<CommentButton />
+				</span>
+			{/if}
+		{/if}
+	</div>
 </div>
 
 <style lang="postcss">

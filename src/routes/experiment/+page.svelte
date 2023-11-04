@@ -133,7 +133,9 @@
 <div class="col-start-1 col-end-2 h-full">
 	<TTMDatapoint
 		data={current_datapoint}
+		tooltips={feature_tooltip}
 		bind:selected_prediction={datapoint_answer_selected}
+		bind:test_or_teaching={test_or_teaching}
 		bind:datapoint_count
 		on:next={handleNext}
 	/>

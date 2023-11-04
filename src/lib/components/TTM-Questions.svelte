@@ -35,7 +35,7 @@
         activeQuestion = e.target.getAttribute('data-value');
 
         // Get the selected feature name from the dropdown
-        const selectedFeatureName = document.querySelector(`option[value="${activeFeature}"]`).textContent;
+        const selectedFeatureName = document.querySelector(`option[value="${activeFeature}"]`)!.textContent!;
 
         // Replace the placeholder with the actual feature name
         activeQuestion = activeQuestion.replace('[feature selection]', selectedFeatureName);
@@ -123,10 +123,6 @@
 
 	.inline-feature-select option {
 		@apply px-1 py-0.5;
-	}
-
-	input[type='submit'] {
-		@apply bg-[black] text-[white] rounded-lg cursor-pointer mx-0 my-[5px] px-5 py-3.5 border-[none];
 	}
 </style>
 

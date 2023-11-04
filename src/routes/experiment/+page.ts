@@ -17,7 +17,6 @@ export const load = (async ({ url }) => {
     if (user_id === null) throw error(400, 'user_id is required as a query parameter');
 
     const { questions, feature_tooltip } = await (await backend.xai(user_id).init()).json();
-    console.log({questions, feature_tooltip})
     const {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         id,

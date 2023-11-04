@@ -1,18 +1,20 @@
 <script lang="ts">
+	import { PUBLIC_TEACH_TEST_CYCLES } from '$env/static/public';
+	import { createEventDispatcher } from 'svelte';
 	import { ListBox, ListBoxItem } from '@skeletonlabs/skeleton';
 	import Header from './Header.svelte';
-	import { createEventDispatcher } from 'svelte';
 	import Datapoint from './Datapoint.svelte';
-	import { PUBLIC_TEACH_TEST_CYCLES } from '$env/static/public';
+	import type { TTestOrTeaching } from '$lib/types';
 
 	const dispatch = createEventDispatcher();
 
-	export let data: {[key: string]: string};
-
+	export let data: { [key: string]: string };
 	export let prediction_question =
 		'Do you think the model will predict the applicant as high risk or low risk?';
 
 	export let datapoint_count: number | null = null;
+	export let test_or_teaching: TTestOrTeaching;
+    export let tooltips: { [key: string]: string };
 
 	const options = [
 		'Surely High Risk',
@@ -43,56 +45,65 @@
 >
 	<Header>Patient</Header>
 	<main>
-		<Datapoint header={['Attribute', 'Value']} body={Object.keys(data).map((key) => [key, data[key].toString()])}/>
+		<Datapoint
+			header={['Attribute', 'Value']}
+			body={Object.keys(data).map((key) => [key, data[key].toString()])}
+            {tooltips}
+		/>
 	</main>
 	<div class="content-align">
-        <hr class="!border-t-4 my-4" />
-        <form>
-            <div class="mt-8">
-                <p class="mb-6">{prediction_question}</p>
-                <div class="variant-ghost-surface w-fit mx-auto">
-                    <ListBox
-                        active="variant-filled-primary"
-                        hover="hover:variant-soft-primary"
-                        display="flex-col"
-                    >
-                        <ListBoxItem bind:group={selected_prediction} name="justify" value={options[0]}
-                            >{options[0]}</ListBoxItem
-                        >
-                        <ListBoxItem bind:group={selected_prediction} name="justify" value={options[1]}
-                            >{options[1]}</ListBoxItem
-                        >
-                        <ListBoxItem bind:group={selected_prediction} name="justify" value={options[2]}
-                            >{options[2]}</ListBoxItem
-                        >
-                        <ListBoxItem bind:group={selected_prediction} name="justify" value={options[3]}
-                            >{options[3]}</ListBoxItem
-                        >
-                        <ListBoxItem bind:group={selected_prediction} name="justify" value={options[4]}
-                            >{options[4]}</ListBoxItem
-                        >
-                    </ListBox>
-                </div>
-            </div>
-            <hr class="!border-t-4 my-4" />
-            {#if selected_prediction}
-                <div class="mt-8 justify-center">
-                    {#if datapoint_count === 5}
-                        <p>Click next to get to the testing step.</p>
-                    {:else}
-                        <p>Click next to get to the test.</p>
-                    {/if}
-                    <input type="submit" value="Go to test" style="width: 100%;" on:click|preventDefault={next} />
-                </div>
-            {/if}
-        </form>
-        {#if datapoint_count}
-            <div>
-                <p class="text-center text-[#999] text-[10px] mt-8">
-                    {datapoint_count} of {PUBLIC_TEACH_TEST_CYCLES} datapoints
-                </p>
-            </div>
-        {/if}
+		<hr class="!border-t-4 my-4" />
+		<form>
+			<div class="mt-8">
+				<p class="mb-6">{prediction_question}</p>
+				<div class="variant-ghost-surface w-fit mx-auto">
+					<ListBox
+						active="variant-filled-primary"
+						hover="hover:variant-soft-primary"
+						display="flex-col"
+					>
+						<ListBoxItem bind:group={selected_prediction} name="justify" value={options[0]}
+							>{options[0]}</ListBoxItem
+						>
+						<ListBoxItem bind:group={selected_prediction} name="justify" value={options[1]}
+							>{options[1]}</ListBoxItem
+						>
+						<ListBoxItem bind:group={selected_prediction} name="justify" value={options[2]}
+							>{options[2]}</ListBoxItem
+						>
+						<ListBoxItem bind:group={selected_prediction} name="justify" value={options[3]}
+							>{options[3]}</ListBoxItem
+						>
+						<ListBoxItem bind:group={selected_prediction} name="justify" value={options[4]}
+							>{options[4]}</ListBoxItem
+						>
+					</ListBox>
+				</div>
+			</div>
+			<hr class="!border-t-4 my-4" />
+			{#if selected_prediction}
+				<div class="mt-8 justify-center">
+					{#if datapoint_count === 5}
+						<p>Click next to get to the {test_or_teaching} step.</p>
+					{:else}
+						<p>Click next to get to the test.</p>
+					{/if}
+					<input
+						type="submit"
+						value="Go to {test_or_teaching}"
+						style="width: 100%;"
+						on:click|preventDefault={next}
+					/>
+				</div>
+			{/if}
+		</form>
+		{#if datapoint_count}
+			<div>
+				<p class="text-center text-[#999] text-[10px] mt-8">
+					{datapoint_count} of {PUBLIC_TEACH_TEST_CYCLES} datapoints
+				</p>
+			</div>
+		{/if}
 	</div>
 </div>
 
@@ -101,9 +112,9 @@
 		background: var(--questions-bg);
 	}
 	.content-align {
-    width: 80%; /* Same width as your table */
-    margin: 0 auto; /* To center it */
-}
+		width: 80%; /* Same width as your table */
+		margin: 0 auto; /* To center it */
+	}
 	input[type='submit'] {
 		@apply bg-[black] text-[white] rounded-lg cursor-pointer mx-0 my-[5px] px-5 py-3.5 border-[none];
 	}

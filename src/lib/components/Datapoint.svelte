@@ -1,7 +1,7 @@
 <script lang="ts">
 	export let header: string[];
 	export let body: string[][];
-	// export let tooltips: { string: string };
+	export let tooltips: { [key: string]: string };
 </script>
 
 <div class="table-container w-[80%] mx-auto">
@@ -15,7 +15,7 @@
 		</thead>
 		<tbody>
 			{#each body as row, i}
-				<tr>
+				<tr title={tooltips[body[i][0].toLowerCase()]}>
 					{#each row as col, j}
 						<td>{col}</td>
 					{/each}
