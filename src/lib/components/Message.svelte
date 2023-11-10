@@ -11,9 +11,8 @@
 
 <div class="flex items-end mb-2.5 {message.isUser ? 'right-msg' : 'left-msg'}">
 	<div class="msg-bubble max-w-md p-2.5 rounded-2xl">
-		<div use:typewriter={message.isUser ? 0 : 50}>
-			{@html message.text}
-		</div>
+
+		{@html message.text}
 		{#if !message.isUser}
 			{#if message.feedback}
 				<br />
