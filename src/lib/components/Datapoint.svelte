@@ -2,6 +2,7 @@
 	export let header: string[];
 	export let body: string[][];
 	export let tooltips: { [key: string]: string };
+	import TooltipIcon from './TooltipIcon.svelte';
 </script>
 
 <div class="table-container w-[80%] mx-auto">
@@ -14,10 +15,15 @@
 			</tr>
 		</thead>
 		<tbody>
-			{#each body as row, i}
-				<tr title={tooltips[body[i][0].toLowerCase()]}>
-					{#each row as col, j}
-						<td>{col}</td>
+			{#each body as row, rowIndex}
+				<tr>
+					{#each row as col, colIndex}
+						<td>
+							<span>{col}</span>
+							{#if colIndex === 0 && tooltips[col.toLowerCase()]}
+								<TooltipIcon message={tooltips[col.toLowerCase()]} />
+							{/if}
+						</td>
 					{/each}
 				</tr>
 			{/each}
@@ -28,5 +34,10 @@
 <style lang="postcss">
 	.table tbody td {
 		padding: 0.25rem;
+	}
+
+	/* Ensuring the tooltip is not clipped */
+	.table-container, .table {
+		overflow: visible;
 	}
 </style>
