@@ -36,7 +36,7 @@
 		<Step>
 			<p>
 				Welcome to our study on understanding decisions and the behavior of machine learning models
-				which should take around 40 minutes. It is designed as part of a large research project
+				which should take around 15 minutes. It is designed as part of a large research project
 				toward creating understanding between Artificial Intelligence Systems (i.e. Machine learning
 				models) and humans.<br />
 			</p>
@@ -142,7 +142,7 @@
 				</label>
 				<label for="familiarityCreditRisk">
 					<span>
-						6) What is your level of familiarity with the topic of credit risk assessment?
+						6) What is your level of familiarity with the topic of diabetes diagnose?
 					</span>
 					<RangeSlider name="range-slider" bind:value={fam_cr_val} {max} step={1}>
 						<div class="flex justify-between items-center">
@@ -158,56 +158,56 @@
 				in credit risk assessments!
 			</h2>
 			<p>
-				Have you ever wondered how banks and financial institutions determine who they can trust to
-				borrow money? Well, that's where the power of AI and machine learning comes into play! <br
-				/><br />
+				Have you ever considered the impact of AI and machine learning in the healthcare sector,
+				particularly in diagnosing chronic diseases like diabetes? This is where the innovative world of
+				machine learning shows its true potential. <br /><br />
 
-				In this experiment, you gain access to explore how machine learning algorithms help analyze
-				vast amounts of historical data to predict whether an individual is likely to repay a loan
-				or poses a higher credit risk. It's like a virtual detective that carefully examines an
-				applicant's financial background and behaviors to make informed decisions. <br /><br />
+				In this exploration, you will discover how machine learning models are employed to analyze extensive
+				health data to predict the likelihood of diabetes in individuals. These models act as high-tech
+				analysts, scrutinizing a person's medical history and lifestyle factors to make accurate diagnoses. <br /><br />
 
-				By analyzing characteristics like age, gender, and job level, the AI identified patterns and
-				can now assess the likelihood of someone being a high-risk customer for new loan
-				applications.
+				By examining variables such as age, weight and blood sugar levels, these AI systems identify patterns
+				and can now more accurately predict the risk of diabetes in patients, aiding in early detection and
+				management of the condition.<br />
+
 				<br />
 			</p>
-			<p>For example, given an applicant with the following attributes:</p>
+		</Step>
+		<Step>
+			<p>For example, given a person with the following information (attributes):</p>
 			<ul class="list">
-				<li><span class="flex-auto">- Age Group: 30 </span></li>
-				<li><span class="flex-auto">- Gender: Male</span></li>
-				<li><span class="flex-auto">- Job Level: Skilled</span></li>
-				<li><span class="flex-auto">- Housing Type: Free</span></li>
-				<li><span class="flex-auto">- Saving accounts: Moderate</span></li>
-				<li><span class="flex-auto">- Checking account: Moderate</span></li>
-				<li><span class="flex-auto">- Credit Amount: 2862 DM</span></li>
-				<li><span class="flex-auto">- Credit Duration: 36 months</span></li>
-				<li><span class="flex-auto">- Credit Purpose: Car</span></li>
-			</ul>
+                <li><span class="flex-auto">- Age: 34 </span></li>
+                <li><span class="flex-auto">- BMI: 24.6</span></li>
+                <li><span class="flex-auto">- Blood Pressure: 80 mmHg</span></li>
+                <li><span class="flex-auto">- Diabetes Pedigree Function: 0.856</span></li>
+                <li><span class="flex-auto">- Glucose Level: 107 mg/dL</span></li>
+                <li><span class="flex-auto">- Insulin Level: 0 µU/mL</span></li>
+                <li><span class="flex-auto">- Number of Pregnancies: 8</span></li>
+                <li><span class="flex-auto">- Skin Thickness: 0 mm</span></li>
+            </ul>
 			<p>
-				The model would give the prediction that this is a <b>high risk</b> customer, meaning that it
-				is likely that the applicant will not repay the loan in time.
+				The model would give the prediction that this person is unlikely to have diabetes.
 			</p>
 		</Step>
 		<Step>
 			<h2 class="text-2xl">Study Introduction</h2>
 			<h3 class="text-xl">How will the model predict the risk level of new applicants?</h3>
 			<p>
-				You will be shown one applicant at a time, and your task is to make an initial guess about
-				how the ML model would decide for that applicant. Then, you will see the models prediction
+				You will be shown one person at a time, and your task is to make an initial guess about
+				how the ML model would decide for that person. Then, you will see the models prediction
 				and you can ask questions about the prediction and how the model works to understand it
 				better. As you learn more, you can update your initial guess if you want. If you are sure
 				about your guess, click on "Next" to see the next applicant and repeat the process.<br /><br
 				/>
 
-				Here, the goal isn't to be right about whether someone is a high or low risk customer. It's
-				all about estimating what the model would predict based on the questions you can ask.
+				Here, the goal isn't to be right about whether someone has diabetes or not. It's
+				all about estimating what the model would predict based on the questions you can ask and the
+				explanations you get.
 				<br /><br />
 
-				You'll do this for eight applicants. After you're done, we'll ask you a few questions about
-				your understanding of the model and it's decision where you will get extra money for correct
-				answers. Afterward, we're curious to hear what you think about the questions, answers, and
-				how well you could predict the model's behavior. Let's get started!
+				You will do this for 5 people. After you're done, we'll ask you a few questions about
+				your understanding of the model. Afterward, we're curious to hear what you think about the questions,
+				answers, and how well you could predict the model's behavior. Let's get started!
 			</p>
 		</Step>
 	</Stepper>

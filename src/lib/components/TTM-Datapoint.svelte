@@ -10,7 +10,7 @@
 
 	export let data: { [key: string]: string };
 	export let prediction_question =
-		'Do you think the model will predict the applicant as high risk or low risk?';
+		'Do you think the model will predict the person as high risk or low risk of having diabetes?';
 
 	export let datapoint_count: number | null = null;
 	export let test_or_teaching: TTestOrTeaching;
