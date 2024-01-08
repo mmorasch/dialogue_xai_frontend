@@ -55,7 +55,7 @@
 		let text = ((): string => {
 			for (let i = 0; i < general_questions.length; i++) {
 				if (general_questions[i].id === question) {
-					return general_questions[i].question;
+					return general_questions[i].question.replace('[current prediction]', '<i>'+current_prediction+'</i>');
 				}
 			}
 			for (let i = 0; i < feature_questions.length; i++) {
@@ -113,12 +113,12 @@
 			}
 			datapoint_count++;
 			({ id, current_prediction, initial_prompt, ...new_datapoint } = await (
-				await backend.xai(user_id).get_test_datapoint()
+				await backend.xai(user_id).get_train_datapoint()
 			).json());
 			test_or_teaching = 'teaching';
 		} else {
 			({ id, current_prediction, initial_prompt, ...new_datapoint } = await (
-				await backend.xai(user_id).get_train_datapoint()
+				await backend.xai(user_id).get_test_datapoint()
 			).json());
 			test_or_teaching = 'test';
 		}
@@ -130,34 +130,32 @@
 	}
 </script>
 
-<div class="col-start-1 col-end-2 h-full">
+<div class="col-start-1 col-end-2">
 	<TTMDatapoint
 		data={current_datapoint}
 		tooltips={feature_tooltip}
 		bind:selected_prediction={datapoint_answer_selected}
-		bind:test_or_teaching={test_or_teaching}
 		bind:datapoint_count
-		on:next={handleNext}
 	/>
-</div>
-<div class="col-start-2 col-end-3 mx-auto -z-10 row-start-1 row-end-2">
-	<header class="text-lg">{test_or_teaching === 'test' ? 'Test' : 'Teaching'}</header>
 </div>
 {#if datapoint_answer_selected}
 	{#if test_or_teaching === 'teaching'}
 		<div
-			class="col-start-2 col-end-3 h-full overflow-y-scroll row-start-1 row-end-2"
+			class="col-start-2 col-end-3 overflow-y-scroll"
 			transition:fade={{ delay: 250, duration: 500 }}
 		>
 			<TTMChat {messages} />
 		</div>
-		<div class="col-auto h-full overflow-y-scroll" transition:fade={{ delay: 250, duration: 500 }}>
+		<div class="col-auto"
+			 transition:fade={{ delay: 250, duration: 500 }}>
 			<TTMQuestions
 				{feature_questions}
 				{general_questions}
 				{current_prediction}
+				bind:selected_prediction={datapoint_answer_selected}
 				feature_questions_dropdown={feature_names}
 				on:submit={submitQuestion}
+				on:next={handleNext}
 			/>
 		</div>
 	{:else}

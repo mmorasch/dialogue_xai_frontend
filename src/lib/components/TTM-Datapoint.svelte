@@ -13,7 +13,6 @@
 		'Do you think the model will predict the person as high risk or low risk of having diabetes?';
 
 	export let datapoint_count: number | null = null;
-	export let test_or_teaching: TTestOrTeaching;
     export let tooltips: { [key: string]: string };
 
 	const options = [
@@ -27,21 +26,10 @@
 	// get event categories
 	export let selected_prediction: string | null = null;
 
-	async function next(e: any) {
-		e.preventDefault();
-		console.log('TTM-Datapoint.svelte > next');
-		console.log('selected_prediction', selected_prediction);
-		if (selected_prediction) {
-			console.log('dispatching');
-			dispatch('next', null);
-		} else {
-			console.log('No question selected');
-		}
-	}
 </script>
 
 <div
-	class="inputarea h-full flex-1 overflow-y-auto border-[length:var(--border)] shadow-[0_15px_15px_-5px_rgba(0,0,0,0.2)] mx-2.5 my-0 rounded-[5px]"
+	class="inputarea h-full flex-1 overflow-y-auto shadow-[0_15px_15px_-5px_rgba(0,0,0,0.2)] mx-2.5 my-0"
 >
 	<Header>Patient</Header>
 	<main>
@@ -81,21 +69,6 @@
 				</div>
 			</div>
 			<hr class="!border-t-4 my-4" />
-			{#if selected_prediction}
-				<div class="mt-8 justify-center">
-					{#if datapoint_count === 5}
-						<p>Click next to get to the {test_or_teaching} step.</p>
-					{:else}
-						<p>Click next to get to the test.</p>
-					{/if}
-					<input
-						type="submit"
-						value="Go to {test_or_teaching}"
-						style="width: 100%;"
-						on:click|preventDefault={next}
-					/>
-				</div>
-			{/if}
 		</form>
 		{#if datapoint_count}
 			<div>
@@ -114,8 +87,5 @@
 	.content-align {
 		width: 80%; /* Same width as your table */
 		margin: 0 auto; /* To center it */
-	}
-	input[type='submit'] {
-		@apply bg-[black] text-[white] rounded-lg cursor-pointer mx-0 my-[5px] px-5 py-3.5 border-[none];
 	}
 </style>

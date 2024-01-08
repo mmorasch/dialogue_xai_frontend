@@ -9,6 +9,7 @@
 	export let feature_questions: TFeatureQuestion[];
 	export let current_prediction: string;
 	export let feature_questions_dropdown: TFeatureName[];
+    export let selected_prediction: string | null = null;
 
 	let activeQuestion: string;
 	let activeFeature: string;
@@ -23,6 +24,18 @@
         ...q,
         question: q.question.replace('[current prediction]', current_prediction)
     }));
+
+    async function next(e: any) {
+      e.preventDefault();
+      console.log('TTM-Questions.svelte > next');
+      console.log('selected_prediction', selected_prediction);
+      if (selected_prediction) {
+       console.log('dispatching');
+       dispatch('next', null);
+      } else {
+       console.log('No question selected');
+      }
+    }
 
 	function buttonOnClick(e: any) {
         const buttons = document.querySelectorAll('button');
@@ -59,7 +72,7 @@
 </script>
 
 <div
-	class="inputarea max-w-[500px] border-[length:var(--border)] shadow-[0_15px_15px_-5px_rgba(0,0,0,0.2)] text-center mx-2.5 my-0 rounded-[5px]"
+	class="inputarea max-w-[500px] shadow-[0_15px_15px_-5px_rgba(0,0,0,0.2)] text-center mx-2.5 my-0"
 >
 	<form class="grid">
 		<div class="row-[1]">
@@ -92,12 +105,20 @@
                 </button>
             {/each}
         </div>
+        <input
+          type="submit"
+          value="Proceed"
+          style="width: 70%;"
+          on:click|preventDefault={next}
+        />
 	</form>
 </div>
 
 <style lang="postcss">
 	.inputarea {
 		background: var(--questions-bg);
+		min-height: 98vh;
+        position: relative;
 	}
 
 	/* Style the buttons to appear below each other */
@@ -123,6 +144,13 @@
 
 	.inline-feature-select option {
 		@apply px-1 py-0.5;
+	}
+
+	input[type='submit'] {
+		@apply bg-[black] text-[white] rounded-lg cursor-pointer mx-0 my-[5px] px-5 py-3.5 border-[none];
+		position: absolute; /* Add this line */
+        bottom: 0; /* Add this line */
+		left: 15%; /* Add this line */
 	}
 </style>
 
