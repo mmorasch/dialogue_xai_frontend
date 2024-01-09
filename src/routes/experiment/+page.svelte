@@ -159,8 +159,6 @@
 			/>
 		</div>
 	{:else}
-		<div class="col-start-2 col-end-3 w-10/12 row-start-1 row-end-2 mt-12 mx-auto">
-			<TTMTest {confidence} {prediction} {explanation} />
-		</div>
+		{handleNext()}
 	{/if}
 {/if}
