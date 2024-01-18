@@ -19,7 +19,6 @@
 				<span class="float-right flex flex-wrap" in:fade={{delay: 1000, duration: 250}}>
 					<LikeButton />
 					<DislikeButton />
-					<CommentButton />
 				</span>
 			{/if}
 		{/if}

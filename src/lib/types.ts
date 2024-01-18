@@ -27,7 +27,8 @@ type TDatapointResult = TDatapoint & {
 
 type TInitResult = {
   questions: TQuestionResult;
-  tooltips: { [key: string]: string };
+  feature_tooltips: { [key: string]: string };
+  feature_units: { [key: string]: string };
 }
 
 type TQuestionResult = {

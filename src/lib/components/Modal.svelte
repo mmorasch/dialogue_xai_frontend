@@ -1,32 +1,41 @@
 <script lang="ts">
-	type TModalType = 'positive' | 'negative' | 'neutral';
-	export let showModal: boolean;
-	export let type: TModalType;
+	 type TModalType = 'positive' | 'negative' | 'neutral';
+	 export let showModal: boolean;
+	 export let type: TModalType;
 
-	let dialog: HTMLDialogElement;
+	 let dialog: HTMLDialogElement;
+	 let comment = '';
 
-	$: if (dialog && showModal) dialog.showModal();
+	 function handleSubmit() {
+	  console.log(comment); // replace with your own submission logic
+	  dialog.close();
+	 }
+
+	 $: if (dialog && showModal) dialog.showModal();
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <dialog
-	bind:this={dialog}
-	on:close={() => (showModal = false)}
-	on:click|self={() => dialog.close()}
+		bind:this={dialog}
+		on:close={() => (showModal = false)}
+		on:click|self={() => dialog.close()}
 >
 	<div on:click|stopPropagation>
-		<slot name="header" />
-		<hr />
-		<slot />
-		<hr />
-		<!-- svelte-ignore a11y-autofocus -->
-		<button autofocus on:click={() => dialog.close()}>close modal</button>
+		<slot>
+			<textarea bind:value={comment} placeholder="Provide additional feedback"></textarea>
+			<div class="button-container">
+			  <button on:click={handleSubmit}>Submit</button>
+			  <!-- svelte-ignore a11y-autofocus -->
+			  <button autofocus on:click={() => dialog.close()}>Cancel</button>
+			</div>
+		</slot>
 	</div>
 </dialog>
 
 <style>
 	dialog {
 		max-width: 32em;
+		min-height: 10em;
 		border-radius: 0.2em;
 		border: none;
 		padding: 0;
@@ -59,7 +68,22 @@
 			opacity: 1;
 		}
 	}
-	button {
-		display: block;
+	 button {
+	  display: block;
+	  padding: 10px 20px; /* Add padding */
+	  border: none; /* Remove default border */
+	  border-radius: 5px; /* Add border radius */
+	  background-color: black;
+	  color: white; /* Change text color */
+	  cursor: pointer; /* Change cursor on hover */
+	 }
+	.button-container {
+	  display: flex;
+	  justify-content: space-between;
 	}
+	 textarea {
+	  width: 100%;
+	  height: 7em;
+	 }
+
 </style>

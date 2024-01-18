@@ -37,34 +37,36 @@
       }
     }
 
+	function selectOnChange(e: any) {
+		// Get the parent button of the select element
+		const parentButton = e.target.closest('button');
+
+		// If there's a parent button, trigger a click event on it
+		if (parentButton) {
+			parentButton.click();
+		}
+	}
+
 	function buttonOnClick(e: any) {
         const buttons = document.querySelectorAll('button');
         buttons.forEach((button) => {
             button.classList.remove('variant-filled-primary');
             button.classList.add('variant-ghost-primary');
         });
-        e.target.classList.remove('variant-ghost-primary');
-        e.target.classList.add('variant-filled-primary');
-        activeQuestion = e.target.getAttribute('data-value');
+
+		e.target.classList.remove('variant-ghost-primary');
+		e.target.classList.add('variant-filled-primary');
+		activeQuestion = e.target.getAttribute('data-value');
 
         // Get the selected feature name from the dropdown
         const selectedFeatureName = document.querySelector(`option[value="${activeFeature}"]`)!.textContent!;
 
-        // Replace the placeholder with the actual feature name
-        activeQuestion = activeQuestion.replace('[feature selection]', selectedFeatureName);
-
         // Automatically submit the question when clicked
-        if (activeQuestion) {
-            if (typeof activeQuestion === 'number') {
-                activeQuestion = '' + activeQuestion;
-            }
-            if (typeof activeFeature === 'number') {
-                activeFeature = '' + activeFeature;
-            }
-            dispatch('submit', {
-                question: activeQuestion,
-                feature: activeFeature
-            });
+		if (activeQuestion) {
+			dispatch('submit', {
+			  question: activeQuestion,
+			  feature: activeFeature
+			});
         } else {
             console.log('No question selected');
         }
@@ -96,11 +98,11 @@
             {#each feature_questions as question}
                 <button data-value={question.id} type="button" class="btn variant-ghost-primary" on:click={buttonOnClick}>
                     {question.question.split('[feature selection]')[0]}
-                    <select bind:value={activeFeature} class="inline-feature-select">
-                        {#each feature_questions_dropdown as feature}
-                            <option value={feature.id}>{feature.feature_name}</option>
-                        {/each}
-                    </select>
+                    <select bind:value={activeFeature} class="inline-feature-select" on:change={selectOnChange}>
+						{#each feature_questions_dropdown as feature}
+							<option value={feature.id}>{feature.feature_name}</option>
+						{/each}
+					</select>
                     {question.question.split('[feature selection]')[1]}
                 </button>
             {/each}
@@ -117,7 +119,7 @@
 <style lang="postcss">
 	.inputarea {
 		background: var(--questions-bg);
-		min-height: 98vh;
+		min-height: 97vh;
         position: relative;
 	}
 
@@ -148,9 +150,9 @@
 
 	input[type='submit'] {
 		@apply bg-[black] text-[white] rounded-lg cursor-pointer mx-0 my-[5px] px-5 py-3.5 border-[none];
-		position: absolute; /* Add this line */
-        bottom: 0; /* Add this line */
-		left: 15%; /* Add this line */
+		position: absolute;
+        bottom: 0;
+		left: 15%;
 	}
 </style>
 

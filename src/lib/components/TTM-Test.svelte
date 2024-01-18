@@ -5,6 +5,5 @@
 </script>
 
 <form>
-
   <input type="submit" value="Next" style="width: 100%;" />
 </form>
