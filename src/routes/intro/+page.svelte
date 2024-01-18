@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
-	import backend from '$lib/backend';
+	import backend, {saveUserProfile} from '$lib/backend';
 	import { RangeSlider, Step, Stepper } from '@skeletonlabs/skeleton';
 	import { generateSlug } from "random-word-slugs";
 
@@ -10,14 +10,30 @@
 	let age: number;
 	let degree: number;
 	let education_field: number;
-	let education_field_other: string;
+	let education_field_other = '';
 	let fam_ml_val: number = 5;
-	let fam_cr_val: number = 5;
+	let fam_domain_val: number = 5;
 	let max: number = 10;
 
 	async function onComplete() {
+		// TODO: Define mandatory fields and check if they are filled
+		  if (degree === "") {
+			  alert("Please select your highest degree before proceeding.");
+		  return;
+		  }
+
 		const user_id = generateSlug()
-		// TODO log data
+		let profile_data = {
+			'gender': gender,
+			'gender_self_identify': gender_self_identify,
+			'age': age,
+			'degree': degree,
+			'education_field': education_field,
+			'education_field_other': education_field_other,
+			'fam_ml_val': fam_ml_val,
+			'fam_domain_val': fam_domain_val,
+		}
+		saveUserProfile(user_id, profile_data);
 		goto(`${base}/experiment?user_id=${user_id}`);
 	}
 
@@ -36,7 +52,7 @@
 		<Step>
 			<p>
 				Welcome to our study on understanding decisions and the behavior of machine learning models
-				which should take around 15 minutes. It is designed as part of a large research project
+				which takes around 15 minutes. It is designed as part of a large research project
 				toward creating understanding between Artificial Intelligence Systems (i.e. Machine learning
 				models) and humans.<br />
 			</p>
@@ -100,11 +116,11 @@
 				<label for="educationalBackground" class="label text-center col-span-1">
 					<span> 3) What is your highest degree? </span>
 					<select class="select mb-8 py-1" id="educationalBackground" bind:value={degree}>
-						<option value="0">- Select -</option>
-						<option value="1">High School</option>
-						<option value="2">Bachelor</option>
-						<option value="3">Master</option>
-						<option value="4">Doctor</option>
+						<option value="" selected>- Select -</option>
+						<option value="high school">High School</option>
+						<option value="bachelor">Bachelor</option>
+						<option value="master">Master</option>
+						<option value="doctor">Doctor</option>
 					</select>
 				</label>
 				<label for="educationalBackgroundField" class="label text-center col-span-1">
@@ -136,17 +152,21 @@
 					<span>5) How familiar are you with machine learning and artificial intelligence?</span>
 					<RangeSlider name="range-slider" bind:value={fam_ml_val} {max} step={1}>
 						<div class="flex justify-between items-center">
+							<div class="text-xs">Low</div>
 							<div class="text-xs">{fam_ml_val} / {max}</div>
+							<div class="text-xs">High</div>
 						</div>
 					</RangeSlider>
 				</label>
-				<label for="familiarityCreditRisk">
+				<label for="familiarityDomain">
 					<span>
 						6) What is your level of familiarity with the topic of diabetes diagnose?
 					</span>
-					<RangeSlider name="range-slider" bind:value={fam_cr_val} {max} step={1}>
+					<RangeSlider name="range-slider" bind:value={fam_domain_val} {max} step={1}>
 						<div class="flex justify-between items-center">
-							<div class="text-xs">{fam_cr_val} / {max}</div>
+							<div class="text-xs">Low</div>
+							<div class="text-xs">{fam_domain_val} / {max}</div>
+							<div class="text-xs">High</div>
 						</div>
 					</RangeSlider>
 				</label>
@@ -155,7 +175,7 @@
 		<Step>
 			<h2 class="text-2xl">
 				Welcome to the world of Artificial Intelligence (AI) that impacts the daily life of people -
-				in credit risk assessments!
+				in diabetes diagnosis!
 			</h2>
 			<p>
 				Have you ever considered the impact of AI and machine learning in the healthcare sector,
