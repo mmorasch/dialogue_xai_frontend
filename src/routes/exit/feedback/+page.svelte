@@ -1,1 +1,1 @@
-<div>For dimi's use later.</div>
+<div>The experiment is done. <br> Your student id is registered as a successful participant.</div>
