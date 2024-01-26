@@ -1,35 +1,36 @@
 <script lang="ts">
-	 type TModalType = 'positive' | 'negative' | 'neutral';
-	 export let showModal: boolean;
-	 export let type: TModalType;
+    import {createEventDispatcher} from 'svelte';
+    export let showModal: boolean;
+    export let userInput = '';
 
-	 let dialog: HTMLDialogElement;
-	 let comment = '';
+    const dispatch = createEventDispatcher();
 
-	 function handleSubmit() {
-	  console.log(comment); // replace with your own submission logic
-	  dialog.close();
-	 }
+    let dialog: HTMLDialogElement;
 
-	 $: if (dialog && showModal) dialog.showModal();
+    function handleSubmit() {
+        dialog.close();
+        dispatch('close', userInput);
+    }
+
+    $: if (dialog && showModal) dialog.showModal();
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <dialog
-		bind:this={dialog}
-		on:close={() => (showModal = false)}
-		on:click|self={() => dialog.close()}
+        bind:this={dialog}
+        on:close={() => (showModal = false)}
+        on:click|self={() => dialog.close()}
 >
-	<div on:click|stopPropagation>
-		<slot>
-			<textarea bind:value={comment} placeholder="Provide additional feedback"></textarea>
-			<div class="button-container">
-			  <button on:click={handleSubmit}>Submit</button>
-			  <!-- svelte-ignore a11y-autofocus -->
-			  <button autofocus on:click={() => dialog.close()}>Cancel</button>
-			</div>
-		</slot>
-	</div>
+    <div on:click|stopPropagation>
+        <slot>
+            <textarea bind:value={userInput} placeholder="Provide additional feedback"></textarea>
+            <div class="button-container">
+                <button on:click={handleSubmit}>Submit</button>
+                <!-- svelte-ignore a11y-autofocus -->
+                <button autofocus on:click={() => dialog.close()}>Cancel</button>
+            </div>
+        </slot>
+    </div>
 </dialog>
 
 <style>

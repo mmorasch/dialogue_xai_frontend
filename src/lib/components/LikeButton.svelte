@@ -1,26 +1,29 @@
 <script lang="ts">
     import like from '$lib/assets/like.png';
-    import Modal from './Modal.svelte';
+    import {createEventDispatcher} from 'svelte';
     import '../../global.css';
-    import backend from '$lib/backend';
+    import Modal from "$lib/components/Modal.svelte";
+    import type {TChatMessage} from "$lib/types";
+
+    export let message: TChatMessage;
+
 
     let showModal = false;
-    let comment = '';
-    let userId = 'user_id'; // replace with actual user id
-    let datapointCount = 0; // replace with actual datapoint count
-    let likeType = 'positive'; // replace with actual like type
+    let userInput = '';
+    const dispatch = createEventDispatcher();
 
+    function handleLike() {
+        showModal = !showModal;
+    }
 
+    function handleModalClose() {
+        console.log('handleModalClose', userInput);
+        dispatch('feedbackButtonClick', {buttonType: 'like', messageId: message.id, user_comment: userInput});
+    }
 
-     function handleLike() {
-         showModal = !showModal;
-         if (showModal) {
-             backend.firebase.logLikeEvent(userId, datapointCount, likeType, comment);
-         }
-     }
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <img class="mr-2.5 mt-2 clickable" src={like} alt="" width="20" height="20" on:click={handleLike}/>
-<Modal type={"positive"} showModal={showModal}/>
+<Modal type={"positive"} showModal={showModal} bind:userInput={userInput} on:close={handleModalClose}/>

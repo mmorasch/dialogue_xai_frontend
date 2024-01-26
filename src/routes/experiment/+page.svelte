@@ -133,6 +133,14 @@
         //-----------------------------------------------------------------
         datapoint_answer_selected = null;
     }
+
+    function handleFeedbackButtonClick(event) {
+        const {buttonType} = event.detail;
+        const {messageId} = event.detail;
+        const {user_comment} = event.detail;
+        console.log("event", event);
+        logEvent(user_id, 'experiment/teaching', 'feedback', datapoint_count, {buttonType, messageId, user_comment});
+    }
 </script>
 
 {#if test_or_teaching === 'teaching'}

@@ -3,11 +3,18 @@
     import {afterUpdate, beforeUpdate, tick} from 'svelte';
     import Header from './Header.svelte';
     import Message from './Message.svelte';
+    import { createEventDispatcher } from 'svelte';
 
     export let messages: TChatMessage[] = [];
     let element: HTMLElement;
 
     let autoscroll = false;
+
+    const dispatch = createEventDispatcher();
+
+     function forwardEvent(event) {
+       dispatch('feedbackButtonClick', event.detail);
+     }
 
     beforeUpdate(() => {
         if (element) {
@@ -32,7 +39,7 @@
             class="flex-1 overflow-y-auto h-full p-3"
     >
         {#each messages as message}
-            <Message {message}/>
+            <Message {message} on:feedbackButtonClick={forwardEvent}/>
         {/each}
     </main>
 </div>
