@@ -27,8 +27,6 @@
 
     async function next(e: any) {
       e.preventDefault();
-      console.log('TTM-Questions.svelte > next');
-      console.log('selected_prediction', selected_prediction);
       if (selected_prediction) {
        console.log('dispatching');
        dispatch('next', null);
