@@ -1,60 +1,76 @@
 type TGeneralQuestion = {
-  id: number;
-  question: string;
+    id: number;
+    question: string;
 };
 
 type TFeatureQuestion = TGeneralQuestion;
 
 type TFeatureName = {
-  id: number;
-  feature_name: string;
+    id: number;
+    feature_name: string;
 };
 
 type TChatMessage = {
-  text: string;
-  isUser: boolean;
-  feedback: boolean;
+    text: string;
+    isUser: boolean;
+    feedback: boolean;
+    id: number;
 };
 
 type TDatapoint = {
-  [key: string]: string
+    [key: string]: string
+};
+
+type StaticReport = {
+    model_prediction: string;
+    instance_type: string;
+    feature_importance: Record<string, number>;
+    opposite_class: string;
+    counterfactuals: string;
+    anchors: string;
 };
 
 type TDatapointResult = TDatapoint & {
-  current_prediction: string;
-  initial_prompt: string;
+    current_prediction: string;
+    initial_prompt: string;
+    static_report: StaticReport;
+    true_label: string;
 };
 
 type TInitResult = {
-  questions: TQuestionResult;
-  feature_tooltips: { [key: string]: string };
-  feature_units: { [key: string]: string };
+    questions: TQuestionResult;
+    feature_tooltips: { [key: string]: string };
+    feature_units: { [key: string]: string };
 }
 
 type TQuestionResult = {
-  general_questions: TGeneralQuestion[];
-  feature_questions: TFeatureQuestion[];
-  feature_names: TFeatureName[];
+    general_questions: TGeneralQuestion[];
+    feature_questions: TFeatureQuestion[];
+    feature_names: TFeatureName[];
 };
 
 type TTestingQuestion = {
-  id: number;
-  question: string;
-  answer: string;
-  feature_id: number;
+    id: number;
+    question: string;
+    answer: string;
+    feature_id: number;
 };
 
-type TTestOrTeaching = 'test' | 'teaching';
+type TTestOrTeaching = 'test' | 'teaching' | 'final-test';
+
+type TInteractiveOrStatic = 'static' | 'interactive';
 
 export type {
-  TChatMessage,
-  TDatapointResult,
-  TDatapoint,
-  TFeatureName,
-  TFeatureQuestion,
-  TGeneralQuestion,
-  TInitResult,
-  TQuestionResult,
-  TTestingQuestion,
-  TTestOrTeaching,
+    TChatMessage,
+    TDatapointResult,
+    TDatapoint,
+    TFeatureName,
+    TFeatureQuestion,
+    TGeneralQuestion,
+    TInitResult,
+    TQuestionResult,
+    TTestingQuestion,
+    TTestOrTeaching,
+    StaticReport,
+    TInteractiveOrStatic
 }
