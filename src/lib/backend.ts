@@ -8,80 +8,138 @@ import * as firebaseConfig from '../../data/config.json';
 const app = initializeApp(firebaseConfig);
 
 export default {
-  xai: (user_id: string) => ({
-    init: () => fetch(PUBLIC_BACKEND_URL + "init" + "?user_id=" + user_id),
-    get_train_datapoint: () => fetch(PUBLIC_BACKEND_URL + "get_train_datapoint" + "?user_id=" + user_id),
-    get_test_datapoint: () => fetch(PUBLIC_BACKEND_URL + "get_test_datapoint" + "?user_id=" + user_id),
-    get_testing_questions: () => fetch(PUBLIC_BACKEND_URL + "get_testing_questions" + "?user_id=" + user_id),
-    get_response: (question: number, feature: number) => fetch(PUBLIC_BACKEND_URL + "get_response" + "?user_id=" + user_id, { method: "POST", body: JSON.stringify({ question, feature }) }),
-  }),
-  firebase: {
-    positive_feedback: () => logFeedback("positive_feedback"),
-    negative_feedback: () => logFeedback("negative_feedback"),
-    comment: () => console.log("comment"),
-    logLikeEvent: (userId: string, datapointCount: number, likeType: string, comment?: string) => logLikeEvent(userId, datapointCount, likeType, comment),
-  }
+    xai: (user_id: string, study_group = 'A', user_prediction='None') => ({
+        init: () => fetch(`${PUBLIC_BACKEND_URL}init?user_id=${user_id}&study_group=${study_group}`),
+        get_user_correctness: () => fetch(`${PUBLIC_BACKEND_URL}get_user_correctness?user_id=${user_id}`),
+        finish: () => fetch(PUBLIC_BACKEND_URL + "finish" + "?user_id=" + user_id, {method: 'DELETE',}),
+        get_train_datapoint: () => fetch(PUBLIC_BACKEND_URL + "get_train_datapoint" + "?user_id=" + user_id),
+        get_test_datapoint: () => fetch(PUBLIC_BACKEND_URL + "get_test_datapoint" + "?user_id=" + user_id),
+        get_testing_questions: () => fetch(PUBLIC_BACKEND_URL + "get_testing_questions" + "?user_id=" + user_id),
+        get_response: (question: number, feature: number) => fetch(PUBLIC_BACKEND_URL + "get_response" + "?user_id=" + user_id, {
+            method: "POST",
+            body: JSON.stringify({question, feature})
+        }),
+    }),
+    firebase: (user_id: string) => ({
+        // TODO: Change all Functions to include user_id and correct the feedback things to be tied to question
+        authenticateUser: () => authenticateUser(),
+        logCompleted: (userId: string) => logCompleted(userId),
+    }),
 }
 
-function logFeedback(feedback_type: string) {
-  const db = getDatabase(app);
-  // Create a reference to a specific node based on feedback type
-  const feedbackRef = ref(db, feedback_type); // 'positive_feedback' or 'negative_feedback'
+// INTRO LOGGING
 
-  // Create a feedback object
-  const feedbackData = {
-    timestamp: new Date().toISOString(),
-    // Add other data here if needed
-  };
+export function setupUserProfile(userId: string,
+                                 profileData: object) {
+    const db = getDatabase(app);
+    const profileRef = ref(db, `users/${userId}/profile`);
+    set(profileRef, profileData);
 
-  // Push the feedback data to the database
-  push(feedbackRef, feedbackData);
+    // Set completed to false in the beginning of the experiment
+    const completedRef = ref(db, `users/${userId}/completed`);
+    set(completedRef, false);
 }
 
-function logLikeEvent(userId: string,
-                      datapointCount: number,
-                      likeType: string,
-                      comment?: string) {
-  const db = getDatabase(app);
-  let timestamp = new Date().toISOString();
-  timestamp = timestamp.split('.')[0]; // remove milliseconds
-  const logRef = ref(db, `users/${userId}/logs/datapoint_${datapointCount}/${timestamp}`);
-  const logEntry = {
-    likeType: likeType,
-    comment: comment || null
-  };
-  set(logRef, logEntry);
+export async function assignStudyGroup() {
+    const db = getDatabase(app);
+    const usersRef = ref(db, 'users');
+    const snapshot = await get(usersRef);
+
+    if (snapshot.exists()) {
+        const users = snapshot.val();
+        let groupStaticCount = 0;
+        let groupInteractiveCount = 0;
+        for (const userId in users) {
+            try {
+                const user = users[userId];
+                if (user["profile"]["study_group"] === 'static') {
+                    groupStaticCount++;
+                } else if (user["profile"]["study_group"] === 'interactive') {
+                    groupInteractiveCount++;
+                }
+            } catch (error) {
+                console.info(`Error accessing study_group property for user ${userId}:`, error);
+            }
+        }
+
+        return groupStaticCount <= groupInteractiveCount ? 'static' : 'interactive';
+    } else {
+
+        return 'static';
+    }
 }
 
+// EXPERIMENT LOGGING
 export function logEvent(userId: string,
-                  source: string,
-                  action: string,
-                  datapointCount: number,
-                  additionalData = {}) {
-  const db = getDatabase(app);
-  let timestamp = new Date().toISOString();
-  timestamp = timestamp.split('.')[0]; // remove milliseconds
-  const logRef = ref(db, `users/${userId}/logs/datapoint_${datapointCount}/${timestamp}`);
-  const logEntry = {
-    source: source,
-    action: action,
-    data: additionalData
-  };
-  set(logRef, logEntry);
+                         source: string,
+                         action: string,
+                         datapointCount: number,
+                         additionalData = {}) {
+    const db = getDatabase(app);
+    let timestamp = new Date().toISOString();
+    timestamp = timestamp.split('.')[0]; // remove milliseconds
+    const logRef = ref(db, `users/${userId}/logs/train_datapoint_${datapointCount}/${action}_${timestamp}`);
+    const logEntry = {
+        source: source,
+        action: action,
+        data: additionalData
+    };
+    set(logRef, logEntry);
 }
 
-export function saveUserProfile(userId: string,
-                                profileData: object) {
-  const db = getDatabase(app);
-  const profileRef = ref(db, `users/${userId}/profile`);
-  set(profileRef, profileData);
+export function logTestingResponse(userId: string,
+                                   datapointCount: number,
+                                   test_response: string,
+                                   final = false,
+                                   true_label = "") {
+    const db = getDatabase(app);
+    let timestamp = new Date().toISOString();
+    timestamp = timestamp.split('.')[0];
+    if (final) {
+        const logRef = ref(db, `users/${userId}/logs/test_datapoint_${datapointCount}/final_response_${timestamp}`);
+    } else {
+        const logRef = ref(db, `users/${userId}/logs/test_datapoint_${datapointCount}/response_${timestamp}`);
+    }
+    const logRef = ref(db, `users/${userId}/logs/test_datapoint_${datapointCount}`);
+    const logEntry = {
+        response: test_response,
+        timestamp: timestamp,
+        true_label: true_label,
+    };
+    set(logRef, logEntry);
+    fetch(`${PUBLIC_BACKEND_URL}set_user_prediction?user_id=${userId}&user_prediction=${test_response}`, {method: 'POST'});
 }
 
-export function saveUserAnswers(userId: string,
-                                answers: number[]) {
-  const db = getDatabase(app);
-  const answersRef = ref(db, `users/${userId}/answers`);
-  set(answersRef, answers);
+
+// FINAL LOGGING
+export function saveQuestionnaireAnswers(userId: string,
+                                         questions: string[],
+                                         answers: number[],
+                                         questionnaire_name = "final_questionnaire") {
+    // Saves user final questionnaire answers to firebase
+    const db = getDatabase(app);
+    const answersRef = ref(db, `users/${userId}/${questionnaire_name}`);
+    set(answersRef, {questions: questions, answers: answers});
 }
 
+
+export function logFinalFeedback(userId: string, feedback: string) {
+    const db = getDatabase(app);
+    const feedbackRef = ref(db, `users/${userId}/final_feedback`);
+
+    const feedbackData = {
+        feedback: feedback,
+        timestamp: new Date().toISOString(),
+    };
+
+    set(feedbackRef, feedbackData);
+    logCompleted(userId);
+}
+
+
+export function logCompleted(userId: string) {
+    const db = getDatabase(app);
+    const completed_ref = ref(db, `users/${userId}/completed`);
+    set(completed_ref, true);
+}
 
