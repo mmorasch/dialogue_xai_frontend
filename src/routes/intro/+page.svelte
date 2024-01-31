@@ -1,9 +1,10 @@
 <script lang="ts">
     import {goto} from '$app/navigation';
     import {base} from '$app/paths';
-    import backend, {saveUserProfile} from '$lib/backend';
+    import backend, {setupUserProfile, assignStudyGroup} from '$lib/backend';
     import {RangeSlider, Step, Stepper} from '@skeletonlabs/skeleton';
     import {generateSlug} from "random-word-slugs";
+    import {authenticateUser} from '$lib/backend';
 
     let gender: string = 'm';
     let gender_self_identify = '';
@@ -11,15 +12,31 @@
     let degree: number;
     let education_field: number;
     let education_field_other = '';
-    let fam_ml_val: number = 5;
-    let fam_domain_val: number = 5;
-    let max: number = 10;
+    let fam_ml_val: number = 0;
+    let fam_domain_val: number = 0;
+    let max: number = 5;
+    let matrikelnummer: number; //TODO: Include matrikelnummer in the form
+    let consent_given: boolean = false;
+    let pdfPath = `${base}/Consent.pdf`;
 
     async function onComplete() {
-        // TODO: Define mandatory fields and check if they are filled
-        if (degree === "") {
-            alert("Please select your highest degree before proceeding.");
-            return;
+        // First check if all the fields are filled out
+        const checks = [
+            {condition: degree === "", message: "Please select your highest degree before proceeding."},
+            {condition: education_field === "", message: "Please select your field of study before proceeding."},
+            {
+                condition: education_field === "other" && education_field_other === "",
+                message: "Please enter your field of study before proceeding."
+            },
+            {condition: age === "", message: "Please enter your age before proceeding."},
+            {condition: gender === "", message: "Please select your gender degree before proceeding."}
+        ];
+
+        for (let check of checks) {
+            if (check.condition) {
+                alert(check.message);
+                return;
+            }
         }
 
         const user_id = generateSlug()
@@ -33,37 +50,29 @@
             'fam_ml_val': fam_ml_val,
             'fam_domain_val': fam_domain_val,
         }
-        saveUserProfile(user_id, profile_data);
+        setupUserProfile(user_id, profile_data);
         goto(`${base}/experiment?user_id=${user_id}`);
-    }
-
-    function onStepHandler(e: {
-        detail: { state: { current: number; total: number }; step: number };
-    }): void {
-        // TODO validate var's
-        console.log('event:step', e);
     }
 </script>
 
 <div class="col-start-2 col-end-2 space-y-4 p-2 sm:p-2 md:space-y-6">
     <h1 class="text text-4xl">Dear Participant, welcome to the study!</h1>
     <!-- https://www.skeleton.dev/components/steppers -->
-    <Stepper buttonCompleteLabel="Start Experiment" on:complete={onComplete}
-             on:step={onStepHandler}>
+    <Stepper buttonCompleteLabel="Start Experiment" on:complete={onComplete}>
         <Step>
             <p>
                 Welcome to our study on understanding decisions and the behavior of machine learning models
-                which takes around 15 minutes. It is designed as part of a large research project
-                toward creating understanding between Artificial Intelligence Systems (i.e. Machine learning
+                which takes about 30 minutes. It is designed as part of a large research project
+                that seeks to improve understanding between Artificial Intelligence Systems (i.e. Machine learning
                 models) and humans.<br/>
             </p>
 
             <p class="m my-12">
-                Your responses will be kept confidential, and we will only use them to help us analyze the
-                results of our study. You have the right to withdraw from the study at any time.<br/>
+                Your responses will be kept confidential, and we will only use them for this study. You have the right
+                to withdraw from the study at any time.<br/>
                 <br/>
 
-                Upon successful completion, you will get 10€. <br/><br/>
+                Upon successful completion, you will get 3 extra Points in the final Exam. <br/><br/>
 
                 Thank you for your participation! <br/><br/>
 
@@ -72,106 +81,20 @@
                 Dimitry Mindlin, PhD Candidate, University of Bielefeld
             </p>
         </Step>
-        <Step>
+        <Step locked={!consent_given}>
             <p>
-                Before we begin, we would like to gather information about you that will help us better
-                understand the representativeness of our study and have a diverse set of participants. <br
-            /><br/>
+                Please read the consent form and agree to participate in the study.
+                <iframe title="Consent Form" src={pdfPath} width="100%" height="500px">
+                    This browser does not support PDFs. Please download the PDF to view it.
+                </iframe>
 
-                The personal information (questions 1-4) will not be used to evaluate the results. It will
-                be anonymized and randomized after the study is done, so that there is no way to link it
-                back to you and your answers in the study.
-
-                <br/> <br/>
-                Please take a moment to answer the following questions:
             </p>
-            <hr/>
-            <div class="grid grid-cols-2 gap-8">
-                <label for="age" class="label text-center">
-                    <span>1) How old are you?</span><br/>
-                    <input type="number" name="age" id="age" class="input w-16 py-1" bind:value={age}/>
-                </label>
-                <label for="gender" class="label text-center">
-                    <div>
-                        <label class="label" for="gender-select">
-                            <span>2) Gender: How do you identify? </span>
-                            <select class="select py-1" name="gender" id="gender-select" bind:value={gender}>
-                                <option value="">- Select -</option>
-                                <option value="man">Man</option>
-                                <option value="nb">Non-Binary</option>
-                                <option value="woman">Woman</option>
-                                <option value="self-describe">Prefer to self-describe, below</option>
-                            </select>
-                        </label>
-                    </div>
-                    <div>
-                        <input
-                                type="text"
-                                name="gender_text"
-                                id="gender_text"
-                                class="input py-1"
-                                bind:value={gender_self_identify}
-                        />
-                    </div>
-                </label>
-                <label for="educationalBackground" class="label text-center col-span-1">
-                    <span> 3) What is your highest degree? </span>
-                    <select class="select mb-8 py-1" id="educationalBackground" bind:value={degree}>
-                        <option value="" selected>- Select -</option>
-                        <option value="high school">High School</option>
-                        <option value="bachelor">Bachelor</option>
-                        <option value="master">Master</option>
-                        <option value="doctor">Doctor</option>
-                    </select>
-                </label>
-                <label for="educationalBackgroundField" class="label text-center col-span-1">
-                    <span> 4) What is your general field of studies? </span>
-                    <select
-                            class="select mb-8 py-1"
-                            id="educationalBackgroundField"
-                            bind:value={education_field}
-                    >
-                        <option value="0">- Select -</option>
-                        <option value="1">Maths</option>
-                        <option value="2">Computer Science</option>
-                        <option value="3">Biology</option>
-                        <option value="4">Economy</option>
-                        <option value="5">Social Sciences</option>
-                        <option value="6">Other (describe below)</option>
-                    </select>
-                    <div>
-                        <input
-                                type="text"
-                                name="study_field_text"
-                                id="study_field_text"
-                                class="input py-1"
-                                bind:value={education_field_other}
-                        />
-                    </div>
-                </label>
-                <label for="familiarityML" class="label text-center">
-                    <span>5) How familiar are you with machine learning and artificial intelligence?</span>
-                    <RangeSlider name="range-slider" bind:value={fam_ml_val} {max} step={1}>
-                        <div class="flex justify-between items-center">
-                            <div class="text-xs">Low</div>
-                            <div class="text-xs">{fam_ml_val} / {max}</div>
-                            <div class="text-xs">High</div>
-                        </div>
-                    </RangeSlider>
-                </label>
-                <label for="familiarityDomain">
-					<span>
-						6) What is your level of familiarity with the topic of diabetes diagnose?
-					</span>
-                    <RangeSlider name="range-slider" bind:value={fam_domain_val} {max} step={1}>
-                        <div class="flex justify-between items-center">
-                            <div class="text-xs">Low</div>
-                            <div class="text-xs">{fam_domain_val} / {max}</div>
-                            <div class="text-xs">High</div>
-                        </div>
-                    </RangeSlider>
-                </label>
+            <div style="display: flex; align-items: center;">
+                <label for="consent" style="margin-right: 10px;">I read and understood the consent form and agree to
+                    participate in the study.</label>
+                <input type="checkbox" id="consent" bind:checked={consent_given}/>
             </div>
+
         </Step>
         <Step>
             <h2 class="text-2xl">
@@ -213,7 +136,7 @@
         </Step>
         <Step>
             <h2 class="text-2xl">Study Introduction</h2>
-            <h3 class="text-xl">How will the model predict the risk level of new applicants?</h3>
+            <h3 class="text-xl">How will the model predict the risk level of different patients?</h3>
             <p>
                 You will be shown one person at a time, and your task is to make an initial guess about
                 how the ML model would decide for that person. Then, you will see the models prediction
@@ -229,16 +152,113 @@
 
                 You will do this for 5 people. After you're done, we'll ask you a few questions about
                 your understanding of the model. Afterward, we're curious to hear what you think about the questions,
-                answers, and how well you could predict the model's behavior. Let's get started!
+                answers, and how well you could predict the model's behavior.
             </p>
+        </Step>
+        <Step>
+            <p>
+                Before we begin, we would like to gather some information about you to ensure a diverse set
+                of participants and the representativeness of the study. <br
+            /><br/>
+
+                Personal information (questions 1-4) will not be used to evaluate the results. It will
+                be anonymized and randomized, so that there is no way to link it back to you and your answers in the
+                study.
+
+                <br/> <br/>
+                Please take a moment to answer the following questions:
+            </p>
+            <hr/>
+            <div class="grid grid-cols-2 gap-8">
+                <label for="age" class="label text-center">
+                    <span>1) How old are you?</span><br/>
+                    <input type="number" name="age" id="age" class="input w-32 py-1" bind:value={age}/>
+                </label>
+                <label for="gender" class="label text-center">
+                    <div>
+                        <label class="label" for="gender-select">
+                            <span>2) Gender: How do you identify? </span>
+                            <select class="select py-1" name="gender" id="gender-select" bind:value={gender}>
+                                <option value="">- Select -</option>
+                                <option value="man">Man</option>
+                                <option value="non-binary">Non-Binary</option>
+                                <option value="woman">Woman</option>
+                                <option value="anonymous">Prefer not to say</option>
+                                <option value="self-describe">Prefer to self-describe, below</option>
+                            </select>
+                        </label>
+                    </div>
+                    {#if gender === 'self-describe'}
+                        <div>
+                            <input
+                                    type="text"
+                                    name="gender_text"
+                                    id="gender_text"
+                                    class="input py-1"
+                                    bind:value={gender_self_identify}
+                            />
+                        </div>
+                    {/if}
+                </label>
+                <label for="educationalBackground" class="label text-center col-span-1">
+                    <span> 3) What is your highest degree? </span>
+                    <select class="select mb-8 py-1" id="educationalBackground" bind:value={degree}>
+                        <option value="" selected>- Select -</option>
+                        <option value="high school">High School</option>
+                        <option value="bachelor">Bachelor</option>
+                        <option value="master">Master</option>
+                        <option value="doctor">Doctor</option>
+                    </select>
+                </label>
+                <label for="educationalBackgroundField" class="label text-center col-span-1">
+                    <span> 4) What is your general field of studies? </span>
+                    <select
+                            class="select mb-8 py-1"
+                            id="educationalBackgroundField"
+                            bind:value={education_field}
+                    >
+                        <option value="" seelcted>- Select -</option>
+                        <option value="maths">Maths</option>
+                        <option value="cs">Computer Science</option>
+                        <option value="bio">Biology</option>
+                        <option value="economics">Economics</option>
+                        <option value="social">Social Sciences</option>
+                        <option value="other">Other (describe below)</option>
+                    </select>
+                    {#if education_field === 'other'}
+                        <div>
+                            <input
+                                    type="text"
+                                    name="study_field_text"
+                                    id="study_field_text"
+                                    class="input py-1"
+                                    bind:value={education_field_other}
+                            />
+                        </div>
+                    {/if}
+                </label>
+                <label for="familiarityML" class="label text-center">
+                    <span>5) How familiar are you with machine learning and artificial intelligence?</span>
+                    <select bind:value={fam_domain_val} class="select py-1">
+                        <option value="0">What is Artificial Intelligence?</option>
+                        <option value="1">I am aware where AI is used.</option>
+                        <option value="2">I actively use AI tools.</option>
+                        <option value="3">I know how AI is developed.</option>
+                        <option value="4">I am a AI researcher.</option>
+                    </select>
+                </label>
+                <label for="familiarityDomain">
+					<span>
+						6) What is your level of familiarity with the topic of diabetes diagnose?
+					</span>
+                    <select bind:value={fam_ml_val} class="select py-1">
+                        <option value="0">I do not know about the disease.</option>
+                        <option value="0">I briefly know about the disease.</option>
+                        <option value="1">I know the symptoms of the disease.</option>
+                        <option value="2">I know how the disease is diagnosed.</option>
+                    </select>
+                </label>
+            </div>
         </Step>
     </Stepper>
 </div>
-<style>
-    .center-button {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100%; /* You may need to adjust this depending on your layout */
-    }
-</style>
