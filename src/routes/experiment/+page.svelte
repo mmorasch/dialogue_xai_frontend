@@ -13,17 +13,30 @@
     import backend from '$lib/backend';
     import {fade} from 'svelte/transition';
     import type {PageData} from './$types';
-    import {PUBLIC_TEACH_TEST_CYCLES} from '$env/static/public';
+    import {PUBLIC_TEACH_TEST_CYCLES, PUBLIC_END_TEST_CYCLES} from '$env/static/public';
+
     import {goto} from '$app/navigation';
     import {base} from '$app/paths';
     import {logEvent} from '$lib/backend';
+    import StaticExplanationReport from '$lib/components/StaticExplanationReport.svelte';
+    import {writable} from "svelte/store";
+    import Popup from '$lib/components/Popup.svelte';
 
     /**
      * Data provided by the `+page.ts` load function in the same folder
      */
     export let data: PageData;
+    export const popupVisible = writable(false);
 
     //-----------------------------------------------------------------
+
+    popupVisible.subscribe(value => {
+        $popupVisible = value;
+    });
+
+    function handleConfirm() {
+        popupVisible.set(false);
+    }
 
     /**
      * Datapoint relevant
