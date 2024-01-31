@@ -7,6 +7,19 @@ import * as firebaseConfig from '../../data/config.json';
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
+export function authenticateUser() {
+    // Authenticate user anonymously
+    const auth = getAuth();
+    signInAnonymously(auth).then(() => {
+        // Signed in..
+    })
+        .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(errorCode, errorMessage);
+        });
+}
+
 export default {
     xai: (user_id: string, study_group = 'A', user_prediction='None') => ({
         init: () => fetch(`${PUBLIC_BACKEND_URL}init?user_id=${user_id}&study_group=${study_group}`),
