@@ -60,14 +60,22 @@
     /**
      * Test relevant
      */
-    let prediction: string = '';
-    let confidence: number = 50;
-    let explanation: string = '';
+    let prediction = '';
+    let cycles_completed = 0;
+    //-----------------------------------------------------------------
+    /**
+     * Static Report relevant
+     */
+    let static_report: StaticReport = data.static_report;
     //-----------------------------------------------------------------
 
     let {feature_names, feature_questions, general_questions}: TQuestionResult = data.questions;
     let user_id: string = data.user_id;
+    let study_group = data.study_group;
     let test_or_teaching: TTestOrTeaching = 'teaching';
+    let true_label: string = data.datapoint.true_label;
+
+    delete data.datapoint.true_label;
 
     async function submitQuestion(e: any) {
         let question: number = parseInt(e.detail.question);
