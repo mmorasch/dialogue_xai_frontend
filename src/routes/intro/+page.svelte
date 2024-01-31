@@ -39,8 +39,12 @@
             }
         }
 
+        authenticateUser();
         const user_id = generateSlug()
+        const study_group = await assignStudyGroup();
+
         let profile_data = {
+            'study_group': study_group,
             'gender': gender,
             'gender_self_identify': gender_self_identify,
             'age': age,
