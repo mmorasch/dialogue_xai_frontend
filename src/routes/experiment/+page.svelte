@@ -2,7 +2,14 @@
     import TTMDatapoint from '$lib/components/TTM-Datapoint.svelte';
     import TTMChat from '$lib/components/TTM-Chat.svelte';
     import TTMQuestions from '$lib/components/TTM-Questions.svelte';
-    import type {TChatMessage, TDatapoint, TQuestionResult, TTestOrTeaching} from '$lib/types';
+    import type {
+        TChatMessage,
+        TDatapoint,
+        TQuestionResult,
+        TTestOrTeaching,
+        StaticReport,
+        TInteractiveOrStatic
+    } from '$lib/types';
     import backend from '$lib/backend';
     import {fade} from 'svelte/transition';
     import type {PageData} from './$types';
@@ -33,7 +40,7 @@
     /**
      * Chat relevant
      */
-    let messages: TChatMessage[] = [{isUser: false, feedback: false, text: data.initial_prompt}];
+    let messages: TChatMessage[] = [{isUser: false, feedback: false, text: data.initial_prompt, id: 1000}];
 
     //-----------------------------------------------------------------
 
@@ -58,7 +65,10 @@
             for (let i = 0; i < general_questions.length; i++) {
                 if (general_questions[i].id === question) {
                     full_question = general_questions[i].question.replace('[current prediction]', '<i>' + current_prediction + '</i>');
-                    logEvent(user_id, '/experiment/page.svelte', 'submitQuestion', datapoint_count, {question: full_question});
+                    logEvent(user_id, 'experiment/teaching', 'question', datapoint_count, {
+                        question: full_question,
+                        id: question
+                    });
                     return full_question;
                 }
             }
@@ -69,7 +79,10 @@
                             full_question = feature_questions[i].question.replace(/\[feature selection\]/, function (i, match) {
                                 return feature_names[j].feature_name;
                             });
-                            logEvent(user_id, '/experiment/page.svelte', 'submitQuestion', datapoint_count, {question: full_question});
+                            logEvent(user_id, 'experiment/teaching', 'question', datapoint_count, {
+                                question: full_question,
+                                id: question
+                            });
                             return full_question;
                         }
                     }
@@ -81,7 +94,8 @@
         messages.push({
             text: text,
             isUser: true,
-            feedback: false
+            feedback: false,
+            id: question,
         });
 
         messages = messages;
@@ -93,7 +107,8 @@
                     messages.push({
                         text: text,
                         isUser: false,
-                        feedback: true
+                        feedback: true,
+                        id: question,
                     });
                     setTimeout(() => {
                         messages = messages;
@@ -103,9 +118,6 @@
     }
 
     async function handleNext(e: any) {
-        console.log('/experiment/+page.svelte > handleNext');
-        // log: datapoint_answer_selected,
-
         /**
          * Change from test to teach or vice versa
          */
