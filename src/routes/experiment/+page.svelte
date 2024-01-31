@@ -145,22 +145,54 @@
         let id: string = '';
         let initial_prompt: string = '';
         let new_datapoint: TDatapoint;
+
+        if (cycles_completed === parseInt(PUBLIC_TEACH_TEST_CYCLES) + parseInt(PUBLIC_END_TEST_CYCLES)) {
+            goto(`${base}/exit?user_id=${user_id}`);
+        }
+
         if (test_or_teaching === 'test') {
-            if (datapoint_count === parseInt(PUBLIC_TEACH_TEST_CYCLES)) {
-                goto(`${base}/exit?user_id=${user_id}`);
-            }
+            // Change to TRAIN CASE
             datapoint_count++;
-            ({id, current_prediction, initial_prompt, ...new_datapoint} = await (
-                await backend.xai(user_id).get_train_datapoint()
-            ).json());
-            test_or_teaching = 'teaching';
-        } else {
+            cycles_completed++;
+
+            // Check if we have completed the teach-test cycles
+            if (cycles_completed === parseInt(PUBLIC_TEACH_TEST_CYCLES)) {
+                // Show intermediate screen
+                popupVisible.set(true);
+                // After showing the intermediate screen, switch to test
+                test_or_teaching = 'final-test';
+                // reset datapoint count
+                datapoint_count = 0;
+            } else {
+                ({id, current_prediction, initial_prompt, static_report, ...new_datapoint} = await (
+                    await backend.xai(user_id).get_train_datapoint()
+                ).json());
+                test_or_teaching = 'teaching';
+            }
+        } else if (test_or_teaching === 'teaching') {
+            // Log timing of next button for teaching
+            logEvent(user_id, 'experiment/teaching', 'handleNext', datapoint_count);
+
+            // Change to Test CASE
             ({id, current_prediction, initial_prompt, ...new_datapoint} = await (
                 await backend.xai(user_id).get_test_datapoint()
             ).json());
+
             test_or_teaching = 'test';
         }
-        messages = [{isUser: false, feedback: false, text: initial_prompt}];
+
+        // If we are in the final test
+        if (test_or_teaching === 'final-test'){
+            // final-test
+            datapoint_count++;
+            logEvent(user_id, 'experiment/final-test', 'handleNext', datapoint_count);
+            ({id, current_prediction, initial_prompt, ...new_datapoint} = await (
+                await backend.xai(user_id).get_test_datapoint()
+            ).json());
+            cycles_completed++;
+        }
+
+        messages = [{isUser: false, feedback: false, text: initial_prompt, id: 1000}];
         current_datapoint = new_datapoint;
 
         //-----------------------------------------------------------------
@@ -171,10 +203,13 @@
         const {buttonType} = event.detail;
         const {messageId} = event.detail;
         const {user_comment} = event.detail;
-        console.log("event", event);
         logEvent(user_id, 'experiment/teaching', 'feedback', datapoint_count, {buttonType, messageId, user_comment});
     }
 </script>
+
+{#if $popupVisible}
+    <Popup {user_id} on:confirm={handleConfirm}/>
+{/if}
 
 {#if test_or_teaching === 'teaching'}
     <div class="col-start-1 col-end-2">
@@ -186,6 +221,9 @@
                 testOrTeaching={test_or_teaching}
                 feature_names={feature_names}
                 feature_units={feature_units}
+                interactiveOrStatic={study_group}
+                user_id={user_id}
+                true_label={true_label}
         />
     </div>
 {:else}
@@ -198,6 +236,9 @@
                 testOrTeaching={test_or_teaching}
                 feature_names={feature_names}
                 feature_units={feature_units}
+                interactiveOrStatic={study_group}
+                user_id={user_id}
+                true_label={true_label}
         />
     </div>
 {/if}
