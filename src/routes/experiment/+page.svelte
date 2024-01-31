@@ -244,24 +244,36 @@
 {/if}
 {#if datapoint_answer_selected}
     {#if test_or_teaching === 'teaching'}
-        <div
-                class="col-start-2 col-end-3 overflow-y-scroll"
-                transition:fade={{ delay: 250, duration: 500 }}
-        >
-            <TTMChat {messages}/>
-        </div>
-        <div class="col-auto"
-             transition:fade={{ delay: 250, duration: 500 }}>
-            <TTMQuestions
-                    {feature_questions}
-                    {general_questions}
-                    {current_prediction}
-                    bind:selected_prediction={datapoint_answer_selected}
-                    feature_questions_dropdown={feature_names}
-                    on:submit={submitQuestion}
-                    on:next={handleNext}
-            />
-        </div>
+        {#if study_group === 'static'}
+            <div
+                    class="col-start-2 col-end-4 overflow-y-scroll"
+                    transition:fade={{ delay: 250, duration: 500 }}
+            >
+                <StaticExplanationReport
+                        {static_report}
+                        on:next={handleNext}
+                />
+            </div>
+        {:else}
+            <div
+                    class="col-start-2 col-end-3 overflow-y-scroll"
+                    transition:fade={{ delay: 250, duration: 500 }}
+            >
+                <TTMChat {messages} on:feedbackButtonClick={handleFeedbackButtonClick}/>
+            </div>
+            <div class="col-auto"
+                 transition:fade={{ delay: 250, duration: 500 }}>
+                <TTMQuestions
+                        {feature_questions}
+                        {general_questions}
+                        {current_prediction}
+                        bind:selected_prediction={datapoint_answer_selected}
+                        feature_questions_dropdown={feature_names}
+                        on:submit={submitQuestion}
+                        on:next={handleNext}
+                />
+            </div>
+        {/if}
     {:else}
         {handleNext()}
     {/if}
