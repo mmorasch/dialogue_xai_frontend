@@ -17,7 +17,6 @@
     }
 
     function handleModalClose() {
-        console.log('handleModalClose', userInput);
         dispatch('feedbackButtonClick', {buttonType: 'like', messageId: message.id, user_comment: userInput});
     }
 
