@@ -1,4 +1,5 @@
-import { PUBLIC_BACKEND_URL } from '$env/static/public';
+import {PUBLIC_BACKEND_URL} from '$env/static/public';
+import {get} from "firebase/database";
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, push, set } from "firebase/database";
