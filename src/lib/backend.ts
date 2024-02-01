@@ -100,6 +100,14 @@ export function logEvent(userId: string,
     set(logRef, logEntry);
 }
 
+export function log_final_test_replies(userId: string, datapointCount: number) {
+    const db = getDatabase(app);
+    let timestamp = new Date().toISOString();
+    timestamp = timestamp.split('.')[0]; // remove milliseconds
+    const logRef = ref(db, `users/${userId}/logs/final_test_datapoint_${datapointCount}/handle_next/${timestamp}`);
+    set(logRef, timestamp);
+}
+
 export function logTestingResponse(userId: string,
                                    datapointCount: number,
                                    test_response: string,

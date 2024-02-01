@@ -15,7 +15,7 @@ import type {TDatapointResult, TInteractiveOrStatic} from '$lib/types';
 export const load = (async ({url}) => {
     const user_id = url.searchParams.get('user_id');
     //const study_group = url.searchParams.get('sg');
-    const study_group: TInteractiveOrStatic = 'interactive';
+    const study_group: TInteractiveOrStatic = 'static';
     if (user_id === null) throw error(400, 'user_id is required as a query parameter');
 
     // backend returns data that is either questions or report (A/B study design)

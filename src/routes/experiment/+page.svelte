@@ -7,10 +7,9 @@
         TDatapoint,
         TQuestionResult,
         TTestOrTeaching,
-        StaticReport,
-        TInteractiveOrStatic
+        StaticReport
     } from '$lib/types';
-    import backend from '$lib/backend';
+    import backend, {log_final_test_replies} from '$lib/backend';
     import {fade} from 'svelte/transition';
     import type {PageData} from './$types';
     import {PUBLIC_TEACH_TEST_CYCLES, PUBLIC_END_TEST_CYCLES} from '$env/static/public';
@@ -60,7 +59,6 @@
     /**
      * Test relevant
      */
-    let prediction = '';
     let cycles_completed = 0;
     //-----------------------------------------------------------------
     /**
@@ -185,7 +183,7 @@
         if (test_or_teaching === 'final-test'){
             // final-test
             datapoint_count++;
-            logEvent(user_id, 'experiment/final-test', 'handleNext', datapoint_count);
+            log_final_test_replies(user_id, datapoint_count);
             ({id, current_prediction, initial_prompt, ...new_datapoint} = await (
                 await backend.xai(user_id).get_test_datapoint()
             ).json());
@@ -211,37 +209,20 @@
     <Popup {user_id} on:confirm={handleConfirm}/>
 {/if}
 
-{#if test_or_teaching === 'teaching'}
-    <div class="col-start-1 col-end-2">
-        <TTMDatapoint
-                data={current_datapoint}
-                feature_tooltips={feature_tooltips}
-                bind:selected_prediction={datapoint_answer_selected}
-                bind:datapoint_count
-                testOrTeaching={test_or_teaching}
-                feature_names={feature_names}
-                feature_units={feature_units}
-                interactiveOrStatic={study_group}
-                user_id={user_id}
-                true_label={true_label}
-        />
-    </div>
-{:else}
-    <div class="col-start-2 col-end-3">
-        <TTMDatapoint
-                data={current_datapoint}
-                feature_tooltips={feature_tooltips}
-                bind:selected_prediction={datapoint_answer_selected}
-                bind:datapoint_count
-                testOrTeaching={test_or_teaching}
-                feature_names={feature_names}
-                feature_units={feature_units}
-                interactiveOrStatic={study_group}
-                user_id={user_id}
-                true_label={true_label}
-        />
-    </div>
-{/if}
+<div class={test_or_teaching === 'teaching' ? "col-start-1 col-end-2" : "col-start-2 col-end-3"}>
+    <TTMDatapoint
+            data={current_datapoint}
+            feature_tooltips={feature_tooltips}
+            bind:selected_prediction={datapoint_answer_selected}
+            bind:datapoint_count
+            testOrTeaching={test_or_teaching}
+            feature_names={feature_names}
+            feature_units={feature_units}
+            interactiveOrStatic={study_group}
+            user_id={user_id}
+            true_label={true_label}
+    />
+</div>
 {#if datapoint_answer_selected}
     {#if test_or_teaching === 'teaching'}
         {#if study_group === 'static'}

@@ -35,7 +35,7 @@
             <div class="grid-item" style="grid-area: area1;">
                 <br>
                 <h1>1. Attribute Ranking</h1>
-                <h3>The <b>importance of the features</b> for the decision are the following:</h3>
+                <h3>The <b>importance of the features</b> for the decision are the following, where the importance score is on the x-axis:</h3>
                 <div class="feature-importance-plot">
                     {@html feature_importance}
                 </div>

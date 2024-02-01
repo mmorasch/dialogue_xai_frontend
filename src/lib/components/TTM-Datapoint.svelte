@@ -20,7 +20,7 @@
 
     export let teaching_intro = "";
     if (interactiveOrStatic === 'static') {
-        teaching_intro = "Guess the patients risk and read the explanations to understand the prediction.";
+        teaching_intro = "Guess the patients likelihood of diabetes. Afterward you can read the explanations to understand the prediction.";
     } else {
         teaching_intro = "Guess the patients risk and ask questions to understand the model's prediction.";
     }
