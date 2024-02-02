@@ -1,9 +1,9 @@
-import {PUBLIC_BACKEND_URL} from '$env/static/public';
-import {get} from "firebase/database";
+import { PUBLIC_BACKEND_URL } from '$env/static/public';
+import { get } from "firebase/database";
 // Import the functions you need from the SDKs you need
-import {initializeApp} from "firebase/app";
-import {getDatabase, ref, set} from "firebase/database";
-import {getAuth, signInAnonymously} from "firebase/auth";
+import { initializeApp } from "firebase/app";
+import { getDatabase, ref, set } from "firebase/database";
+import { getAuth, signInAnonymously } from "firebase/auth";
 //import * as firebaseConfig from '../../data/config.json'; // TODO: Enable for prod, before deployment.
 
 // Initialize Firebase
@@ -29,13 +29,13 @@ export default {
     xai: (user_id: string, study_group = 'A') => ({
         init: () => fetch(`${PUBLIC_BACKEND_URL}init?user_id=${user_id}&study_group=${study_group}`),
         get_user_correctness: () => fetch(`${PUBLIC_BACKEND_URL}get_user_correctness?user_id=${user_id}`),
-        finish: () => fetch(PUBLIC_BACKEND_URL + "finish" + "?user_id=" + user_id, {method: 'DELETE',}),
+        finish: () => fetch(PUBLIC_BACKEND_URL + "finish" + "?user_id=" + user_id, { method: 'DELETE', }),
         get_train_datapoint: () => fetch(PUBLIC_BACKEND_URL + "get_train_datapoint" + "?user_id=" + user_id),
         get_test_datapoint: () => fetch(PUBLIC_BACKEND_URL + "get_test_datapoint" + "?user_id=" + user_id),
         get_testing_questions: () => fetch(PUBLIC_BACKEND_URL + "get_testing_questions" + "?user_id=" + user_id),
         get_response: (question: number, feature: number) => fetch(PUBLIC_BACKEND_URL + "get_response" + "?user_id=" + user_id, {
             method: "POST",
-            body: JSON.stringify({question, feature})
+            body: JSON.stringify({ question, feature })
         }),
     }),
 }
@@ -43,7 +43,7 @@ export default {
 // INTRO LOGGING
 
 export function setupUserProfile(userId: string,
-                                 profileData: object) {
+    profileData: object) {
     const db = getDatabase(app);
     const profileRef = ref(db, `users/${userId}/profile`);
     set(profileRef, profileData);
@@ -90,12 +90,14 @@ export async function assignStudyGroup() {
 }
 
 // EXPERIMENT LOGGING
-export function logEvent(userId: string,
-                         source: string,
-                         action: string,
-                         datapointCount: number,
-                         additionalData = {},
-                         teach_or_testing = "teaching") {
+export function logEvent(
+    userId: string,
+    source: string,
+    action: string,
+    datapointCount: number,
+    additionalData = {},
+    teach_or_testing = "teaching",
+) {
     const db = getDatabase(app);
     let timestamp = new Date().toISOString();
     timestamp = timestamp.split('.')[0]; // remove milliseconds
@@ -114,10 +116,10 @@ export function logEvent(userId: string,
 }
 
 export function logTestingResponse(userId: string,
-                                   datapointCount: number,
-                                   test_response: string,
-                                   final = false,
-                                   true_label = "") {
+    datapointCount: number,
+    test_response: string,
+    final = false,
+    true_label = "") {
     const db = getDatabase(app);
     let timestamp = new Date().toISOString();
     timestamp = timestamp.split('.')[0];
@@ -134,19 +136,19 @@ export function logTestingResponse(userId: string,
     };
     set(logRef, logEntry);
     console.log("Telling backend to log user prediction");
-    fetch(`${PUBLIC_BACKEND_URL}set_user_prediction?user_id=${userId}&user_prediction=${test_response}`, {method: 'POST'});
+    fetch(`${PUBLIC_BACKEND_URL}set_user_prediction?user_id=${userId}&user_prediction=${test_response}`, { method: 'POST' });
 }
 
 
 // FINAL LOGGING
 export function saveQuestionnaireAnswers(userId: string,
-                                         questions: string[],
-                                         answers: number[],
-                                         questionnaire_name = "final_questionnaire") {
+    questions: string[],
+    answers: number[],
+    questionnaire_name = "final_questionnaire") {
     // Saves user final questionnaire answers to firebase
     const db = getDatabase(app);
     const answersRef = ref(db, `users/${userId}/${questionnaire_name}`);
-    set(answersRef, {questions: questions, answers: answers});
+    set(answersRef, { questions: questions, answers: answers });
 }
 
 
