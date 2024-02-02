@@ -6,11 +6,10 @@ import {getDatabase, ref, set} from "firebase/database";
 import {getAuth, signInAnonymously} from "firebase/auth";
 //import * as firebaseConfig from '../../data/config.json'; // TODO: Enable for prod, before deployment.
 
-let db: Db | undefined;
-const client = new MongoClient(url);
+// Initialize Firebase
+//TODO: Delete before prod deployment
+const firebaseConfig = {
 
-export function get_timestamp() {
-    return new Date().toISOString().split('.')[0];
 }
 const app = initializeApp(firebaseConfig);
 
