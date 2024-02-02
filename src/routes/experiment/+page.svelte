@@ -9,7 +9,7 @@
         TTestOrTeaching,
         StaticReport
     } from '$lib/types';
-    import backend, {log_final_test_replies} from '$lib/backend';
+    import backend from '$lib/backend';
     import {fade} from 'svelte/transition';
     import type {PageData} from './$types';
     import {PUBLIC_TEACH_TEST_CYCLES, PUBLIC_END_TEST_CYCLES} from '$env/static/public';
@@ -180,10 +180,11 @@
         }
 
         // If we are in the final test
-        if (test_or_teaching === 'final-test'){
+        if (test_or_teaching === 'final-test') {
             // final-test
             datapoint_count++;
-            log_final_test_replies(user_id, datapoint_count);
+            // Log timing of next button for testing
+            logEvent(user_id, 'experiment/final-test', 'handleNext', datapoint_count);
             ({id, current_prediction, initial_prompt, ...new_datapoint} = await (
                 await backend.xai(user_id).get_test_datapoint()
             ).json());

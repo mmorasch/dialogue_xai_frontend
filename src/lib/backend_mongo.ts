@@ -4,12 +4,8 @@ import {Db, MongoClient} from 'mongodb';
 const url = PUBLIC_MONGO_URL;
 const db_name = PUBLIC_MONGO_DB_NAME;
 
-let db: Db | null = null;
-let client: MongoClient;
-
-async function create_client() {
-    return new MongoClient(url);
-}
+let db: Db | undefined;
+const client = new MongoClient(url);
 
 export function get_timestamp() {
     return new Date().toISOString().split('.')[0];

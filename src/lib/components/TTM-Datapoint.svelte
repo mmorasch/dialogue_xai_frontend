@@ -49,10 +49,12 @@
                                      option: string,
                                      datapointCount: number,
                                      true_label: string) {
+        console.log("Logging prediction and disabling", userid, option, datapointCount, true_label);
         if (!isDisabled) {
             if (testOrTeaching === 'test') {
                 logTestingResponse(userid, datapointCount, option, false, true_label);
             } else if (testOrTeaching === 'teaching') {
+                console.log("Logging Teaching");
                 logEvent(userid, 'TTM-Datapoint', 'user_prediction', datapointCount, {
                     prediction: option,
                     true_label: true_label
