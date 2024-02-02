@@ -9,7 +9,7 @@ const sql = postgres({
 
 export async function setupUserProfile(userId: string, profileData: object) {
   return await sql`
-    INSERT INTO users (id, profile, completed)
+    INSERT INTO users (id, profile)
     VALUES (${userId}, ${JSON.stringify(profileData)})
   `
 }
