@@ -1,10 +1,10 @@
 <script lang="ts">
     import {goto} from '$app/navigation';
     import {base} from '$app/paths';
-    import backend, {setupUserProfile, assignStudyGroup} from '$lib/backend';
-    import {RangeSlider, Step, Stepper} from '@skeletonlabs/skeleton';
+    import {Step, Stepper} from '@skeletonlabs/skeleton';
     import {generateSlug} from "random-word-slugs";
-    import {authenticateUser} from '$lib/backend';
+    import {onMount} from "svelte";
+    import {assignStudyGroup, setupUserProfile} from "$lib/backend";
 
     let gender: string = 'm';
     let gender_self_identify = '';
@@ -18,6 +18,18 @@
     let matrikelnummer: number; //TODO: Include matrikelnummer in the form
     let consent_given: boolean = false;
     let pdfPath = `${base}/Consent.pdf`;
+
+    let study_group;
+    onMount(() => {
+        assignStudyGroup()
+            .then(result => {
+                study_group = result;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                study_group = 'static';
+            });
+    });
 
     async function onComplete() {
         // First check if all the fields are filled out
@@ -39,9 +51,7 @@
             }
         }
 
-        authenticateUser();
         const user_id = generateSlug()
-        const study_group = await assignStudyGroup();
 
         let profile_data = {
             'study_group': study_group,
@@ -55,8 +65,13 @@
             'fam_domain_val': fam_domain_val,
         }
         setupUserProfile(user_id, profile_data);
-        goto(`${base}/experiment?user_id=${user_id}`);
+        goto(`${base}/experiment?user_id=${user_id}&sg=${study_group}`);
     }
+
+    let study_group_interactive_text = "and you can select different questions in the chatbot to understand why the model made the prediction.";
+
+    let study_group_static_text = "and you will see a report of different explanations to understand why the model made the prediction.";
+
 </script>
 
 <div class="col-start-2 col-end-2 space-y-4 p-2 sm:p-2 md:space-y-6">
@@ -65,17 +80,12 @@
     <Stepper buttonCompleteLabel="Start Experiment" on:complete={onComplete}>
         <Step>
             <p>
-                Welcome to our study on understanding decisions and the behavior of machine learning models
-                which takes about 30 minutes. It is designed as part of a large research project
-                that seeks to improve understanding between Artificial Intelligence Systems (i.e. Machine learning
-                models) and humans.<br/>
+                Welcome to our study on understanding the decision process of Artificial Intelligence (AI) models
+                which takes about 20 minutes. It is designed as part of a large research project
+                that seeks to improve understanding between AI Systems (i.e. Machine learning models) and humans.<br/>
             </p>
 
             <p class="m my-12">
-                Your responses will be kept confidential, and we will only use them for this study. You have the right
-                to withdraw from the study at any time.<br/>
-                <br/>
-
                 Upon successful completion, you will get 3 extra Points in the final Exam. <br/><br/>
 
                 Thank you for your participation! <br/><br/>
@@ -142,21 +152,29 @@
             <h2 class="text-2xl">Study Introduction</h2>
             <h3 class="text-xl">How will the model predict the risk level of different patients?</h3>
             <p>
-                You will be shown one person at a time, and your task is to make an initial guess about
-                how the ML model would decide for that person. Then, you will see the models prediction
-                and you can ask questions about the prediction and how the model works to understand it
-                better. As you learn more, you can update your initial guess if you want. If you are sure
-                about your guess, click on "Next" to see the next applicant and repeat the process.<br/><br
-            />
+                The experiment is structured as follows: <br>
+                1. You will be shown one patient at a time, and your task is to make an initial guess about
+                how the ML model would decide for that person. <br>
+
+                2. Then, you will see what the AI model predicts for the patient
+                {#if study_group === 'interactive'}
+                    {study_group_interactive_text}
+                {:else}
+                    {study_group_static_text}
+                {/if}
+                If you are done with looking at explanations, click on "Next".<br/>
+
+                3. After you had time to understand the prediction, the next step requires you to say how the model
+                will predict for a new patient. <br/>
+                4. You will repeat this process for 5 patients. <br/>
+
+                5. Finally, we will ask you a few questions about your understanding of the model. <br/>
+                <br
+                />
 
                 Here, the goal isn't to be right about whether someone has diabetes or not. It's
-                all about estimating what the model would predict based on the questions you can ask and the
-                explanations you get.
+                all about estimating what the model would predict based on the explanations you see.
                 <br/><br/>
-
-                You will do this for 5 people. After you're done, we'll ask you a few questions about
-                your understanding of the model. Afterward, we're curious to hear what you think about the questions,
-                answers, and how well you could predict the model's behavior.
             </p>
         </Step>
         <Step>
