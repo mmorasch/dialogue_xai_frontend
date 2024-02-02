@@ -4,23 +4,24 @@
     import {Step, Stepper} from '@skeletonlabs/skeleton';
     import {generateSlug} from "random-word-slugs";
     import {onMount} from "svelte";
-    import {assignStudyGroup, setupUserProfile} from "$lib/backend";
+    import {assignStudyGroup, authenticateUser, setupUserProfile} from "$lib/backend";
 
-    let gender: string = 'm';
+    let gender = 'm';
     let gender_self_identify = '';
     let age: number;
     let degree: number;
     let education_field: number;
     let education_field_other = '';
-    let fam_ml_val: number = 0;
-    let fam_domain_val: number = 0;
-    let max: number = 5;
+    let fam_ml_val = 0;
+    let fam_domain_val = 0;
+    let max = 5;
     let matrikelnummer: number; //TODO: Include matrikelnummer in the form
-    let consent_given: boolean = false;
+    let consent_given = false;
     let pdfPath = `${base}/Consent.pdf`;
 
     let study_group;
     onMount(() => {
+        authenticateUser();
         assignStudyGroup()
             .then(result => {
                 study_group = result;

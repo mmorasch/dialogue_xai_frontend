@@ -9,7 +9,7 @@
         TTestOrTeaching,
         StaticReport
     } from '$lib/types';
-    import backend, {log_final_test_replies} from '$lib/backend';
+    import backend, {logTestingResponse} from '$lib/backend';
     import {fade} from 'svelte/transition';
     import type {PageData} from './$types';
     import {PUBLIC_TEACH_TEST_CYCLES, PUBLIC_END_TEST_CYCLES} from '$env/static/public';
@@ -144,11 +144,10 @@
         let initial_prompt: string = '';
         let new_datapoint: TDatapoint;
 
-        if (cycles_completed === parseInt(PUBLIC_TEACH_TEST_CYCLES) + parseInt(PUBLIC_END_TEST_CYCLES)) {
-            goto(`${base}/exit?user_id=${user_id}`);
-        }
-
         if (test_or_teaching === 'test') {
+            if (datapoint_answer_selected !== null) {
+                logTestingResponse(user_id, datapoint_count, datapoint_answer_selected, false, true_label);
+            }
             // Change to TRAIN CASE
             datapoint_count++;
             cycles_completed++;
@@ -180,10 +179,19 @@
         }
 
         // If we are in the final test
-        if (test_or_teaching === 'final-test'){
+        if (test_or_teaching === 'final-test') {
             // final-test
             datapoint_count++;
-            log_final_test_replies(user_id, datapoint_count);
+            if (datapoint_answer_selected !== null) {
+                logTestingResponse(user_id, datapoint_count, datapoint_answer_selected, true, true_label);
+            }
+            if (cycles_completed === parseInt(PUBLIC_TEACH_TEST_CYCLES) + parseInt(PUBLIC_END_TEST_CYCLES)) {
+                if (study_group === 'static') {
+                    goto(`${base}/exit/feedback?user_id=${user_id}`);
+                } else {
+                    goto(`${base}/exit?user_id=${user_id}`);
+                }
+            }
             ({id, current_prediction, initial_prompt, ...new_datapoint} = await (
                 await backend.xai(user_id).get_test_datapoint()
             ).json());

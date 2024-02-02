@@ -1,8 +1,10 @@
-import {PUBLIC_MONGO_URL, PUBLIC_MONGO_DB_NAME, PUBLIC_BACKEND_URL} from '$env/static/public';
-import {Db, MongoClient} from 'mongodb';
+import {PUBLIC_BACKEND_URL} from '$env/static/public';
+import {get} from "firebase/database";
 
-const url = PUBLIC_MONGO_URL;
-const db_name = PUBLIC_MONGO_DB_NAME;
+import {initializeApp} from "firebase/app";
+import {getDatabase, ref, set} from "firebase/database";
+import {getAuth, signInAnonymously} from "firebase/auth";
+//import * as firebaseConfig from '../../data/config.json'; // TODO: Enable for prod, before deployment.
 
 let db: Db | undefined;
 const client = new MongoClient(url);
@@ -10,33 +12,19 @@ const client = new MongoClient(url);
 export function get_timestamp() {
     return new Date().toISOString().split('.')[0];
 }
+const app = initializeApp(firebaseConfig);
 
-export async function connectToDB() {
-    if (db) {
-        return db; // Return existing db instance if already connected
-    }
-    try {
-        await client.connect();
-        db = client.db(db_name);
-        console.log("Connected successfully to MongoDB");
-
-        // Optional: Listen for connection events for monitoring
-        client.on('error', err => console.error('Connection error', err));
-        client.on('reconnect', () => console.log('Reconnected to MongoDB'));
-
-        return db;
-    } catch (error) {
-        console.error("Could not connect to MongoDB", error);
-        process.exit(1); // Consider a more graceful error handling strategy
-    }
-}
-
-// Use this function to access db in your application
-async function getDB() {
-    if (!db) {
-        return await connectToDB();
-    }
-    return db;
+export function authenticateUser() {
+    // Authenticate user anonymously
+    const auth = getAuth();
+    signInAnonymously(auth).then(() => {
+        // Signed in..
+    })
+        .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(errorCode, errorMessage);
+        });
 }
 
 export default {
@@ -56,148 +44,130 @@ export default {
 
 // INTRO LOGGING
 
-export async function setupUserProfile(userId: string, profileData: object) {
-    try {
-        const db = await getDB(); // Use getDB to ensure connection reuse
-        const result = await db.collection('users').updateOne(
-            {userId},
-            {$set: {profileData}},
-            {upsert: true}
-        );
-    } catch (error) {
-        console.error("Error setting user profile:", error);
-        throw error;
-    }
+export function setupUserProfile(userId: string,
+                                 profileData: object) {
+    const db = getDatabase(app);
+    const profileRef = ref(db, `users/${userId}/profile`);
+    set(profileRef, profileData);
+
+    // Set completed to false in the beginning of the experiment
+    const completedRef = ref(db, `users/${userId}/completed`);
+    set(completedRef, false);
 }
 
 export async function assignStudyGroup() {
-    console.log("Accessing Mongo");
+    const db = getDatabase(app);
+
+    let snapshot;
     try {
-        const db = await getDB(); // Ensure connection reuse
-        const usersCollection = db.collection('users');
+        const usersRef = ref(db, 'users');
+        snapshot = await get(usersRef);
+    } catch (error) {
+        console.info(`Error accessing users node in database:`, error);
+        return 'static';
+    }
 
-        const groupCounts = await usersCollection.aggregate([
-            {$group: {_id: "$profile.study_group", count: {$sum: 1}}}
-        ]).toArray();
-
+    if (snapshot.exists()) {
+        const users = snapshot.val();
         let groupStaticCount = 0;
         let groupInteractiveCount = 0;
-
-        // Calculate counts for each study group
-        groupCounts.forEach(group => {
-            if (group._id === 'static') {
-                groupStaticCount = group.count;
-            } else if (group._id === 'interactive') {
-                groupInteractiveCount = group.count;
+        for (const userId in users) {
+            try {
+                const user = users[userId];
+                if (user["profile"]["study_group"] === 'static') {
+                    groupStaticCount++;
+                } else if (user["profile"]["study_group"] === 'interactive') {
+                    groupInteractiveCount++;
+                }
+            } catch (error) {
+                console.info(`Error accessing study_group property for user ${userId}:`, error);
             }
-        });
+        }
+
         return groupStaticCount <= groupInteractiveCount ? 'static' : 'interactive';
-    } catch (error) {
-        console.error("Error in assignStudyGroup:", error);
-        throw error;
+    } else {
+
+        return 'static';
     }
 }
-
 
 // EXPERIMENT LOGGING
-export async function logEvent(userId: string, source: string, action: string, datapointCount: number, additionalData = {}, teach_or_testing = "teaching") {
-    try {
-        const db = await getDB(); // Use getDB for connection reuse
-        const logsCollection = db.collection('logs');
-
-        const logEntry = {
-            userId,
-            source,
-            action,
-            datapointCount,
-            additionalData,
-            teach_or_testing,
-            timestamp: get_timestamp()
-        };
-
-        await logsCollection.insertOne(logEntry);
-    } catch (error) {
-        console.error("Error logging event:", error);
-        throw error; // Rethrow or handle the error appropriately
+export function logEvent(userId: string,
+                         source: string,
+                         action: string,
+                         datapointCount: number,
+                         additionalData = {},
+                         teach_or_testing = "teaching") {
+    const db = getDatabase(app);
+    let timestamp = new Date().toISOString();
+    timestamp = timestamp.split('.')[0]; // remove milliseconds
+    let logRef;
+    if (teach_or_testing === "teaching") {
+        logRef = ref(db, `users/${userId}/logs/train_datapoint_${datapointCount}/${action}_${timestamp}`);
+    } else {
+        logRef = ref(db, `users/${userId}/logs/test_datapoint_${datapointCount}/${action}_${timestamp}`);
     }
+    const logEntry = {
+        source: source,
+        action: action,
+        data: additionalData
+    };
+    set(logRef, logEntry);
 }
 
-
-export async function logTestingResponse(userId: string, datapointCount: number, test_response: string, final = false, true_label = "") {
-    try {
-        const db = await getDB(); // Use getDB for connection reuse
-        const testResponsesCollection = db.collection('testResponses');
-
-        const logEntry = {
-            userId,
-            datapointCount,
-            test_response,
-            final,
-            true_label,
-            timestamp: get_timestamp()
-        };
-
-        await testResponsesCollection.insertOne(logEntry);
-        // Connection is managed for reuse, no need to close here
-    } catch (error) {
-        console.error("Error logging testing response:", error);
-        throw error;
+export function logTestingResponse(userId: string,
+                                   datapointCount: number,
+                                   test_response: string,
+                                   final = false,
+                                   true_label = "") {
+    const db = getDatabase(app);
+    let timestamp = new Date().toISOString();
+    timestamp = timestamp.split('.')[0];
+    let logRef;
+    if (final) {
+        logRef = ref(db, `users/${userId}/logs/final_test_datapoint_${datapointCount}/response_${timestamp}`);
+    } else {
+        logRef = ref(db, `users/${userId}/logs/test_datapoint_${datapointCount}/response_${timestamp}`);
     }
+    const logEntry = {
+        response: test_response,
+        timestamp: timestamp,
+        true_label: true_label,
+    };
+    set(logRef, logEntry);
+    console.log("Telling backend to log user prediction");
+    fetch(`${PUBLIC_BACKEND_URL}set_user_prediction?user_id=${userId}&user_prediction=${test_response}`, {method: 'POST'});
 }
+
 
 // FINAL LOGGING
-export async function saveQuestionnaireAnswers(userId: string, questions: string[], answers: number[], questionnaire_name = "final_questionnaire") {
-    try {
-        const db = await getDB(); // Use getDB for efficient connection reuse
-        const questionnaireCollection = db.collection('questionnaires');
-
-        const document = {
-            userId,
-            questions,
-            answers,
-            questionnaire_name,
-            timestamp: get_timestamp()
-        };
-
-        await questionnaireCollection.insertOne(document);
-    } catch (error) {
-        console.error("Error saving questionnaire answers:", error);
-        throw error; // Rethrow or handle the error based on your application's error management strategy
-    }
+export function saveQuestionnaireAnswers(userId: string,
+                                         questions: string[],
+                                         answers: number[],
+                                         questionnaire_name = "final_questionnaire") {
+    // Saves user final questionnaire answers to firebase
+    const db = getDatabase(app);
+    const answersRef = ref(db, `users/${userId}/${questionnaire_name}`);
+    set(answersRef, {questions: questions, answers: answers});
 }
 
 
-export async function logFinalFeedback(userId: string, feedback: string) {
-    try {
-        const db = await getDB();
-        const feedbackCollection = db.collection('feedback');
+export function logFinalFeedback(userId: string, feedback: string) {
+    const db = getDatabase(app);
+    const feedbackRef = ref(db, `users/${userId}/final_feedback`);
 
-        const feedbackData = {
-            userId,
-            feedback,
-            timestamp: get_timestamp()
-        };
+    const feedbackData = {
+        feedback: feedback,
+        timestamp: new Date().toISOString(),
+    };
 
-        await feedbackCollection.insertOne(feedbackData);
-        // Connection is managed for reuse, no need to close here
-    } catch (error) {
-        console.error("Error logging final feedback:", error);
-        throw error; // Proper error handling
-    }
+    set(feedbackRef, feedbackData);
+    logCompleted(userId);
 }
 
 
-export async function logCompleted(userId: string) {
-    try {
-        const db = await getDB();
-        const usersCollection = db.collection('users');
-
-        await usersCollection.updateOne({userId}, {$set: {completed: true}});
-        console.log(`User ${userId} marked as completed.`);
-    } catch (error) {
-        console.error("Failed to log completion for user:", error);
-        throw error; // Depending on your application's needs, you might handle the error differently
-    }
+export function logCompleted(userId: string) {
+    const db = getDatabase(app);
+    const completed_ref = ref(db, `users/${userId}/completed`);
+    set(completed_ref, true);
 }
-
-

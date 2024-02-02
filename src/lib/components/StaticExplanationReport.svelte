@@ -120,10 +120,6 @@
         max-height: 97vh;
     }
 
-    .centered-table {
-        margin-left: auto;
-        margin-right: auto;
-    }
 
     .feature-importance-plot {
         width: 80%; /* adjust this value to change the width of the image */

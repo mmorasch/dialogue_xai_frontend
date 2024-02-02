@@ -2,8 +2,8 @@
     import {goto} from '$app/navigation';
     import {base} from '$app/paths';
     import {Step, Stepper, RangeSlider} from '@skeletonlabs/skeleton';
-    import backend, {logFinalFeedback, saveQuestionnaireAnswers} from '$lib/backend';
-    import { onMount, afterUpdate } from 'svelte';
+    import backend, {saveQuestionnaireAnswers} from '$lib/backend';
+
     export let user_id;
     let currentStep = 0;
 
@@ -83,19 +83,15 @@
         chunks.push(shuffled_questions.slice(i, i + 7));
     }
 
-
     // Create Answer Array
     let answers = new Array(11).fill(0);
 
-    let feedback = "";
 
     // Save Answers to Database
     async function onComplete() {
         // Save the answers when the user completes the questionnaire
         await saveQuestionnaireAnswers(user_id, shuffled_questions, answers);
-        await logFinalFeedback(user_id, feedback);
-        await backend.xai(user_id).finish();
-        goto(`${base}/exit/feedback`);
+        goto(`${base}/exit/feedback?user_id=${user_id}`);
     }
 </script>
 
@@ -137,13 +133,6 @@
                 {/each}
             </Step>
         {/each}
-        <!-- Step 2 -->
-        <Step>
-            <h1 class="center-text text-xl">Thank you for the participation!</h1>
-            <h2>Since this is the prestudy, please leave any opinion and your name here so we can talk and I can link the
-                experiment results to you for further analysis together. :)</h2>
-            <textarea class="feedback-textarea" bind:value={feedback}></textarea> <!-- Bind the value here -->
-        </Step>
     </Stepper>
 </div>
 
@@ -178,14 +167,6 @@
 
     .slider-column {
         flex: 0.75; /* this will make the slider column take up 75% of the total width */
-    }
-
-    .feedback-textarea {
-        width: 100%; /* adjust as needed */
-        height: 100px; /* adjust as needed */
-        padding: 10px;
-        margin-top: 20px;
-        box-sizing: border-box;
     }
 
 </style>
