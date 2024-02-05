@@ -17,10 +17,8 @@
 		// 2 Agent's Usability TODO: Mix
 		'The Chatbot is easy to use.',
 		'Learning to work with the Chatbot is easy.',
-		'Learning how to communicate with the Chatbot is quick',
 		// 3 Performance
 		'The Chatbot does its task well',
-		'The Chatbot does not hinder me',
 		'I am capable of succeeding with the Chatbot',
 		// 4 Agent’s Likeability
 		'I like the Chatbot.',
@@ -33,7 +31,6 @@
 		// 9 User’s Engagement
 		'I was concentrated during the interaction with the chatbot.',
 		'The interaction captured my attention.',
-		'I was alert during the interaction with the chatbot.',
 		// 10 User’s Trust
 		'The chatbot always gives good advice.',
 		'The chatbot acts truthfully.',
@@ -43,7 +40,6 @@
 		'The chatbot understands me.',
 		// 13 Agent’s Coherence
 		'The chatbots’s behavior does not make sense.',
-		'The chatbots is inconsistent.',
 		'The chatbots appears confused.',
 		// 14 Agent’s Intentionality
 		'The chatbot acts intentionally',
@@ -69,12 +65,8 @@
 		'The interaction captured my attention.',
 		'The chatbots’s behavior does not make sense.',
 		'The Chatbot does its task well',
-		'The chatbots is inconsistent.',
-		'Learning how to communicate with the Chatbot is quick',
 		'I dislike the Chatbot.',
-		'The Chatbot does not hinder me',
 		'I am capable of succeeding with the Chatbot',
-		'I was alert during the interaction with the chatbot.'
 	];
 
 	let chunks: any[] = [];
