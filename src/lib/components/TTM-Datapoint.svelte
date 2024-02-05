@@ -4,7 +4,7 @@
     import Header from './Header.svelte';
     import Datapoint from './Datapoint.svelte';
     import type {TInteractiveOrStatic, TTestOrTeaching} from '$lib/types';
-    import {logEvent} from '../backend_pg.ts';
+    import {base} from "$app/paths";
 
     export let testOrTeaching: TTestOrTeaching;
     export let interactiveOrStatic: TInteractiveOrStatic;
@@ -50,29 +50,24 @@
                                      datapointCount: number,
                                      true_label: string) {
         console.log("Logging prediction and disabling", userid, option, datapointCount, true_label);
-        if (!isDisabled) {
-            if (testOrTeaching === 'test') {
-                logEvent(userid, 'testing', 'user_prediction', {
-                    datapointCount: datapointCount,
-                    prediction: option,
-                    true_label: true_label
-                });
-            } else if (testOrTeaching === 'teaching') {
-                console.log("Logging Teaching");
-                logEvent(userid, 'teaching', 'user_prediction', {
-                    datapointCount: datapointCount,
-                    prediction: option,
-                    true_label: true_label
-                });
-                isDisabled = true;
-            } else {
-                logEvent(userid, 'final_testing', 'user_prediction', {
-                    datapointCount: datapointCount,
-                    prediction: option,
-                    true_label: true_label
-                });
-            }
-        }
+        const details = {
+            datapoint_count: datapoint_count,
+            prediction: option,
+            true_label: true_label
+        };
+        fetch(`${base}/api/log_event`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_id: user_id,
+                event_source: testOrTeaching,
+                event_type: 'user_prediction',
+                details: details,
+            })
+        });
+
     }
 </script>
 
