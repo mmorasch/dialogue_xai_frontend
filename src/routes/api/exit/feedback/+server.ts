@@ -1,5 +1,5 @@
 import type { RequestHandler } from './$types';
-import { logFinalFeedback } from '$lib/backend_pg'
+import { logFinalFeedback } from '$lib/pg'
 
 export const POST: RequestHandler = async ({ request }) => {
   const body = await request.json()

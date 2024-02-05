@@ -1,5 +1,5 @@
-import type { RequestHandler } from '../$types';
-import { assignStudyGroup, setupUserProfile } from '$lib/backend_pg'
+import type { RequestHandler } from './$types';
+import { assignStudyGroup, setupUserProfile } from '$lib/pg'
 
 export const POST: RequestHandler = async ({request}) => {
   const body = await request.json()

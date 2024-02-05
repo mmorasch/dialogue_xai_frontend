@@ -1,4 +1,4 @@
-import backend from '$lib/backend_pg';
+import backend from '$lib/backend';
 import {error} from '@sveltejs/kit';
 import type {PageLoad} from './$types';
 import type {TDatapointResult} from '$lib/types';

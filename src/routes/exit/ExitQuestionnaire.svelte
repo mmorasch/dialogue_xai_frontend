@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
 	import { Step, Stepper, RangeSlider } from '@skeletonlabs/skeleton';
-	import backend from '$lib/backend_pg';
+	import backend from '$lib/backend';
 	export let user_id: string;
 	let currentStep = 0;
 

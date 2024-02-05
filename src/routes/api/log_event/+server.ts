@@ -1,7 +1,7 @@
-import type {RequestHandler} from './$types';
-import {logEvent} from '$lib/backend_pg'
+import type { RequestHandler } from './$types';
+import { logEvent } from '$lib/pg'
 
-export const POST: RequestHandler = async ({request}) => {
+export const POST: RequestHandler = async ({ request }) => {
     const body = await request.json()
     const details = body.details || {};
 
