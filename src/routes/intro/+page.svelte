@@ -20,14 +20,13 @@
 
 	let study_group: any;
 	onMount(() => {
-		console.log('Assigning Study Group');
-		fetch(`${base}/api/setup`, {
+		console.log("Study_Group Assignmenetn1");
+		fetch(`${base}/api/assign_study_group`, {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json'
 			}
-		})
-			.then((result) => {
+		}).then((result) => {
 				result.text().then((text) => {
 					study_group = text;
 				});
