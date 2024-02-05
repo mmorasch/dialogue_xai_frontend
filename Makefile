@@ -3,7 +3,7 @@
 MAKEFLAGS += --silent
 NODE_PACKAGE_MANAGER := npm
 
-up: build
+up: clean install build
 	docker compose up -d
 
 build_svelte:
@@ -19,3 +19,10 @@ local_dev:
 
 local_preview: build_svelte
 	$(NODE_PACKAGE_MANAGER) run preview --host
+
+install:
+	$(NODE_PACKAGE_MANAGER) install
+
+clean:
+	rm -rf node_modules
+	rm -rf .svelte-kit
