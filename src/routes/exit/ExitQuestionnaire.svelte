@@ -2,8 +2,8 @@
     import {goto} from '$app/navigation';
     import {base} from '$app/paths';
     import {Step, Stepper, RangeSlider} from '@skeletonlabs/skeleton';
-    import backend, {logFinalFeedback, saveQuestionnaireAnswers} from '$lib/backend_pg';
-    export let user_id;
+    import backend from '$lib/backend_pg';
+    export let user_id: string;
     let currentStep = 0;
 
     function onNext() {
@@ -77,7 +77,7 @@
         "I was alert during the interaction with the chatbot."
     ];
 
-    let chunks = [];
+    let chunks: any[] = [];
     for (let i = 0; i < shuffled_questions.length; i += 6) {
         chunks.push(shuffled_questions.slice(i, i + 7));
     }
@@ -91,8 +91,27 @@
     // Save Answers to Database
     async function onComplete() {
         // Save the answers when the user completes the questionnaire
-        await saveQuestionnaireAnswers(user_id, shuffled_questions, answers);
-        await logFinalFeedback(user_id, feedback);
+        await fetch(`${base}/api/exit/questionnaire`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_id,
+                shuffled_questions,
+                answers
+            })
+        });
+        await fetch(`${base}/api/exit/feedback`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_id,
+                feedback
+            })
+        });
         await backend.xai(user_id).finish();
         goto(`${base}/exit/feedback`);
     }
