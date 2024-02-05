@@ -7,9 +7,9 @@
 
 	let gender: string = 'm';
 	let gender_self_identify = '';
-	let age: number;
-	let degree: number;
-	let education_field: number;
+	let age: string;
+	let degree: string;
+	let education_field: string;
 	let education_field_other = '';
 	let fam_ml_val: number = 0;
 	let fam_domain_val: number = 0;
