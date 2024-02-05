@@ -12,7 +12,7 @@ build_svelte:
 build_docker:
 	docker compose build
 
-build: build_svelte build_docker
+build: build_docker
 
 local_dev:
 	$(NODE_PACKAGE_MANAGER) run dev

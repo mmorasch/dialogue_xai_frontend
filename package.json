@@ -42,8 +42,6 @@
   "type": "module",
   "dependencies": {
     "@types/dom-view-transitions": "1.0.3",
-    "firebase": "^10.8.0",
-    "mongodb": "^6.3.0",
     "postgres": "^3.4.3",
     "random-word-slugs": "^0.1.7"
   }
