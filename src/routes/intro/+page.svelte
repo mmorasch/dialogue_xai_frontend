@@ -4,13 +4,12 @@
 	import { Step, Stepper } from '@skeletonlabs/skeleton';
 	import { generateSlug } from 'random-word-slugs';
 	import { onMount } from 'svelte';
-	import { assignStudyGroup, setupUserProfile } from '$lib/backend_pg';
 
 	let gender: string = 'm';
 	let gender_self_identify = '';
-	let age: number;
-	let degree: number;
-	let education_field: number;
+	let age: string;
+	let degree: string;
+	let education_field: string;
 	let education_field_other = '';
 	let fam_ml_val: number = 0;
 	let fam_domain_val: number = 0;
@@ -22,7 +21,12 @@
 	let study_group: any;
 	onMount(() => {
 		console.log('Assigning Study Group');
-		assignStudyGroup()
+		fetch(`${base}/api/setup`, {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		})
 			.then((result) => {
 				study_group = result;
 			})
@@ -68,7 +72,7 @@
 			fam_ml_val: fam_ml_val,
 			fam_domain_val: fam_domain_val
 		};
-		fetch(`${base}/api`, {
+		fetch(`${base}/api/setup`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
@@ -78,7 +82,6 @@
 				profile_data: profile_data
 			})
 		});
-		setupUserProfile(user_id, profile_data);
 		goto(`${base}/experiment?user_id=${user_id}&sg=${study_group}`);
 	}
 
