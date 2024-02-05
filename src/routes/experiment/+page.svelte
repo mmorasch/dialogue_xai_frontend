@@ -225,6 +225,7 @@
             // Log timing of next button for testing
             const details = {
                 datapoint_count: datapoint_count,
+
             };
             fetch(`${base}/api/log_event`, {
                 method: 'POST',
@@ -234,7 +235,7 @@
                 body: JSON.stringify({
                     user_id: user_id,
                     event_source: 'teaching',
-                    event_type: 'question',
+                    event_type: 'handleNext',
                     details: details,
                 })
             });
