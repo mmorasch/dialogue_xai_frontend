@@ -74,7 +74,6 @@
         chunks.push(shuffled_questions.slice(i, i + 7));
     }
 
-
     // Create Answer Array
     let answers = new Array(11).fill(0);
 
@@ -93,16 +92,6 @@
 					user_id,
 					shuffled_questions,
 					answers
-				})
-			}),
-			fetch(`${base}/api/exit/feedback`, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					user_id,
-					feedback
 				})
 			}),
 			backend.xai(user_id).finish()

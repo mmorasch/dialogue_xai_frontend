@@ -1,5 +1,5 @@
 <script lang="ts">
-    import backend, {logFinalFeedback} from "$lib/backend.js";
+    import backend from "$lib/backend.js";
     import {goto} from "$app/navigation";
     import {base} from "$app/paths";
 
@@ -8,7 +8,16 @@
 
     async function handleSubmit(event) {
         event.preventDefault();
-        await logFinalFeedback(user_id, feedback);
+        fetch(`${base}/api/exit/feedback`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_id,
+                feedback
+            })
+        });
         await backend.xai(user_id).finish();
         goto(`${base}/exit/endscreen`);
     }
