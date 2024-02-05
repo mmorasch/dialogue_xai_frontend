@@ -11,3 +11,5 @@ vite.config.ts.timestamp-*
 pnpm-lock.yaml
 .devcontainer
 .idea
+bun.lockb
+package-lock.json

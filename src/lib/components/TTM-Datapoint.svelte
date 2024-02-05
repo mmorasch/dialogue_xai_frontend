@@ -4,7 +4,7 @@
     import Header from './Header.svelte';
     import Datapoint from './Datapoint.svelte';
     import type {TInteractiveOrStatic, TTestOrTeaching} from '$lib/types';
-    import backend, {logEvent, logTestingResponse} from '../backend.ts';
+    import {base} from "$app/paths";
 
     export let testOrTeaching: TTestOrTeaching;
     export let interactiveOrStatic: TInteractiveOrStatic;
@@ -49,19 +49,25 @@
                                      option: string,
                                      datapointCount: number,
                                      true_label: string) {
-        if (!isDisabled) {
-            if (testOrTeaching === 'test') {
-                logTestingResponse(userid, datapointCount, option, false, true_label);
-            } else if (testOrTeaching === 'teaching') {
-                logEvent(userid, 'TTM-Datapoint', 'user_prediction', datapointCount, {
-                    prediction: option,
-                    true_label: true_label
-                });
-                isDisabled = true;
-            } else {
-                logTestingResponse(userid, datapointCount, option, true, true_label);
-            }
-        }
+        console.log("Logging prediction and disabling", userid, option, datapointCount, true_label);
+        const details = {
+            datapoint_count: datapoint_count,
+            prediction: option,
+            true_label: true_label
+        };
+        fetch(`${base}/api/log_event`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_id: user_id,
+                event_source: testOrTeaching,
+                event_type: 'user_prediction',
+                details: details,
+            })
+        });
+
     }
 </script>
 

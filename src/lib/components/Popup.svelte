@@ -1,7 +1,8 @@
 <script>
     import {createEventDispatcher, onMount} from 'svelte';
     import {RangeSlider, Step, Stepper} from "@skeletonlabs/skeleton";
-    import backend, {saveQuestionnaireAnswers} from "../backend.ts";
+    import backend from "$lib/backend";
+    import {base} from "$app/paths";
 
     const dispatch = createEventDispatcher();
 
@@ -24,7 +25,17 @@
 
     async function onComplete() {
         // Save the answers when the user completes the questionnaire
-        await saveQuestionnaireAnswers(user_id, questions, answers, "self_assessment");
+        await fetch(`${base}/api/exit/questionnaire`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_id,
+                questions,
+                answers
+            })
+        });
         dispatch('confirm');
     }
 

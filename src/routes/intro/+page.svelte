@@ -1,49 +1,57 @@
 <script lang="ts">
-    import {goto} from '$app/navigation';
-    import {base} from '$app/paths';
-    import {Step, Stepper} from '@skeletonlabs/skeleton';
-    import {generateSlug} from "random-word-slugs";
-    import {onMount} from "svelte";
-    import {assignStudyGroup, authenticateUser, setupUserProfile} from "$lib/backend";
+	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
+	import { Step, Stepper } from '@skeletonlabs/skeleton';
+	import { generateSlug } from 'random-word-slugs';
+	import { onMount } from 'svelte';
 
-    let gender = 'm';
-    let gender_self_identify = '';
-    let age: number;
-    let degree: number;
-    let education_field: number;
-    let education_field_other = '';
-    let fam_ml_val = 0;
-    let fam_domain_val = 0;
-    let max = 5;
-    let matrikelnummer: number; //TODO: Include matrikelnummer in the form
-    let consent_given = false;
-    let pdfPath = `${base}/Consent.pdf`;
+	let gender: string = 'm';
+	let gender_self_identify = '';
+	let age: string;
+	let degree: string;
+	let education_field: string;
+	let education_field_other = '';
+	let fam_ml_val: number = 0;
+	let fam_domain_val: number = 0;
+	let max: number = 5;
+	let matrikelnummer: number; //TODO: Include matrikelnummer in the form
+	let consent_given: boolean = false;
+	let pdfPath = `${base}/Consent.pdf`;
 
-    let study_group;
-    onMount(() => {
-        authenticateUser();
-        assignStudyGroup()
-            .then(result => {
-                study_group = result;
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                study_group = 'static';
-            });
-    });
+	let study_group: any;
+	onMount(() => {
+		console.log("Study_Group Assignmenetn1");
+		fetch(`${base}/api/assign_study_group`, {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		}).then((result) => {
+				result.text().then((text) => {
+					study_group = text;
+				});
+			})
+			.catch((error) => {
+				console.error('Error:', error);
+				study_group = 'static';
+			});
+	});
 
-    async function onComplete() {
-        // First check if all the fields are filled out
-        const checks = [
-            {condition: degree === "", message: "Please select your highest degree before proceeding."},
-            {condition: education_field === "", message: "Please select your field of study before proceeding."},
-            {
-                condition: education_field === "other" && education_field_other === "",
-                message: "Please enter your field of study before proceeding."
-            },
-            {condition: age === "", message: "Please enter your age before proceeding."},
-            {condition: gender === "", message: "Please select your gender degree before proceeding."}
-        ];
+	async function onComplete() {
+		// First check if all the fields are filled out
+		const checks = [
+			{ condition: degree === '', message: 'Please select your highest degree before proceeding.' },
+			{
+				condition: education_field === '',
+				message: 'Please select your field of study before proceeding.'
+			},
+			{
+				condition: education_field === 'other' && education_field_other === '',
+				message: 'Please enter your field of study before proceeding.'
+			},
+			{ condition: age === '', message: 'Please enter your age before proceeding.' },
+			{ condition: gender === '', message: 'Please select your gender degree before proceeding.' }
+		];
 
         for (let check of checks) {
             if (check.condition) {
@@ -52,27 +60,37 @@
             }
         }
 
-        const user_id = generateSlug()
+		const user_id = generateSlug();
 
-        let profile_data = {
-            'study_group': study_group,
-            'gender': gender,
-            'gender_self_identify': gender_self_identify,
-            'age': age,
-            'degree': degree,
-            'education_field': education_field,
-            'education_field_other': education_field_other,
-            'fam_ml_val': fam_ml_val,
-            'fam_domain_val': fam_domain_val,
-        }
-        setupUserProfile(user_id, profile_data);
-        goto(`${base}/experiment?user_id=${user_id}&sg=${study_group}`);
-    }
+		let profile_data = {
+			study_group: study_group,
+			gender: gender,
+			gender_self_identify: gender_self_identify,
+			age: age,
+			degree: degree,
+			education_field: education_field,
+			education_field_other: education_field_other,
+			fam_ml_val: fam_ml_val,
+			fam_domain_val: fam_domain_val
+		};
+		fetch(`${base}/api/setup`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				user_id: user_id,
+				profile_data: profile_data
+			})
+		});
+		goto(`${base}/experiment?user_id=${user_id}&sg=${study_group}`);
+	}
 
-    let study_group_interactive_text = "and you can select different questions in the chatbot to understand why the model made the prediction.";
+	let study_group_interactive_text =
+		'and you can select different questions in the chatbot to understand why the model made the prediction.';
 
-    let study_group_static_text = "and you will see a report of different explanations to understand why the model made the prediction.";
-
+	let study_group_static_text =
+		'and you will see a report of different explanations to understand why the model made the prediction.';
 </script>
 
 <div class="col-start-2 col-end-2 space-y-4 p-2 sm:p-2 md:space-y-6">
@@ -89,7 +107,7 @@
             <p class="m my-12">
                 Upon successful completion, you will get 3 extra Points in the final Exam. <br/><br/>
 
-                Thank you for your participation! <br/><br/>
+				Thank you for your participation! <br /><br />
 
                 Sincerely, <br/><br/>
 

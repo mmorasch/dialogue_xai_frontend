@@ -9,14 +9,13 @@
         TTestOrTeaching,
         StaticReport
     } from '$lib/types';
-    import backend, {logTestingResponse} from '$lib/backend';
+    import backend from '$lib/backend';
     import {fade} from 'svelte/transition';
     import type {PageData} from './$types';
     import {PUBLIC_TEACH_TEST_CYCLES, PUBLIC_END_TEST_CYCLES} from '$env/static/public';
 
     import {goto} from '$app/navigation';
     import {base} from '$app/paths';
-    import {logEvent} from '$lib/backend';
     import StaticExplanationReport from '$lib/components/StaticExplanationReport.svelte';
     import {writable} from "svelte/store";
     import Popup from '$lib/components/Popup.svelte';
@@ -84,9 +83,22 @@
             for (let i = 0; i < general_questions.length; i++) {
                 if (general_questions[i].id === question) {
                     full_question = general_questions[i].question.replace('[current prediction]', '<i>' + current_prediction + '</i>');
-                    logEvent(user_id, 'experiment/teaching', 'question', datapoint_count, {
+                    const details = {
+                        datapoint_count: datapoint_count,
                         question: full_question,
-                        id: question
+                        question_id: question
+                    };
+                    fetch(`${base}/api/log_event`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            user_id: user_id,
+                            event_source: 'teaching',
+                            event_type: 'question',
+                            details: details,
+                        })
                     });
                     return full_question;
                 }
@@ -98,9 +110,22 @@
                             full_question = feature_questions[i].question.replace(/\[feature selection\]/, function (i, match) {
                                 return feature_names[j].feature_name;
                             });
-                            logEvent(user_id, 'experiment/teaching', 'question', datapoint_count, {
+                            const details = {
+                                datapoint_count: datapoint_count,
                                 question: full_question,
-                                id: question
+                                question_id: question
+                            };
+                            fetch(`${base}/api/log_event`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    user_id: user_id,
+                                    event_source: 'teaching',
+                                    event_type: 'question',
+                                    details: details,
+                                })
                             });
                             return full_question;
                         }
@@ -144,10 +169,15 @@
         let initial_prompt: string = '';
         let new_datapoint: TDatapoint;
 
-        if (test_or_teaching === 'test') {
-            if (datapoint_answer_selected !== null) {
-                logTestingResponse(user_id, datapoint_count, datapoint_answer_selected, false, true_label);
+        if (cycles_completed === parseInt(PUBLIC_TEACH_TEST_CYCLES) + parseInt(PUBLIC_END_TEST_CYCLES)) {
+            if (study_group === 'static') {
+                goto(`${base}/exit/feedback?user_id=${user_id}`);
+            } else {
+                goto(`${base}/exit?user_id=${user_id}`);
             }
+        }
+
+        if (test_or_teaching === 'test') {
             // Change to TRAIN CASE
             datapoint_count++;
             cycles_completed++;
@@ -168,7 +198,21 @@
             }
         } else if (test_or_teaching === 'teaching') {
             // Log timing of next button for teaching
-            logEvent(user_id, 'experiment/teaching', 'handleNext', datapoint_count);
+            const details = {
+                datapoint_count: datapoint_count,
+            };
+            fetch(`${base}/api/log_event`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    user_id: user_id,
+                    event_source: 'teaching',
+                    event_type: 'handleNext',
+                    details: details,
+                })
+            });
 
             // Change to Test CASE
             ({id, current_prediction, initial_prompt, ...new_datapoint} = await (
@@ -182,16 +226,23 @@
         if (test_or_teaching === 'final-test') {
             // final-test
             datapoint_count++;
-            if (datapoint_answer_selected !== null) {
-                logTestingResponse(user_id, datapoint_count, datapoint_answer_selected, true, true_label);
-            }
-            if (cycles_completed === parseInt(PUBLIC_TEACH_TEST_CYCLES) + parseInt(PUBLIC_END_TEST_CYCLES)) {
-                if (study_group === 'static') {
-                    goto(`${base}/exit/feedback?user_id=${user_id}`);
-                } else {
-                    goto(`${base}/exit?user_id=${user_id}`);
-                }
-            }
+            // Log timing of next button for testing
+            const details = {
+                datapoint_count: datapoint_count,
+
+            };
+            fetch(`${base}/api/log_event`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    user_id: user_id,
+                    event_source: 'teaching',
+                    event_type: 'handleNext',
+                    details: details,
+                })
+            });
             ({id, current_prediction, initial_prompt, ...new_datapoint} = await (
                 await backend.xai(user_id).get_test_datapoint()
             ).json());
@@ -209,7 +260,24 @@
         const {buttonType} = event.detail;
         const {messageId} = event.detail;
         const {user_comment} = event.detail;
-        logEvent(user_id, 'experiment/teaching', 'feedback', datapoint_count, {buttonType, messageId, user_comment});
+        const details = {
+            datapoint_count: datapoint_count,
+            buttonType: buttonType,
+            messageId: messageId,
+            user_comment: user_comment
+        };
+        fetch(`${base}/api/log_event`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_id: user_id,
+                event_source: 'teaching',
+                event_type: 'feedback',
+                details: details,
+            })
+        });
     }
 </script>
 
