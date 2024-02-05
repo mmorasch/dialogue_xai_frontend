@@ -2,8 +2,7 @@
     import {goto} from '$app/navigation';
     import {base} from '$app/paths';
     import {Step, Stepper, RangeSlider} from '@skeletonlabs/skeleton';
-    import backend, {logFinalFeedback, saveQuestionnaireAnswers} from '$lib/backend';
-    import { onMount, afterUpdate } from 'svelte';
+    import backend, {logFinalFeedback, saveQuestionnaireAnswers} from '$lib/backend_pg';
     export let user_id;
     let currentStep = 0;
 

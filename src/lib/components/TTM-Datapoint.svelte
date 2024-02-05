@@ -4,7 +4,7 @@
     import Header from './Header.svelte';
     import Datapoint from './Datapoint.svelte';
     import type {TInteractiveOrStatic, TTestOrTeaching} from '$lib/types';
-    import backend, {logEvent, logTestingResponse} from '../backend.ts';
+    import {logEvent} from '../backend_pg.ts';
 
     export let testOrTeaching: TTestOrTeaching;
     export let interactiveOrStatic: TInteractiveOrStatic;
@@ -52,16 +52,25 @@
         console.log("Logging prediction and disabling", userid, option, datapointCount, true_label);
         if (!isDisabled) {
             if (testOrTeaching === 'test') {
-                logTestingResponse(userid, datapointCount, option, false, true_label);
+                logEvent(userid, 'testing', 'user_prediction', {
+                    datapointCount: datapointCount,
+                    prediction: option,
+                    true_label: true_label
+                });
             } else if (testOrTeaching === 'teaching') {
                 console.log("Logging Teaching");
-                logEvent(userid, 'TTM-Datapoint', 'user_prediction', datapointCount, {
+                logEvent(userid, 'teaching', 'user_prediction', {
+                    datapointCount: datapointCount,
                     prediction: option,
                     true_label: true_label
                 });
                 isDisabled = true;
             } else {
-                logTestingResponse(userid, datapointCount, option, true, true_label);
+                logEvent(userid, 'final_testing', 'user_prediction', {
+                    datapointCount: datapointCount,
+                    prediction: option,
+                    true_label: true_label
+                });
             }
         }
     }

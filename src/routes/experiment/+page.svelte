@@ -9,14 +9,13 @@
         TTestOrTeaching,
         StaticReport
     } from '$lib/types';
-    import backend from '$lib/backend';
+    import backend, {logEvent} from '$lib/backend_pg';
     import {fade} from 'svelte/transition';
     import type {PageData} from './$types';
     import {PUBLIC_TEACH_TEST_CYCLES, PUBLIC_END_TEST_CYCLES} from '$env/static/public';
 
     import {goto} from '$app/navigation';
     import {base} from '$app/paths';
-    import {logEvent} from '$lib/backend';
     import StaticExplanationReport from '$lib/components/StaticExplanationReport.svelte';
     import {writable} from "svelte/store";
     import Popup from '$lib/components/Popup.svelte';
@@ -84,9 +83,10 @@
             for (let i = 0; i < general_questions.length; i++) {
                 if (general_questions[i].id === question) {
                     full_question = general_questions[i].question.replace('[current prediction]', '<i>' + current_prediction + '</i>');
-                    logEvent(user_id, 'experiment/teaching', 'question', datapoint_count, {
+                    logEvent(user_id, 'teaching', 'question', {
+                        datapoint_count: datapoint_count,
                         question: full_question,
-                        id: question
+                        question_id: question
                     });
                     return full_question;
                 }

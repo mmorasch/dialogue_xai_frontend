@@ -4,7 +4,7 @@
     import {Step, Stepper} from '@skeletonlabs/skeleton';
     import {generateSlug} from "random-word-slugs";
     import {onMount} from "svelte";
-    import {setupUserProfile} from "$lib/backend";
+    import {assignStudyGroup, setupUserProfile} from "$lib/backend_pg";
 
     let gender: string = 'm';
     let gender_self_identify = '';
@@ -22,14 +22,14 @@
     let study_group;
     onMount(() => {
         console.log("Assigning Study Group");
-        //assignStudyGroup()
-          //  .then(result => {
-            //    study_group = result;
-            //})
-            //.catch(error => {
-              //  console.error('Error:', error);
-                //study_group = 'static';
-            //});
+        assignStudyGroup()
+            .then(result => {
+                study_group = result;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                study_group = 'static';
+            });
     });
 
     async function onComplete() {

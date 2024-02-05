@@ -1,6 +1,6 @@
 <script lang="ts">
 	import comment from '$lib/assets/comment.png';
-	import backend from '$lib/backend';
+	import backend from '$lib/backend_pg';
     import '../../global.css';
 </script>
 

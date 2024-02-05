@@ -1,7 +1,7 @@
 <script>
     import {createEventDispatcher, onMount} from 'svelte';
     import {RangeSlider, Step, Stepper} from "@skeletonlabs/skeleton";
-    import backend, {saveQuestionnaireAnswers} from "../backend.ts";
+    import backend, {saveQuestionnaireAnswers} from "../backend_pg.ts";
 
     const dispatch = createEventDispatcher();
 
