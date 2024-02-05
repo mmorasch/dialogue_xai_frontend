@@ -1,6 +1,7 @@
 
 import postgres from 'postgres'
 import { POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB } from "$env/static/private"
+import { PUBLIC_BACKEND_URL } from '$env/static/public'
 
 const sql = postgres({
   host: 'db',
@@ -72,7 +73,7 @@ export async function logTestingResponse(
       VALUES (${userId}, ${datapointCount}, ${test_response}, ${timestamp}, ${true_label}, ${final})
   `;
   // Log user prediction to backend
-  await fetch(`${process.env.PUBLIC_BACKEND_URL}set_user_prediction?user_id=${userId}&user_prediction=${test_response}`, { method: 'POST' });
+  await fetch(`${PUBLIC_BACKEND_URL}set_user_prediction?user_id=${userId}&user_prediction=${test_response}`, { method: 'POST' });
 }
 
 export async function logFinalFeedback(userId: string, feedback: string) {

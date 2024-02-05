@@ -28,7 +28,9 @@
 			}
 		})
 			.then((result) => {
-				study_group = result;
+				result.text().then((text) => {
+					study_group = text;
+				});
 			})
 			.catch((error) => {
 				console.error('Error:', error);
