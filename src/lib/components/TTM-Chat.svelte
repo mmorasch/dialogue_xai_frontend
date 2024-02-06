@@ -33,7 +33,7 @@
 <div
         class="ttm flex h-full"
 >
-    <Header>Chat Window</Header>
+    <Header>Chatbot</Header>
     <main
             bind:this={element}
             class="flex-1 overflow-y-auto h-full p-3"
