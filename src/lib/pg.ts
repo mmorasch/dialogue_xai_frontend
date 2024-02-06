@@ -61,7 +61,7 @@ export async function saveQuestionnaireAnswers(
     userId: string,
     questions: string[],
     answers: number[],
-    questionnaire_name = "final_questionnaire"
+    questionnaire_name = "exit"
 ) {
     return await sql`
         UPDATE users

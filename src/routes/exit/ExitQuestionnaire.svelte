@@ -56,9 +56,10 @@
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    user_id,
-                    shuffled_questions,
-                    answers
+                    user_id: user_id,
+                    questions: shuffled_questions,
+                    answers: answers,
+                    questionnaire_name: 'exit'
                 })
             }),
             backend.xai(user_id).finish()

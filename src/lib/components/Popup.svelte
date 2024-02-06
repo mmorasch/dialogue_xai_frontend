@@ -19,6 +19,8 @@
     let questions = [
         'I understand the important attributes for a decision.',
         'I can distinguish between high risk and low risk patients.',
+        'I understand how the ML model works.',
+        'I understand how the ML model makes decisions.',
     ];
 
     let answers = Array(questions.length).fill(0);
@@ -31,9 +33,10 @@
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                user_id,
-                questions,
-                answers
+                user_id: user_id,
+                questions: questions,
+                answers: answers,
+                questionnaire_name: 'self_assessment'
             })
         });
         dispatch('confirm');
