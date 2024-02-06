@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS users (
   id text PRIMARY KEY DEFAULT gen_random_uuid(),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   profile jsonb DEFAULT '{}',
+  study_group VARCHAR(255),
   logs jsonb DEFAULT '{}',
   questionnaires jsonb DEFAULT '{}',
   feedback jsonb DEFAULT '{}',
