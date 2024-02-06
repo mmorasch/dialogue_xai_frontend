@@ -5,6 +5,7 @@
     import Datapoint from './Datapoint.svelte';
     import type {TInteractiveOrStatic, TTestOrTeaching} from '$lib/types';
     import {base} from "$app/paths";
+    import backend from "$lib/backend";
 
     export let testOrTeaching: TTestOrTeaching;
     export let interactiveOrStatic: TInteractiveOrStatic;
@@ -45,11 +46,10 @@
 
     let isDisabled = false;
 
-    function logPredictionAndDisable(userid: string,
-                                     option: string,
-                                     datapointCount: number,
-                                     true_label: string) {
-        console.log("Logging prediction and disabling", userid, option, datapointCount, true_label);
+    function logPrediction(userid: string,
+                           option: string,
+                           datapointCount: number,
+                           true_label: string) {
         const details = {
             datapoint_count: datapoint_count,
             prediction: option,
@@ -67,7 +67,7 @@
                 details: details,
             })
         });
-
+        backend.xai(userid).set_user_prediction(option);
     }
 </script>
 
@@ -121,7 +121,7 @@
                             display="flex-col">
                         {#each options as option, index}
                             <ListBoxItem bind:group={selected_prediction} name="justify" value={option}
-                                         on:click={() => logPredictionAndDisable(user_id, option, datapoint_count, true_label)}
+                                         on:click={() => logPrediction(user_id, option, datapoint_count, true_label)}
                                          {isDisabled}>{option}</ListBoxItem>
                         {/each}
                     </ListBox>
