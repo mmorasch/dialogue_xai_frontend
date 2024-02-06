@@ -27,11 +27,11 @@ clean:
 	rm -rf node_modules
 	rm -rf .svelte-kit
 
-remake: stop up
+remake:
+	docker compose up -d --build
 
 stop:
 	docker compose stop
 
 clean_db:
 	docker compose down -v
-	docker volume rm mydatabase-data
