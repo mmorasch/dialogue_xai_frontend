@@ -1,4 +1,4 @@
-.PHONY: up build
+.PHONY: up build clean_db
 
 MAKEFLAGS += --silent
 NODE_PACKAGE_MANAGER := npm
@@ -26,3 +26,12 @@ install:
 clean:
 	rm -rf node_modules
 	rm -rf .svelte-kit
+
+remake: stop up
+
+stop:
+	docker compose stop
+
+clean_db:
+	docker compose down -v
+	docker volume rm mydatabase-data
