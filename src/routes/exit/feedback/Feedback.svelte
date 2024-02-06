@@ -14,8 +14,8 @@
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                user_id,
-                feedback
+                user_id: user_id,
+                feedback: feedback
             })
         });
         await backend.xai(user_id).finish();

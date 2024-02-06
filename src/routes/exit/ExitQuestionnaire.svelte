@@ -1,10 +1,11 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import { base } from '$app/paths';
-	import { Step, Stepper, RangeSlider } from '@skeletonlabs/skeleton';
-	import backend from '$lib/backend';
-	export let user_id: string;
-	let currentStep = 0;
+    import {goto} from '$app/navigation';
+    import {base} from '$app/paths';
+    import {Step, Stepper, RangeSlider} from '@skeletonlabs/skeleton';
+    import backend from '$lib/backend';
+
+    export let user_id: string;
+    let currentStep = 0;
 
     function onNext() {
         currentStep++;
@@ -13,91 +14,57 @@
         }
     }
 
-	let questions = [
-		// 2 Agent's Usability TODO: Mix
-		'The Chatbot is easy to use.',
-		'Learning to work with the Chatbot is easy.',
-		// 3 Performance
-		'The Chatbot does its task well',
-		'I am capable of succeeding with the Chatbot',
-		// 4 Agent’s Likeability
-		'I like the Chatbot.',
-		'I dislike the Chatbot.',
-		'The Chatbot is cooperative.',
-		// 5 Agent’s Sociability
-		'The Chatbot interacts socially with me.',
-		// 7 User Acceptance of the Agent
-		'I can see myself using the Chatbot in the future.',
-		// 9 User’s Engagement
-		'I was concentrated during the interaction with the chatbot.',
-		'The interaction captured my attention.',
-		// 10 User’s Trust
-		'The chatbot always gives good advice.',
-		'The chatbot acts truthfully.',
-		'I can rely on the chatbot.',
-		// 11 User-Agent Alliance
-		'The chatbot can collaborate in a productive way.',
-		'The chatbot understands me.',
-		// 13 Agent’s Coherence
-		'The chatbots’s behavior does not make sense.',
-		'The chatbots appears confused.',
-		// 14 Agent’s Intentionality
-		'The chatbot acts intentionally',
-		'The chatbot has no clue of what it is doing.'
-	];
-
-	let shuffled_questions = [
-		'The Chatbot is cooperative.',
-		'I like the Chatbot.',
-		'The chatbot has no clue of what it is doing.',
-		'The chatbot always gives good advice.',
-		'The chatbot can collaborate in a productive way.',
-		'The chatbot acts truthfully.',
-		'The chatbots appears confused.',
-		'The Chatbot interacts socially with me.',
-		'The chatbot acts intentionally',
-		'I can see myself using the Chatbot in the future.',
-		'I can rely on the chatbot.',
-		'The Chatbot is easy to use.',
-		'The chatbot understands me.',
-		'I was concentrated during the interaction with the chatbot.',
-		'Learning to work with the Chatbot is easy.',
-		'The interaction captured my attention.',
-		'The chatbots’s behavior does not make sense.',
-		'The Chatbot does its task well',
-		'I dislike the Chatbot.',
-		'I am capable of succeeding with the Chatbot',
-	];
+    let shuffled_questions = [
+        'The Chatbot is cooperative.',
+        'I like the Chatbot.',
+        'The chatbot has no clue of what it is doing.',
+        'The chatbot always gives good advice.',
+        'The chatbot can collaborate in a productive way.',
+        'The chatbot acts truthfully.',
+        'The chatbots appears confused.',
+        'The Chatbot interacts socially with me.',
+        'The chatbot acts intentionally',
+        'I can see myself using the Chatbot in the future.',
+        'I can rely on the chatbot.',
+        'The Chatbot is easy to use.',
+        'The chatbot understands me.',
+        'I was concentrated during the interaction with the chatbot.',
+        'Learning to work with the Chatbot is easy.',
+        'The interaction captured my attention.',
+        'The chatbots’s behavior does not make sense.',
+        'The Chatbot does its task well',
+        'I dislike the Chatbot.',
+        'I am capable of succeeding with the Chatbot',
+    ];
 
     let chunks = [];
-    for (let i = 0; i < shuffled_questions.length; i += 6) {
-        chunks.push(shuffled_questions.slice(i, i + 7));
+    const questions_per_page = 7;
+    for (let i = 0; i < shuffled_questions.length; i += questions_per_page) {
+        chunks.push(shuffled_questions.slice(i, i + questions_per_page));
     }
 
     // Create Answer Array
     let answers = new Array(11).fill(0);
 
-	let feedback = '';
-
-	// Save Answers to Database
-	async function onComplete() {
-		// Save the answers when the user completes the questionnaire
-		await Promise.all([
-			fetch(`${base}/api/exit/questionnaire`, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					user_id,
-					shuffled_questions,
-					answers
-				})
-			}),
-			backend.xai(user_id).finish()
-		]);
-		goto(`${base}/exit/feedback`);
-	}
+    // Save Answers to Database
+    async function onComplete() {
+        // Save the answers when the user completes the questionnaire
+        await Promise.all([
+            fetch(`${base}/api/exit/questionnaire`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    user_id,
+                    shuffled_questions,
+                    answers
+                })
+            }),
+            backend.xai(user_id).finish()
+        ]);
+        goto(`${base}/exit/feedback?user_id=${user_id}`);
+    }
 </script>
 
 <div>
