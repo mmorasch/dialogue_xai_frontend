@@ -1,6 +1,5 @@
 import postgres from 'postgres'
 import {POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, POSTGRES_HOST} from "$env/static/private"
-import {PUBLIC_BACKEND_URL} from '$env/static/public'
 
 const sql = postgres({
     host: POSTGRES_HOST,
@@ -16,17 +15,34 @@ export async function setupUserProfile(userId: string, profileData: object) {
     `
 }
 
-export async function assignStudyGroup() {
-    const [staticCount, interactiveCount] = await Promise.all([
-        sql`SELECT COUNT(*)
-            FROM users
-            WHERE profile ->> 'study_group' = 'static'`,
-        sql`SELECT COUNT(*)
-            FROM users
-            WHERE profile ->> 'study_group' = 'interactive'`
-    ])
+export async function get_study_group() {
+    try {
+        // Execute SQL queries to count users in each study group
+        const staticCountResult = await sql`SELECT COUNT(*) as count
+                                            FROM users
+                                            WHERE study_group = 'static' AND completed = true`;
+        const interactiveCountResult = await sql`SELECT COUNT(*) as count
+                                                 FROM users
+                                                 WHERE study_group = 'interactive' AND completed = true`;
+        // Extract counts from query results
+        const staticCount = parseInt(staticCountResult[0].count, 10);
+        const interactiveCount = parseInt(interactiveCountResult[0].count, 10);
 
-    return staticCount <= interactiveCount ? 'static' : 'interactive'
+
+        // Determine and return the less used study group
+        return staticCount <= interactiveCount ? 'static' : 'interactive';
+    } catch (error) {
+        console.error('Error in get_study_group:', error);
+        throw error; // or handle error as needed
+    }
+}
+
+export async function set_study_group(userId: string, studyGroup: string) {
+    return await sql`
+        UPDATE users
+        SET study_group = ${studyGroup}
+        WHERE id = ${userId}
+    `;
 }
 
 export async function logEvent(userId: string,
@@ -56,31 +72,23 @@ export async function saveQuestionnaireAnswers(
     `
 }
 
-export async function logTestingResponse(
-    userId: string,
-    datapointCount: number,
-    test_response: string,
-    final = false,
-    true_label = ""
-) {
-    // Generate timestamp without milliseconds
-    const timestamp = new Date().toISOString().split('.')[0];
-
-    // Insert log entry into PostgreSQL
-    await sql`
-        INSERT INTO log_entries (user_id, datapoint_count, test_response, timestamp, true_label, is_final)
-        VALUES (${userId}, ${datapointCount}, ${test_response}, ${timestamp}, ${true_label}, ${final})
+export async function logFinalFeedback(userId: string, feedback: string) {
+    const timestamp = new Date().toISOString();
+    logCompleted(userId);
+    return await sql`
+        UPDATE users
+        SET feedback = feedback || ${JSON.stringify(
+                {timestamp: timestamp, feedback: feedback}
+        )}
+        WHERE id = ${userId}
     `;
-    // Log user prediction to backend
-    await fetch(`${PUBLIC_BACKEND_URL}set_user_prediction?user_id=${userId}&user_prediction=${test_response}`, {method: 'POST'});
 }
 
-export async function logFinalFeedback(userId: string, feedback: string) {
-    const timestamp = new Date().toISOString(); // Format the timestamp as an ISO string
-
+export async function logCompleted(userId: string) {
     return await sql`
-        INSERT INTO feedback (user_id, feedback, timestamp)
-        VALUES (${userId}, ${feedback}, ${timestamp})
+        UPDATE users
+        SET completed = true
+        WHERE id = ${userId}
     `;
 }
 
