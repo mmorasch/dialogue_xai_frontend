@@ -12,5 +12,10 @@ export default {
             method: "POST",
             body: JSON.stringify({question, feature})
         }),
+        set_user_prediction: (user_prediction: any) => fetch(`${PUBLIC_BACKEND_URL}set_user_prediction?user_id=${user_id}`, {
+            method: "POST",
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({prediction: user_prediction})
+        }),
     }),
 }
