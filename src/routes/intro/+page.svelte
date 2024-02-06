@@ -11,9 +11,9 @@
     let age: string;
     let degree: string;
     let education_field: string;
-    let education_field_other = '';
-    let fam_ml_val: number = 0;
-    let fam_domain_val: number = 0;
+    let education_field_other = 0;
+    let fam_ml_val = 0;
+    let fam_domain_val = '';
     let max: number = 5;
     let matrikelnummer: number; //TODO: Include matrikelnummer in the form
     let consent_given: boolean = false;
@@ -184,7 +184,8 @@
                         explanations.
                     </li>
                     <li>Complete this process for a total of <span class="highlight">{PUBLIC_TEACH_TEST_CYCLES}
-                        patient pairs </span> where you first learn and then guess the model prediction for a new patient.
+                        patient pairs </span> where you first learn and then guess the model prediction for a new
+                        patient.
                     </li>
                     <li>Answer a few questions about your model understanding at the end.</li>
                 </ul>
@@ -290,9 +291,9 @@
 					</span>
                     <select bind:value={fam_ml_val} class="select py-1">
                         <option value="0">I do not know about the disease.</option>
-                        <option value="0">I briefly know about the disease.</option>
-                        <option value="1">I know the symptoms of the disease.</option>
-                        <option value="2">I know how the disease is diagnosed.</option>
+                        <option value="1">I briefly know about the disease.</option>
+                        <option value="2">I know the symptoms of the disease.</option>
+                        <option value="3">I know how the disease is diagnosed.</option>
                     </select>
                 </label>
             </div>
