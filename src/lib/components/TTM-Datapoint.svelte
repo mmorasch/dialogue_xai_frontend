@@ -6,6 +6,10 @@
     import type {TInteractiveOrStatic, TTestOrTeaching} from '$lib/types';
     import {base} from "$app/paths";
     import backend from "$lib/backend";
+    import FeedbackWindow from "$lib/components/FeedbackWindow.svelte";
+    import {createEventDispatcher} from "svelte";
+
+    const dispatch = createEventDispatcher();
 
     export let testOrTeaching: TTestOrTeaching;
     export let interactiveOrStatic: TInteractiveOrStatic;
@@ -44,15 +48,15 @@
     // get event categories
     export let selected_prediction: string | null = null;
 
-    let isDisabled = false;
 
-    function logPrediction(userid: string,
-                           option: string,
-                           datapointCount: number,
-                           true_label: string) {
+    function logPrediction() {
+        // if final test, return
+        if (testOrTeaching === 'final-test') {
+            return;
+        }
         const details = {
             datapoint_count: datapoint_count,
-            prediction: option,
+            prediction: selected_prediction,
             true_label: true_label
         };
         fetch(`${base}/api/log_event`, {
@@ -67,7 +71,45 @@
                 details: details,
             })
         });
-        backend.xai(userid).set_user_prediction(option);
+        // Check if usser_id is not null
+        if (user_id) {
+            backend.xai(user_id).set_user_prediction(selected_prediction);
+        }
+        if (testOrTeaching === 'test') {
+            console.log("dispatching next in", {testOrTeaching});
+            dispatch('next', null);
+        }
+    }
+
+    function logFinalTestPrediction(event) {
+        // Get the feedback from the event
+        const {feedback} = event.detail;
+
+        const details = {
+            datapoint_count: datapoint_count,
+            prediction: selected_prediction,
+            true_label: true_label,
+            feedback: feedback,
+        };
+        fetch(`${base}/api/log_event`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_id: user_id,
+                event_source: testOrTeaching,
+                event_type: 'user_prediction',
+                details: details,
+            })
+        });
+        // Check if usser_id is not null
+        if (user_id) {
+            backend.xai(user_id).set_user_prediction(selected_prediction);
+        }
+        // Dispatch next event
+        dispatch('next', null);
+        console.log("dispatching next in", {testOrTeaching});
     }
 </script>
 
@@ -109,25 +151,33 @@
         />
     </main>
     <div class="content-align">
-        <hr class="!border-t-4 my-3"/>
-        <form>
-            <div class="mt-6">
-                <h2 style="text-align: center">Make a prediction</h2>
-                <p class="mb-3">{prediction_question}</p>
-                <div class="variant-ghost-surface w-fit mx-auto">
-                    <ListBox
-                            active="variant-filled-primary"
-                            hover="hover:variant-soft-primary"
-                            display="flex-col">
-                        {#each options as option, index}
-                            <ListBoxItem bind:group={selected_prediction} name="justify" value={option}
-                                         on:click={() => logPrediction(user_id, option, datapoint_count, true_label)}
-                                         {isDisabled}>{option}</ListBoxItem>
-                        {/each}
-                    </ListBox>
+        {#if testOrTeaching === 'final-test' && selected_prediction}
+            <FeedbackWindow
+                    placeholder="Please describe why you made the decision..."
+                    submitLabel="Proceed"
+                    on:feedbackSubmit={logFinalTestPrediction}
+            />
+        {:else}
+            <hr class="!border-t-4 my-3"/>
+            <form>
+                <div class="mt-6">
+                    <h2 style="text-align: center">Make a prediction</h2>
+                    <p class="mb-3">{prediction_question}</p>
+                    <div class="variant-ghost-surface w-fit mx-auto">
+                        <ListBox
+                                active="variant-filled-primary"
+                                hover="hover:variant-soft-primary"
+                                display="flex-col">
+                            {#each options as option, index}
+                                <ListBoxItem bind:group={selected_prediction} name="justify" value={option}
+                                             on:click={() => logPrediction()}
+                                >{option}</ListBoxItem>
+                            {/each}
+                        </ListBox>
+                    </div>
                 </div>
-            </div>
-        </form>
+            </form>
+        {/if}
     </div>
 </div>
 

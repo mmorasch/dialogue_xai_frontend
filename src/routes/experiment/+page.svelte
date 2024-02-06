@@ -297,6 +297,7 @@
             interactiveOrStatic={study_group}
             user_id={user_id}
             true_label={true_label}
+            on:next={handleNext}
     />
 </div>
 {#if datapoint_answer_selected}
@@ -331,7 +332,5 @@
                 />
             </div>
         {/if}
-    {:else}
-        {handleNext()}
     {/if}
 {/if}

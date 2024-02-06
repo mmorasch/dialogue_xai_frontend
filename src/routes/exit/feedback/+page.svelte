@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Feedback from "$lib/components/FeedbackWindow.svelte";
+    import FeedbackWindow from "$lib/components/FeedbackWindow.svelte";
     import {base} from '$app/paths';
     import backend from "$lib/backend";
     import {goto} from "$app/navigation";
@@ -36,8 +36,7 @@
         <h1 class="center-text text-xl">Thank you for the participation!</h1>
         <h2>Since this is the prestudy, please leave any opinion and your name here so we can talk and I can link the
             experiment results to you for further analysis together. :)</h2>
-        <Feedback
-                {user_id}
+        <FeedbackWindow
                 placeholder="Please leave any opinion and your name here..."
                 submitLabel="End Experiment"
                 on:feedbackSubmit={handleFeedbackSubmit}
@@ -59,5 +58,6 @@
         flex-direction: column;
         height: 100vh;
         width: 100vw;
+        margin: 5vh;
     }
 </style>

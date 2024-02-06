@@ -32,7 +32,8 @@
     }
 
     .feedback-textarea {
-        width: 50vw;
+        width: 100%;
+        max-width: 100%;
         height: 15vw;
         padding: 10px;
         margin-top: 20px;
