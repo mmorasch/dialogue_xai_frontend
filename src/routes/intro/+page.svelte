@@ -1,57 +1,61 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import { base } from '$app/paths';
-	import { Step, Stepper } from '@skeletonlabs/skeleton';
-	import { generateSlug } from 'random-word-slugs';
-	import { onMount } from 'svelte';
+    import {goto} from '$app/navigation';
+    import {base} from '$app/paths';
+    import {Step, Stepper} from '@skeletonlabs/skeleton';
+    import {generateSlug} from 'random-word-slugs';
+    import {onMount} from 'svelte';
+    import {PUBLIC_TEACH_TEST_CYCLES} from "$env/static/public";
 
-	let gender: string = 'm';
-	let gender_self_identify = '';
-	let age: string;
-	let degree: string;
-	let education_field: string;
-	let education_field_other = '';
-	let fam_ml_val: number = 0;
-	let fam_domain_val: number = 0;
-	let max: number = 5;
-	let matrikelnummer: number; //TODO: Include matrikelnummer in the form
-	let consent_given: boolean = false;
-	let pdfPath = `${base}/Consent.pdf`;
+    let gender: string = 'm';
+    let gender_self_identify = '';
+    let age: string;
+    let degree: string;
+    let education_field: string;
+    let education_field_other = '';
+    let fam_ml_val: number = 0;
+    let fam_domain_val: number = 0;
+    let max: number = 5;
+    let matrikelnummer: number; //TODO: Include matrikelnummer in the form
+    let consent_given: boolean = false;
+    let pdfPath = `${base}/Consent.pdf`;
 
-	let study_group: any;
-	onMount(() => {
-		console.log("Study_Group Assignmenetn1");
-		fetch(`${base}/api/assign_study_group`, {
-			method: 'GET',
-			headers: {
-				'Content-Type': 'application/json'
-			}
-		}).then((result) => {
-				result.text().then((text) => {
-					study_group = text;
-				});
-			})
-			.catch((error) => {
-				console.error('Error:', error);
-				study_group = 'static';
-			});
-	});
+    let study_group: any;
+    onMount(() => {
+        fetch(`${base}/api/get_study_group`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then((response) => {
+            if (response.ok) {
+                response.text().then((text) => {
+                    study_group = text;
+                });
+            } else {
+                console.error('Server responded with non-OK status');
+                study_group = 'static';
+            }
+        }).catch((error) => {
+            console.error('Error:', error);
+            study_group.set('static');
+        });
+    });
 
-	async function onComplete() {
-		// First check if all the fields are filled out
-		const checks = [
-			{ condition: degree === '', message: 'Please select your highest degree before proceeding.' },
-			{
-				condition: education_field === '',
-				message: 'Please select your field of study before proceeding.'
-			},
-			{
-				condition: education_field === 'other' && education_field_other === '',
-				message: 'Please enter your field of study before proceeding.'
-			},
-			{ condition: age === '', message: 'Please enter your age before proceeding.' },
-			{ condition: gender === '', message: 'Please select your gender degree before proceeding.' }
-		];
+    async function onComplete() {
+        // First check if all the fields are filled out
+        const checks = [
+            {condition: degree === '', message: 'Please select your highest degree before proceeding.'},
+            {
+                condition: education_field === '',
+                message: 'Please select your field of study before proceeding.'
+            },
+            {
+                condition: education_field === 'other' && education_field_other === '',
+                message: 'Please enter your field of study before proceeding.'
+            },
+            {condition: age === '', message: 'Please enter your age before proceeding.'},
+            {condition: gender === '', message: 'Please select your gender degree before proceeding.'}
+        ];
 
         for (let check of checks) {
             if (check.condition) {
@@ -60,37 +64,37 @@
             }
         }
 
-		const user_id = generateSlug();
+        const user_id = generateSlug();
 
-		let profile_data = {
-			study_group: study_group,
-			gender: gender,
-			gender_self_identify: gender_self_identify,
-			age: age,
-			degree: degree,
-			education_field: education_field,
-			education_field_other: education_field_other,
-			fam_ml_val: fam_ml_val,
-			fam_domain_val: fam_domain_val
-		};
-		fetch(`${base}/api/setup`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				user_id: user_id,
-				profile_data: profile_data
-			})
-		});
-		goto(`${base}/experiment?user_id=${user_id}&sg=${study_group}`);
-	}
+        let profile_data = {
+            gender: gender,
+            gender_self_identify: gender_self_identify,
+            age: age,
+            degree: degree,
+            education_field: education_field,
+            education_field_other: education_field_other,
+            fam_ml_val: fam_ml_val,
+            fam_domain_val: fam_domain_val
+        };
+        fetch(`${base}/api/setup`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_id: user_id,
+                profile_data: profile_data,
+                study_group: study_group
+            })
+        });
+        goto(`${base}/experiment?user_id=${user_id}&sg=${study_group}`);
+    }
 
-	let study_group_interactive_text =
-		'and you can select different questions in the chatbot to understand why the model made the prediction.';
+    let study_group_interactive_text =
+        'Get familiar with the ML\'s prediction in an <b>interactive chatbot</b>.';
 
-	let study_group_static_text =
-		'and you will see a report of different explanations to understand why the model made the prediction.';
+    let study_group_static_text =
+        'Get familiar with the ML\'s prediction in an <b>explanation report</b>.';
 </script>
 
 <div class="col-start-2 col-end-2 space-y-4 p-2 sm:p-2 md:space-y-6">
@@ -107,7 +111,7 @@
             <p class="m my-12">
                 Upon successful completion, you will get 3 extra Points in the final Exam. <br/><br/>
 
-				Thank you for your participation! <br /><br />
+                Thank you for your participation! <br/><br/>
 
                 Sincerely, <br/><br/>
 
@@ -170,31 +174,23 @@
         <Step>
             <h2 class="text-2xl">Study Introduction</h2>
             <h3 class="text-xl">How will the model predict the risk level of different patients?</h3>
-            <p>
-                The experiment is structured as follows: <br>
-                1. You will be shown one patient at a time, and your task is to make an initial guess about
-                how the ML model would decide for that person. <br>
-
-                2. Then, you will see what the AI model predicts for the patient
-                {#if study_group === 'interactive'}
-                    {study_group_interactive_text}
-                {:else}
-                    {study_group_static_text}
-                {/if}
-                If you are done with looking at explanations, click on "Next".<br/>
-
-                3. After you had time to understand the prediction, the next step requires you to say how the model
-                will predict for a new patient. <br/>
-                4. You will repeat this process for 5 patients. <br/>
-
-                5. Finally, we will ask you a few questions about your understanding of the model. <br/>
-                <br
-                />
-
-                Here, the goal isn't to be right about whether someone has diabetes or not. It's
-                all about estimating what the model would predict based on the explanations you see.
-                <br/><br/>
-            </p>
+            <div class="container">
+                <h1>The experiment is structured as follows:</h1>
+                <ul>
+                    <li>Review one patient's information at a time and guess the ML model's decision.</li>
+                    <li>{study_group_interactive_text}</li>
+                    <li>When ready, proceed by clicking <span class="highlight">"Next"</span>.</li>
+                    <li>Predict the outcome for a new patient based on your understanding. This time, without seeing
+                        explanations.
+                    </li>
+                    <li>Complete this process for a total of <span class="highlight">{PUBLIC_TEACH_TEST_CYCLES}
+                        patient pairs </span> where you first learn and then guess the model prediction for a new patient.
+                    </li>
+                    <li>Answer a few questions about your model understanding at the end.</li>
+                </ul>
+                <p class="note">Here, the goal isn't to be right about whether someone has diabetes or not. It's all
+                    about estimating what the model would predict based on the explanations you see.</p>
+            </div>
         </Step>
         <Step>
             <p>
@@ -303,3 +299,24 @@
         </Step>
     </Stepper>
 </div>
+
+
+<style>
+    h1 {
+        color: #444;
+    }
+
+    ul {
+        margin: 20px 0;
+        list-style-type: disc;
+    }
+
+    li {
+        margin: 10px 0;
+    }
+
+    .note {
+        font-style: italic;
+        color: #555;
+    }
+</style>
