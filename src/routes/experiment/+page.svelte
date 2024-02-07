@@ -250,6 +250,7 @@
         }
 
         messages = [{isUser: false, feedback: false, text: initial_prompt, id: 1000}];
+        delete new_datapoint.true_label;
         current_datapoint = new_datapoint;
 
         //-----------------------------------------------------------------
