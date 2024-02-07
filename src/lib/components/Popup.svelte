@@ -65,9 +65,9 @@
                         <div class="slider-column">
                             <RangeSlider name="range-slider" bind:value={answers[i]} min={-3} max={3} step={1} ticked>
                                 <div class="flex justify-between items-center">
-                                    <div class="text-xs">Disagree</div>
+                                    <div class="text-xs">Strongly Disagree</div>
                                     <div class="text-xs">Neither agree nor disagree</div>
-                                    <div class="text-xs">Agree</div>
+                                    <div class="text-xs">Strongly Agree</div>
                                 </div>
                             </RangeSlider>
                             <div class="labels flex justify-between">
