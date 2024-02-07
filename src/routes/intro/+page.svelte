@@ -121,11 +121,10 @@
         <Step locked={!consent_given}>
             <p>
                 Please read the consent form and agree to participate in the study.
-                <iframe title="Consent Form" src={pdfPath} width="100%" height="500px">
-                    This browser does not support PDFs. Please download the PDF to view it.
-                </iframe>
-
             </p>
+            <iframe title="Consent Form" src={pdfPath} width="100%" height="500vh">
+                    This browser does not support PDFs. Please download the PDF to view it.
+            </iframe>
             <div style="display: flex; align-items: center;">
                 <label for="consent" style="margin-right: 10px;">I read and understood the consent form and agree to
                     participate in the study.</label>
