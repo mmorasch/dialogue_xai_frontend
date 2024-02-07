@@ -28,6 +28,7 @@
         'I can rely on the chatbot.',
         'The Chatbot is easy to use.',
         'The chatbot understands me.',
+        'I am not just clicking randomly and I can prove it by selecting -2.',
         'I was concentrated during the interaction with the chatbot.',
         'Learning to work with the Chatbot is easy.',
         'The interaction captured my attention.',
@@ -87,9 +88,9 @@
                             <RangeSlider name="range-slider" bind:value={answers[chunkIndex * 7 + i]} min={-3} max={3}
                                          step={1} ticked>
                                 <div class="flex justify-between items-center">
-                                    <div class="text-xs">Disagree</div>
+                                    <div class="text-xs">Strongly Disagree</div>
                                     <div class="text-xs">Neither agree nor disagree</div>
-                                    <div class="text-xs">Agree</div>
+                                    <div class="text-xs">Strongly Agree</div>
                                 </div>
                             </RangeSlider>
                             <div class="labels flex justify-between">

@@ -18,9 +18,10 @@
 
     let questions = [
         'I understand the important attributes for a decision.',
-        'I can distinguish between high risk and low risk patients.',
+        'I cannot distinguish between high risk and low risk patients.',
         'I understand how the ML model works.',
-        'I understand how the ML model makes decisions.',
+        'I can select number 2 for this question to demonstrate my attention.',
+        'I did not understand how the ML model makes decisions.',
     ];
 
     let answers = Array(questions.length).fill(0);
