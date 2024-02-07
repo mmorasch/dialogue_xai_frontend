@@ -72,11 +72,10 @@
             })
         });
         // Check if usser_id is not null
-        if (user_id) {
+        if (user_id !== null && selected_prediction !== null) {
             backend.xai(user_id).set_user_prediction(selected_prediction);
         }
         if (testOrTeaching === 'test') {
-            console.log("dispatching next in", {testOrTeaching});
             dispatch('next', null);
         }
     }
@@ -104,12 +103,11 @@
             })
         });
         // Check if usser_id is not null
-        if (user_id) {
+        if (user_id !== null && selected_prediction !== null) {
             backend.xai(user_id).set_user_prediction(selected_prediction);
         }
         // Dispatch next event
         dispatch('next', null);
-        console.log("dispatching next in", {testOrTeaching});
     }
 </script>
 
@@ -151,7 +149,7 @@
         />
     </main>
     <div class="content-align">
-        {#if testOrTeaching === 'final-test' && selected_prediction}
+        {#if testOrTeaching === 'final-test' && selected_prediction != null}
             <FeedbackWindow
                     placeholder="Please describe why you made the decision..."
                     submitLabel="Proceed"
@@ -170,7 +168,7 @@
                                 display="flex-col">
                             {#each options as option, index}
                                 <ListBoxItem bind:group={selected_prediction} name="justify" value={option}
-                                             on:click={() => logPrediction()}
+                                             on:click={() => {selected_prediction = option; logPrediction();}}
                                 >{option}</ListBoxItem>
                             {/each}
                         </ListBox>
