@@ -178,7 +178,7 @@
                 <h1>The experiment is structured as follows:</h1>
                 <ul>
                     <li>Review one patient's information at a time and guess the ML model's decision.</li>
-                    <li>{study_group_interactive_text}</li>
+                    <li>{@html study_group_interactive_text}</li>
                     <li>When ready, proceed by clicking <span class="highlight">"Next"</span>.</li>
                     <li>Predict the outcome for a new patient based on your understanding. This time, without seeing
                         explanations.
