@@ -283,54 +283,56 @@
 
 {#if $popupVisible}
     <Popup {user_id} on:confirm={handleConfirm}/>
-{/if}
 
-<div class={test_or_teaching === 'teaching' ? "col-start-1 col-end-2" : "col-start-2 col-end-3"}>
-    <TTMDatapoint
-            data={current_datapoint}
-            feature_tooltips={feature_tooltips}
-            bind:selected_prediction={datapoint_answer_selected}
-            bind:datapoint_count
-            testOrTeaching={test_or_teaching}
-            feature_names={feature_names}
-            feature_units={feature_units}
-            interactiveOrStatic={study_group}
-            user_id={user_id}
-            true_label={true_label}
-            on:next={handleNext}
-    />
-</div>
-{#if datapoint_answer_selected}
-    {#if test_or_teaching === 'teaching'}
-        {#if study_group === 'static'}
-            <div
-                    class="col-start-2 col-end-4 overflow-y-scroll"
-                    transition:fade={{ delay: 250, duration: 500 }}
-            >
-                <StaticExplanationReport
-                        {static_report}
-                        on:next={handleNext}
-                />
-            </div>
-        {:else}
-            <div
-                    class="col-start-2 col-end-3 overflow-y-scroll"
-                    transition:fade={{ delay: 250, duration: 500 }}
-            >
-                <TTMChat {messages} on:feedbackButtonClick={handleFeedbackButtonClick}/>
-            </div>
-            <div class="col-auto"
-                 transition:fade={{ delay: 250, duration: 500 }}>
-                <TTMQuestions
-                        {feature_questions}
-                        {general_questions}
-                        {current_prediction}
-                        bind:selected_prediction={datapoint_answer_selected}
-                        feature_questions_dropdown={feature_names}
-                        on:submit={submitQuestion}
-                        on:next={handleNext}
-                />
-            </div>
+{:else}
+    <div class={test_or_teaching === 'teaching' ? "col-start-1 col-end-2" : "col-start-2 col-end-3"}>
+        <TTMDatapoint
+                data={current_datapoint}
+                feature_tooltips={feature_tooltips}
+                bind:selected_prediction={datapoint_answer_selected}
+                bind:datapoint_count
+                testOrTeaching={test_or_teaching}
+                feature_names={feature_names}
+                feature_units={feature_units}
+                interactiveOrStatic={study_group}
+                user_id={user_id}
+                true_label={true_label}
+                on:next={handleNext}
+        />
+    </div>
+    {#if datapoint_answer_selected}
+        {#if test_or_teaching === 'teaching'}
+            {#if study_group === 'static'}
+                <div
+                        class="col-start-2 col-end-4 overflow-y-scroll"
+                        transition:fade={{ delay: 250, duration: 500 }}
+                >
+                    <StaticExplanationReport
+                            {static_report}
+                            on:next={handleNext}
+                    />
+                </div>
+            {:else}
+                <div
+                        class="col-start-2 col-end-3 overflow-y-scroll"
+                        transition:fade={{ delay: 250, duration: 500 }}
+                >
+                    <TTMChat {messages} on:feedbackButtonClick={handleFeedbackButtonClick}/>
+                </div>
+                <div class="col-start-3 col-end-4"
+                     transition:fade={{ delay: 250, duration: 500 }}>
+                    <TTMQuestions
+                            {feature_questions}
+                            {general_questions}
+                            {current_prediction}
+                            bind:selected_prediction={datapoint_answer_selected}
+                            feature_questions_dropdown={feature_names}
+                            on:submit={submitQuestion}
+                            on:next={handleNext}
+                    />
+                </div>
+            {/if}
         {/if}
     {/if}
 {/if}
+
