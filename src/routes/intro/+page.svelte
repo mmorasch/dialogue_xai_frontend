@@ -282,13 +282,11 @@
                 <label for="familiarityML" class="label text-center">
                     <span>5) How familiar are you with machine learning and artificial intelligence?</span>
                     <select bind:value={fam_domain_val} class="select py-1">
-                        <option value="0">What is Artificial Intelligence (AI)?</option>
-                        <option value="1">I see AI in the news but its very foreign to me.</option>
-                        <option value="2">I see AI news and have an idea.</option>
-                        <option value="3">I am aware where AI is used.</option>
-                        <option value="4">I actively use AI tools.</option>
-                        <option value="5">I know how AI is developed.</option>
-                        <option value="6">I am a AI researcher.</option>
+                        <option value="0">I don't know anything about AI.</option>
+                        <option value="1">I know a bit about AI, but not in detail.</option>
+                        <option value="2">I know some things about AI, but I'm not an expert.</option>
+                        <option value="3">I work with AI.</option>
+                        <option value="4">I am an AI engineer.</option>
                     </select>
                 </label>
                 <label for="familiarityDomain">
