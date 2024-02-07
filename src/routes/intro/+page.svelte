@@ -33,11 +33,11 @@
                 });
             } else {
                 console.error('Server responded with non-OK status');
-                study_group = 'static';
+                study_group = 'interactive';
             }
         }).catch((error) => {
             console.error('Error:', error);
-            study_group.set('static');
+            study_group.set('interactive');
         });
     });
 
@@ -172,11 +172,11 @@
             </p>
         </Step>
         <Step>
-            <h2 class="text-2xl">Study Introduction</h2>
+            <h2 class="text-2xl">Experiment Introduction</h2>
             <h3 class="text-xl">How will the model predict the risk level of different patients?</h3>
             <div class="container">
                 <h1>The experiment is structured as follows:</h1>
-                <ul>
+                <ol>
                     <li>Review one patient's information at a time and guess the ML model's decision.</li>
                     <li>{@html study_group_interactive_text}</li>
                     <li>When ready, proceed by clicking <span class="highlight">"Next"</span>.</li>
@@ -188,7 +188,7 @@
                         patient.
                     </li>
                     <li>Answer a few questions about your model understanding at the end.</li>
-                </ul>
+                </ol>
                 <p class="note">Here, the goal isn't to be right about whether someone has diabetes or not. It's all
                     about estimating what the model would predict based on the explanations you see.</p>
             </div>
@@ -278,11 +278,13 @@
                 <label for="familiarityML" class="label text-center">
                     <span>5) How familiar are you with machine learning and artificial intelligence?</span>
                     <select bind:value={fam_domain_val} class="select py-1">
-                        <option value="0">What is Artificial Intelligence?</option>
-                        <option value="1">I am aware where AI is used.</option>
-                        <option value="2">I actively use AI tools.</option>
-                        <option value="3">I know how AI is developed.</option>
-                        <option value="4">I am a AI researcher.</option>
+                        <option value="0">What is Artificial Intelligence (AI)?</option>
+                        <option value="1">I see AI in the news but its very foreign to me.</option>
+                        <option value="2">I see AI news and have an idea.</option>
+                        <option value="3">I am aware where AI is used.</option>
+                        <option value="4">I actively use AI tools.</option>
+                        <option value="5">I know how AI is developed.</option>
+                        <option value="6">I am a AI researcher.</option>
                     </select>
                 </label>
                 <label for="familiarityDomain">
@@ -307,9 +309,9 @@
         color: #444;
     }
 
-    ul {
+    ol {
         margin: 20px 0;
-        list-style-type: disc;
+        list-style-type: decimal;
     }
 
     li {
@@ -318,6 +320,6 @@
 
     .note {
         font-style: italic;
-        color: #555;
+        font-weight: bold;
     }
 </style>
