@@ -202,7 +202,6 @@
                 Before we begin, we would like to gather some information about you to ensure a diverse set
                 of participants and the representativeness of the study. <br
             /><br/>
-                <br/> <br/>
                 Please take a moment to answer the following questions:
             </p>
             <hr/>
@@ -211,11 +210,12 @@
                     <span>1) How old are you?</span><br/>
                     <select id="age" class="select w-32 py-1" bind:value={age}>
                         <option value="">- Select -</option>
-                        <option value="18-20">18-20</option>
-                        <option value="21-25">21-25</option>
-                        <option value="26-35">26-35</option>
-                        <option value="36-50">36-50</option>
-                        <option value="51+">51+</option>
+                        <option value="18-24">18-24 years old</option>
+                        <option value="25-34">25-34 years old</option>
+                        <option value="35-44">35-44 years old</option>
+                        <option value="45-54">45-54 years old</option>
+                        <option value="55-64">55-64 years old</option>
+                        <option value="65+">65+ years old</option>
                         <option value="anonymous">Prefer not to say</option>
                     </select>
                 </label>
@@ -246,58 +246,76 @@
                     {/if}
                 </label>
                 <label for="educationalBackground" class="label text-center col-span-1">
-                    <span> 3) What is your highest degree? </span>
+                    <span> 3) Which of the following best describes your educational background? </span>
                     <select class="select mb-8 py-1" id="educationalBackground" bind:value={degree}>
                         <option value="" selected>- Select -</option>
-                        <option value="high school">High School</option>
-                        <option value="bachelor">Bachelor</option>
-                        <option value="master">Master</option>
-                        <option value="doctor">Doctor</option>
+                        <option value="no degree">Did not complete high school</option>
+                        <option value="high school">High school graduate</option>
+                        <option value="college">Attended college but no degree</option>
+                        <option value="bachelor">Bachelor's degree</option>
+                        <option value="master">Master's degree</option>
+                        <option value="doctor">Doctoral degree</option>
                         <option value="anonymous">Prefer not to say</option>
                     </select>
                 </label>
-                <label for="educationalBackgroundField" class="label text-center col-span-1">
-                    <span> 4) What is your general field of studies? </span>
-                    <select
-                            class="select mb-8 py-1"
-                            id="educationalBackgroundField"
-                            bind:value={education_field}
-                    >
-                        <option value="" seelcted>- Select -</option>
-                        <option value="maths">Maths</option>
-                        <option value="cs">Computer Science</option>
-                        <option value="bio">Biology</option>
-                        <option value="economics">Economics</option>
-                        <option value="social">Social Sciences</option>
-                        <option value="anonymous">Prefer not to say</option>
-                        <option value="other">Other (describe below)</option>
-                    </select>
-                    {#if education_field === 'other'}
-                        <div>
-                            <input
-                                    type="text"
-                                    name="study_field_text"
-                                    id="study_field_text"
-                                    class="input py-1"
-                                    bind:value={education_field_other}
-                            />
-                        </div>
-                    {/if}
-                </label>
+                {#if degree === 'college' || degree === 'bachelor' || degree === 'master' || degree === 'doctor'}
+
+                    <label for="educationalBackgroundField" class="label text-center col-span-1">
+                        <span> What is your general field of studies? </span>
+                        <select
+                                class="select mb-8 py-1"
+                                id="educationalBackgroundField"
+                                bind:value={education_field}
+                        >
+                            <option value="" selected>- Select -</option>
+                            <option value="maths">Mathematics</option>
+                            <option value="cs">Computer Science</option>
+                            <option value="bio">Biological Sciences</option>
+                            <option value="economics">Economics</option>
+                            <option value="social">Social Sciences</option>
+                            <option value="physics">Physics</option>
+                            <option value="chemistry">Chemistry</option>
+                            <option value="arts">Arts and Humanities</option>
+                            <option value="engineering">Engineering and Technology</option>
+                            <option value="health">Health Sciences</option>
+                            <option value="environmental">Environmental Sciences</option>
+                            <option value="law">Law and Legal Studies</option>
+                            <option value="humanities">Humanities (including History, Philosophy, Literature)</option>
+                            <option value="business">Business and Management</option>
+                            <option value="education">Education</option>
+                            <option value="anonymous">Prefer not to say</option>
+                            <option value="other">Other (describe below)</option>
+                        </select>
+                        {#if education_field === 'other'}
+                            <div>
+                                <input
+                                        type="text"
+                                        name="study_field_text"
+                                        id="study_field_text"
+                                        class="input py-1"
+                                        bind:value={education_field_other}
+                                />
+                            </div>
+                        {/if}
+                    </label>
+                {/if}
                 <label for="familiarityML" class="label text-center">
-                    <span>5) How familiar are you with machine learning and artificial intelligence?</span>
+                    <span>4) Rate your level of familiarity with artificial intelligence (AI):</span>
                     <select bind:value={fam_domain_val} class="select py-1">
-                        <option value="0">I don't know anything about AI.</option>
-                        <option value="1">I know a bit about AI, but not in detail.</option>
-                        <option value="2">I know some things about AI, but I'm not an expert.</option>
-                        <option value="3">I work with AI.</option>
-                        <option value="4">I am an AI engineer.</option>
+                        <option value="0">Very low: I have little to no understanding of AI.</option>
+                        <option value="1">Low: I have basic knowledge but limited understanding of AI concepts.</option>
+                        <option value="2">Moderate: I have a fair understanding of AI concepts and its applications.
+                        </option>
+                        <option value="3">High: I am knowledgeable about AI and its various applications.</option>
+                        <option value="4">Very high: I am highly proficient in AI, with extensive knowledge and
+                            experience in its theory and applications.
+                        </option>
                         <option value="anonymous">Prefer not to say</option>
                     </select>
                 </label>
                 <label for="familiarityDomain">
 					<span>
-						6) What is your level of familiarity with the topic of diabetes diagnose?
+						5) What is your level of familiarity with the topic of diabetes diagnose?
 					</span>
                     <select bind:value={fam_ml_val} class="select py-1">
                         <option value="0">I do not know about the disease.</option>
