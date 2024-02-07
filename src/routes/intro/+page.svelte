@@ -168,7 +168,8 @@
                 <li><span class="flex-auto">- Skin Thickness: 0 mm</span></li>
             </ul>
             <p>
-                The model would give the prediction that this person is unlikely to have diabetes.
+                The model would give a prediction whether this person is <b>likely</b> or <b>unlikely</b> to have
+                diabetes.
             </p>
         </Step>
         <Step>
@@ -202,11 +203,6 @@
                 Before we begin, we would like to gather some information about you to ensure a diverse set
                 of participants and the representativeness of the study. <br
             /><br/>
-
-                Personal information (questions 1-4) will not be used to evaluate the results. It will
-                be anonymized and randomized, so that there is no way to link it back to you and your answers in the
-                study.
-
                 <br/> <br/>
                 Please take a moment to answer the following questions:
             </p>
@@ -214,7 +210,15 @@
             <div class="grid grid-cols-2 gap-8">
                 <label for="age" class="label text-center">
                     <span>1) How old are you?</span><br/>
-                    <input type="number" name="age" id="age" class="input w-32 py-1" bind:value={age}/>
+                    <select id="age" class="select w-32 py-1" bind:value={age}>
+                        <option value="">- Select -</option>
+                        <option value="18-20">18-20</option>
+                        <option value="21-25">21-25</option>
+                        <option value="26-35">26-35</option>
+                        <option value="36-50">36-50</option>
+                        <option value="51+">51+</option>
+                        <option value="anonymous">Prefer not to say</option>
+                    </select>
                 </label>
                 <label for="gender" class="label text-center">
                     <div>
@@ -250,6 +254,7 @@
                         <option value="bachelor">Bachelor</option>
                         <option value="master">Master</option>
                         <option value="doctor">Doctor</option>
+                        <option value="anonymous">Prefer not to say</option>
                     </select>
                 </label>
                 <label for="educationalBackgroundField" class="label text-center col-span-1">
@@ -265,6 +270,7 @@
                         <option value="bio">Biology</option>
                         <option value="economics">Economics</option>
                         <option value="social">Social Sciences</option>
+                        <option value="anonymous">Prefer not to say</option>
                         <option value="other">Other (describe below)</option>
                     </select>
                     {#if education_field === 'other'}
@@ -287,6 +293,7 @@
                         <option value="2">I know some things about AI, but I'm not an expert.</option>
                         <option value="3">I work with AI.</option>
                         <option value="4">I am an AI engineer.</option>
+                        <option value="anonymous">Prefer not to say</option>
                     </select>
                 </label>
                 <label for="familiarityDomain">
@@ -324,4 +331,5 @@
         font-style: italic;
         font-weight: bold;
     }
+
 </style>
