@@ -7,6 +7,11 @@
     const dispatch = createEventDispatcher();
 
     export let user_id;
+    export let feature_questions;
+    export let general_questions;
+
+    export let study_group;
+
     let user_correctness_string;
 
     onMount(async () => {
@@ -20,13 +25,51 @@
         'I understand the important attributes for a decision.',
         'I cannot distinguish between high risk and low risk patients.',
         'I understand how the ML model works.',
-        'I can select number 2 for this question to demonstrate my attention.',
+        'I can select minus two for this question.',
         'I did not understand how the ML model makes decisions.',
     ];
 
     let answers = Array(questions.length).fill(0);
 
+    // Change [current prediction] placeholder
+    general_questions = general_questions.map(question => {
+        question.question = question.question.replace('[current prediction]', 'the current prediction');
+        return question;
+    });
+
+    // Change [feature selection] placeholder
+    feature_questions = feature_questions.map(question => {
+        question.question = question.question.replace('[feature selection]', 'this feature');
+        return question;
+    });
+
+    // Combine the feature and general questions
+    let ttm_questions = [
+        ...general_questions,
+        ...feature_questions
+    ];
+
+    let selectedGeneralValues = new Array(general_questions.length).fill(null);
+    let selectedFeatureValues = new Array(feature_questions.length).fill(null);
+    let selectedValues = [];
+
     async function onComplete() {
+        //merge selectedGeneralValues and selectedFeatureValues
+        selectedValues = [...selectedGeneralValues, ...selectedFeatureValues];
+
+        // Save questions ranking
+        await fetch(`${base}/api/exit/questionnaire`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_id: user_id,
+                questions: ttm_questions,
+                answers: selectedValues,
+                questionnaire_name: 'question_ranking'
+            })
+        });
         // Save the answers when the user completes the questionnaire
         await fetch(`${base}/api/exit/questionnaire`, {
             method: 'POST',
@@ -48,15 +91,85 @@
 <div class="overlay">
     <div class="popup">
         <Stepper stepTerm="Step" on:complete={onComplete} buttonCompleteLabel="Continue Experiment">
+            {#if study_group === 'interactive'}
+                <Step>
+                    <h1 class="center-text text-xl">Please rank the questions based on their usefulness.</h1>
+                    <!-- General Questions -->
+                    <div class="flex flex-col my-[5px]">
+                        <h2>General Questions</h2>
+                        {#each general_questions as question, index}
+                            <div class="flex my-[5px]">
+                                <select bind:value={selectedGeneralValues[index]}
+                                        on:change={(e) => {
+                                        const value = e.target.value;
+                                        if (value) {
+                                            selectedValues = [...selectedValues, value];
+                                        } else {
+                                            selectedValues = selectedValues.filter(val => val !== value);
+                                        }
+                                    }}
+                                        class="rounded-lg bg-[whitesmoke] cursor-pointer mx-2 my-[5px] px-5 py-3.5 border-2">
+                                    <option value="">Select a rank</option>
+                                    {#each Array(ttm_questions.length).fill().map((_, i) => i + 1) as rank}
+                                        <option value={rank}
+                                                disabled={selectedValues.includes(rank.toString())}>{rank}</option>
+                                    {/each}
+                                </select>
+                                <button
+                                        data-value={question.id}
+                                        type="button"
+                                        class="btn variant-ghost-primary left-aligned-button">
+                                    {question.question}
+                                </button>
+                            </div>
+                        {/each}
+                    </div>
+
+                    <!-- Feature Questions -->
+                    <div class="flex flex-col my-[5px]">
+                        <h2>Attribute Related Questions</h2>
+                        {#each feature_questions as question, index}
+                            <div class="flex my-[5px]">
+                                <select bind:value={selectedFeatureValues[index]}
+                                        on:change={(e) => {
+                                        const value = e.target.value;
+                                        if (value) {
+                                            selectedValues = [...selectedValues, value];
+                                        } else {
+                                            selectedValues = selectedValues.filter(val => val !== value);
+                                        }
+                                    }}
+                                        class="rounded-lg bg-[whitesmoke] cursor-pointer mx-2 my-[5px] px-5 py-3.5 border-2">
+                                    <option value="">Select a rank</option>
+                                    {#each Array(ttm_questions.length).fill().map((_, i) => i + 1) as rank}
+                                        <option value={rank}
+                                                disabled={selectedValues.includes(rank.toString())}>{rank}</option>
+                                    {/each}
+                                </select>
+                                <button
+                                        data-value={question.id}
+                                        type="button"
+                                        class="btn variant-ghost-primary left-aligned-button">
+                                    {question.question}
+                                </button>
+                            </div>
+                        {/each}
+                    </div>
+                </Step>
+            {/if}
             <Step>
                 <h2 class="text-2xl">You are done with the initial phase where you had the possibility to learn about
-                    the model decision.<br> You correctly answered {user_correctness_string} of the test cases.</h2>
+                    the model decision.
+                    <br>
+                    You <b>correctly answered {user_correctness_string}</b> of the test cases.</h2>
+            </Step>
+            <Step>
                 <p class="text-center text-xl">
                     How would you rate your understanding of the model decision process? <br>
                 </p>
 
                 {#each questions as question, i}
-                    <div class="flex">
+                    <div class="slider-flex">
                         <div class="question-column">
                             <span class="question align-middle">
                                 {question}
@@ -64,13 +177,13 @@
                         </div>
                         <div class="slider-column">
                             <RangeSlider name="range-slider" bind:value={answers[i]} min={-3} max={3} step={1} ticked>
-                                <div class="flex justify-between items-center">
+                                <div class="slider-flex justify-between items-center">
                                     <div class="text-xs">Strongly Disagree</div>
                                     <div class="text-xs">Neither agree nor disagree</div>
                                     <div class="text-xs">Strongly Agree</div>
                                 </div>
                             </RangeSlider>
-                            <div class="labels flex justify-between">
+                            <div class="labels slider-flex justify-between">
                                 <span class="small-text">-3</span>
                                 <span class="small-text">-2</span>
                                 <span class="small-text">-1</span>
@@ -85,8 +198,10 @@
             </Step>
             <Step>
                 <p class="text-center text-xl">
-                    Now, as a last activity, you will see new patients and will be asked to make a decision whether
-                    they are high or low risk patients. <br>
+                    Almost done!<br> <br>
+
+                    As a last activity, you will see new patients and will be asked to make a decision whether
+                    they are high or low risk patients. You will not see explanations.<br>
                 </p>
             </Step>
         </Stepper>
@@ -120,6 +235,12 @@
 
     .flex {
         display: flex;
+        justify-content: flex-start;
+        margin-bottom: 20px; /* adjust this value to create more space between the rows */
+    }
+
+    .slider-flex {
+        display: flex;
         justify-content: space-between;
         margin-bottom: 20px; /* adjust this value to create more space between the rows */
         border-bottom: 1px solid #000; /* add a bottom border to each row */
@@ -139,4 +260,14 @@
     .text-center {
         margin-bottom: 30px; /* adjust this value to create more space */
     }
+
+    /* Style the selection field like tailwind */
+    select {
+        @apply rounded-lg bg-[whitesmoke] cursor-pointer mx-0 my-[5px] px-5 py-3.5 border-2;
+    }
+
+    .left-aligned-button {
+        align-self: flex-start;
+    }
+
 </style>

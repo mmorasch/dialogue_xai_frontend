@@ -13,6 +13,7 @@
     let counterfactuals = static_report.counterfactuals;
     let anchors = static_report.anchors;
     let feature_statistics = static_report.feature_statistics;
+    let ceteris_paribus = static_report.ceteris_paribus;
 
     async function next(e: any) {
         e.preventDefault();
@@ -28,14 +29,14 @@
 
     <main class="flex-1 overflow-y-auto h-full p-3">
         <h1>Prediction</h1>
-        <h3>The model predicts <i>{model_prediction}</i> for the current {instance_type}. Here are
+        <h3>The model predicts <b>{model_prediction}</b> for the current {instance_type}. Here are
             explanations for the prediction:</h3>
         <div class="grid-container">
-
             <div class="grid-item" style="grid-area: area1;">
                 <br>
                 <h1>1. Attribute Ranking</h1>
-                <h3>The <b>importance of the features</b> for the decision are the following, where the importance score is on the x-axis:</h3>
+                <h3>Each <b>attribute has a contribution</b> to the decision. The attributions are of different
+                    strengths and can contribute toward the prediction of likely or unlikely. The strength is shown on the x-axis:</h3>
                 <div class="feature-importance-plot">
                     {@html feature_importance}
                 </div>
@@ -44,14 +45,14 @@
             <div class="grid-item" style="grid-area: area2;">
                 <br>
                 <h1>2. Alternative Scenarios</h1>
-                <h3>The model would predict <i>{opposite_class}</i> if the following features were changed:</h3>
+                <h3>The model would predict <b>{opposite_class}</b> if the following features were changed:</h3>
                 <p>{@html counterfactuals}</p>
             </div>
 
             <div class="grid-item" style="grid-area: area3;">
 
                 <h1>3. Attribute Ranges</h1>
-                <div class="table-container w-[80%] mx-auto">
+                <div class="table-container w-[80%]">
                     <table class="table table-hover">
                         <thead>
                         <tr>
@@ -85,14 +86,21 @@
 
             <div class="grid-item" style="grid-area: area4;">
                 <br>
-                <h1>4. Changes not impacting the prediction</h1>
+                <h1>4. Changes not impacting the prediction</h1><br>
                 <h3>As long as the following conditions apply, the model will predict
-                    <i>{model_prediction}</i>:</h3>
+                    <b>{model_prediction}</b>:</h3>
                 <p>{@html anchors}</p>
             </div>
 
+            <div class="grid-item" style="grid-area: area5;">
+                <br>
+                <h1>5. What would happen to this patient if individual attributes were higher or lower?</h1><br>
+                {#each ceteris_paribus as statement}
+                    <p>{@html statement}</p> <br>
+                {/each}
+            </div>
 
-            <div class="grid-item" style="grid-area: area4;">
+            <div class="grid-item" style="grid-area: area5;">
                 <input class=""
                        type="submit"
                        value="Proceed"
@@ -100,7 +108,7 @@
                        on:click|preventDefault={next}
                 />
             </div>
-        </div>
+            </div>
     </main>
 </div>
 
@@ -122,14 +130,14 @@
 
 
     .feature-importance-plot {
-        width: 80%; /* adjust this value to change the width of the image */
+        width: 50%; /* adjust this value to change the width of the image */
         height: auto; /* this will maintain the aspect ratio of the image */
     }
 
     .grid-container {
         display: grid;
         grid-template-areas:
-    "area1" "area2" "area3" "area4";
+    "area1" "area2" "area3" "area4" "area5";
         grid-gap: 10px; /* adjust this value to change the gap between grid items */
     }
 

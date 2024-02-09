@@ -45,7 +45,7 @@
     }
 
     // Create Answer Array
-    let answers = new Array(11).fill(0);
+    let answers = new Array(shuffled_questions.length).fill(0);
 
     // Save Answers to Database
     async function onComplete() {
@@ -72,7 +72,6 @@
 <div>
     <!-- https://www.skeleton.dev/components/steppers -->
     <Stepper {currentStep} stepTerm="Questions" on:step={onNext} on:complete={onComplete}>
-        <!-- Step 1 -->
         {#each chunks as chunk, chunkIndex}
             <Step>
                 <h1 class="center-text text-xl">Please answer the following questions and give us feedback to

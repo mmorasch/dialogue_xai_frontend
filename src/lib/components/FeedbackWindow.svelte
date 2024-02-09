@@ -32,7 +32,7 @@
     }
 
     .feedback-textarea {
-        width: 100%;
+        width: 80vh;
         max-width: 100%;
         height: 15vw;
         padding: 10px;

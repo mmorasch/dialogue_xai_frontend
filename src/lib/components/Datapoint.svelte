@@ -16,35 +16,34 @@
 </script>
 
 <div class="table-container w-[90%] mx-auto">
-  <table class="table table-hover">
-    <thead>
-      <tr>
-        {#each header as col, i}
-        <th>{col}</th>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            {#each header as col, i}
+                <th>{col}</th>
+            {/each}
+        </tr>
+        </thead>
+        <tbody>
+        {#each body as row, rowIndex}
+            <tr>
+                {#each row as col, colIndex}
+                    <td>
+                        {#if colIndex === 0}
+                            <span>{feature_names[rowIndex]?.feature_name}</span>
+                            {#if feature_tooltips[col.toLowerCase()]}
+                                <TooltipIcon class="tooltipIcon" message={feature_tooltips[col.toLowerCase()]}/>
+                            {/if}
+                        {:else}
+                            <span>{col} {feature_units[firstColumnValues[rowIndex]?.toLowerCase()]}</span>
+                        {/if}
+                    </td>
+                {/each}
+            </tr>
         {/each}
-      </tr>
-    </thead>
-    <tbody>
-      {#each body as row, rowIndex}
-      <tr>
-        {#each row as col, colIndex}
-        <td>
-          {#if colIndex === 0}
-          <span>{feature_names[rowIndex]?.feature_name}</span>
-          {#if feature_tooltips[col.toLowerCase()]}
-          <TooltipIcon message={feature_tooltips[col.toLowerCase()]} />
-          {/if}
-          {:else}
-          <span>{col} {feature_units[firstColumnValues[rowIndex]?.toLowerCase()]}</span>
-          {/if}
-        </td>
-        {/each}
-      </tr>
-      {/each}
-    </tbody>
-  </table>
+        </tbody>
+    </table>
 </div>
-
 
 
 <style lang="postcss">
@@ -55,5 +54,9 @@
     /* Ensuring the tooltip is not clipped */
     .table-container, .table {
         overflow: visible;
+    }
+
+    .tooltipIcon {
+        margin: 20px; /* Adjust as needed */
     }
 </style>

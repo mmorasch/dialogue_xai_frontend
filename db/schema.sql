@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS users (
   logs jsonb DEFAULT '{}',
   questionnaires jsonb DEFAULT '{}',
   feedback jsonb DEFAULT '{}',
-  completed BOOLEAN DEFAULT FALSE
+  completed BOOLEAN DEFAULT FALSE,
+    matrik_num VARCHAR(255)
 );
 
 CREATE TABLE IF NOT EXISTS events (

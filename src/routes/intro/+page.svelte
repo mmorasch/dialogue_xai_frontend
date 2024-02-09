@@ -2,22 +2,23 @@
     import {goto} from '$app/navigation';
     import {base} from '$app/paths';
     import {Step, Stepper} from '@skeletonlabs/skeleton';
-    import {generateSlug} from 'random-word-slugs';
     import {onMount} from 'svelte';
     import {PUBLIC_TEACH_TEST_CYCLES} from "$env/static/public";
+    import {v4 as uuidv4} from 'uuid';
 
-    let gender: string = 'm';
-    let gender_self_identify = '';
+    let gender: string;
+    let gender_self_identify: string;
     let age: string;
     let degree: string;
     let education_field: string;
-    let education_field_other = 0;
-    let fam_ml_val = 0;
-    let fam_domain_val = '';
-    let max: number = 5;
-    let matrikelnummer: number; //TODO: Include matrikelnummer in the form
+    let education_field_other: string;
+    let english_speaking_level: string;
+    let fam_ml_val: number;
+    let fam_domain_val: number;
+    let matrikelnummer: string;
     let consent_given: boolean = false;
     let pdfPath = `${base}/Consent.pdf`;
+    const user_id = uuidv4();
 
     let study_group: any;
     onMount(() => {
@@ -33,11 +34,11 @@
                 });
             } else {
                 console.error('Server responded with non-OK status');
-                study_group = 'interactive';
+                study_group = 'static';
             }
         }).catch((error) => {
             console.error('Error:', error);
-            study_group.set('interactive');
+            study_group.set('static');
         });
     });
 
@@ -64,8 +65,6 @@
             }
         }
 
-        const user_id = generateSlug();
-
         let profile_data = {
             gender: gender,
             gender_self_identify: gender_self_identify,
@@ -74,8 +73,10 @@
             education_field: education_field,
             education_field_other: education_field_other,
             fam_ml_val: fam_ml_val,
-            fam_domain_val: fam_domain_val
+            fam_domain_val: fam_domain_val,
+            english_speaking_level: english_speaking_level
         };
+
         fetch(`${base}/api/setup`, {
             method: 'POST',
             headers: {
@@ -84,38 +85,39 @@
             body: JSON.stringify({
                 user_id: user_id,
                 profile_data: profile_data,
-                study_group: study_group
+                study_group: study_group,
+                matrikelnummer: matrikelnummer
             })
         });
         goto(`${base}/experiment?user_id=${user_id}&sg=${study_group}`);
     }
 
     let study_group_interactive_text =
-        'Get familiar with the ML\'s prediction in an <b>interactive chatbot</b>.';
+        'Get familiar with the ML model\'s prediction in an <b>interactive chatbot</b>.';
 
     let study_group_static_text =
-        'Get familiar with the ML\'s prediction in an <b>explanation report</b>.';
+        'Get familiar with the ML model\'s prediction in an <b>explanation report</b>.';
 </script>
 
 <div class="col-start-2 col-end-2 space-y-4 p-2 sm:p-2 md:space-y-6">
-    <h1 class="text text-4xl">Dear Participant, welcome to the study!</h1>
+    <h1 class="text text-4xl">Welcome!</h1>
     <!-- https://www.skeleton.dev/components/steppers -->
     <Stepper buttonCompleteLabel="Start Experiment" on:complete={onComplete}>
         <Step>
             <p>
-                Welcome to our study on understanding the decision process of Artificial Intelligence (AI) models
+                This is a study on <b>understanding the decision process of Artificial Intelligence (AI) models</b>
                 which takes about 20 minutes. It is designed as part of a large research project
                 that seeks to improve understanding between AI Systems (i.e. Machine learning models) and humans.<br/>
             </p>
 
             <p class="m my-12">
-                Upon successful completion, you will get 3 extra Points in the final Exam. <br/><br/>
+                Upon successful completion, you will get <b>3 extra points in the final exam</b>. <br/><br/>
 
                 Thank you for your participation! <br/><br/>
 
                 Sincerely, <br/><br/>
 
-                Dimitry Mindlin, PhD Candidate, University of Bielefeld
+                <b>Dimitry Mindlin</b>, Bielefeld University
             </p>
         </Step>
         <Step locked={!consent_given}>
@@ -123,7 +125,7 @@
                 Please read the consent form and agree to participate in the study.
             </p>
             <iframe title="Consent Form" src={pdfPath} width="100%" height="500vh">
-                    This browser does not support PDFs. Please download the PDF to view it.
+                This browser does not support PDFs. Please download the PDF to view it.
             </iframe>
             <div style="display: flex; align-items: center;">
                 <label for="consent" style="margin-right: 10px;">I read and understood the consent form and agree to
@@ -134,82 +136,109 @@
         </Step>
         <Step>
             <h2 class="text-2xl">
-                Welcome to the world of Artificial Intelligence (AI) that impacts the daily life of people -
-                in diabetes diagnosis!
+                AI predictions in disease diagnosis
             </h2>
             <p>
                 Have you ever considered the impact of AI and machine learning in the healthcare sector,
-                particularly in diagnosing chronic diseases like diabetes? This is where the innovative world of
-                machine learning shows its true potential. <br/><br/>
+                particularly in <b>diagnosing chronic diseases like diabetes</b>? This is where the world of
+                machine learning shows its potential. <br/><br/>
 
-                In this exploration, you will discover how machine learning models are employed to analyze extensive
-                health data to predict the likelihood of diabetes in individuals. These models act as high-tech
-                analysts, scrutinizing a person's medical history and lifestyle factors to make accurate diagnoses.
-                <br/><br/>
-
-                By examining variables such as age, weight and blood sugar levels, these AI systems identify patterns
-                and can now more accurately predict the risk of diabetes in patients, aiding in early detection and
-                management of the condition.<br/>
-
+                In this experiment, you will <b>discover how machine learning models work</b> when predicting the
+                likelihood of diabetes in individual patients. These models act as high-tech analysts, checking a <b>patient's
+                medical history and lifestyle factors to make diagnoses</b>.
                 <br/>
             </p>
         </Step>
         <Step>
-            <p>For example, given a person with the following information (attributes):</p>
+            <h2 class="text-2xl">
+                Concrete Example
+            </h2>
+            <p>For example, given a person with the following information (called attributes):</p>
             <ul class="list">
                 <li><span class="flex-auto">- Age: 34 </span></li>
                 <li><span class="flex-auto">- BMI: 24.6</span></li>
                 <li><span class="flex-auto">- Blood Pressure: 80 mmHg</span></li>
                 <li><span class="flex-auto">- Diabetes Pedigree Function: 0.856</span></li>
                 <li><span class="flex-auto">- Glucose Level: 107 mg/dL</span></li>
-                <li><span class="flex-auto">- Insulin Level: 0 µU/mL</span></li>
+                <li><span class="flex-auto">- Insulin Level: 3 µU/mL</span></li>
                 <li><span class="flex-auto">- Number of Pregnancies: 8</span></li>
-                <li><span class="flex-auto">- Skin Thickness: 0 mm</span></li>
+                <li><span class="flex-auto">- Skin Thickness: 7 mm</span></li>
             </ul>
             <p>
-                The model would give a prediction whether this person is <b>likely</b> or <b>unlikely</b> to have
+                The model would give a <b>prediction</b> whether this person is <b>likely</b> or <b>unlikely</b> to have
                 diabetes.
             </p>
         </Step>
         <Step>
-            <h2 class="text-2xl">Experiment Introduction</h2>
-            <h3 class="text-xl">How will the model predict the risk level of different patients?</h3>
+            <h2 class="text-2xl">Experiment Introduction - How will the model predict the risk level of different
+                patients?</h2>
             <div class="container">
                 <h1>The experiment is structured as follows:</h1>
                 <ol>
-                    <li>Review one patient's information at a time and guess the ML model's decision.</li>
+                    <li><b style="color: green;">Learning Phase:</b> Review one patient's information at a time and
+                        guess the ML model's decision.
+                    </li>
                     {#if study_group === 'interactive'}
                         <li>{@html study_group_interactive_text}</li>
                     {:else}
                         <li>{@html study_group_static_text}</li>
                     {/if}
-                    <li>When ready, proceed by clicking <span class="highlight">"Next"</span>.</li>
-                    <li>Predict the outcome for a new patient based on your understanding. This time, without seeing
-                        explanations.
+                    <li>When you feel that you understand the reason for the models decision, proceed by clicking <b>Proceed</b>.
                     </li>
-                    <li>Complete this process for a total of <span class="highlight">{PUBLIC_TEACH_TEST_CYCLES}
-                        patient pairs </span> where you first learn and then guess the model prediction for a new
-                        patient.
+                    <li><b style="color: purple;">Testing Phase:</b> Predict the outcome for a new patient based on your
+                        understanding. For this new patient, you will not
+                        receive the model's prediction or explanations, since it is a test of your understanding.
+                    </li>
+                    <li>Complete this process for a total of <b>{PUBLIC_TEACH_TEST_CYCLES}
+                        learning-testing patient pairs </b>.
                     </li>
                     <li>Answer a few questions about your model understanding at the end.</li>
                 </ol>
-                <p class="note">Here, the goal isn't to be right about whether someone has diabetes or not. It's all
-                    about estimating what the model would predict based on the explanations you see.</p>
             </div>
         </Step>
         <Step>
+            <h2 class="text-2xl">General Information</h2>
+            <p class="note">Attention: The goal isn't to be right about whether someone is likely to have diabetes
+                or not. It's all
+                about estimating what the model would predict based on the explanations you see.</p>
+            <br>
             <p>
-                Before we begin, we would like to gather some information about you to ensure a diverse set
-                of participants and the representativeness of the study. <br
+                Do not use the browser's back button during the experiment. This will cause the experiment to restart.
+                <br>
+                <br>
+            </p>
+        </Step>
+        <Step>
+            <h2 class="text-2xl">Ensuring your experiment data can be deleted</h2>
+            <p>
+                To ensure the <b>deletion of your experiment data</b>, please keep this unique experiment ID:
+                <br>
+                {user_id}
+                <br><br>
+                We value your privacy; so, your <b>student number is anonymized and not stored</b> with your data.
+                This ID is essential for us to identify and delete your data upon request.
+                It's crucial to <b>save this ID in a secure location</b>, as we will be unable to process deletion
+                requests without it.
+            </p>
+        </Step>
+        <Step>
+            <h2 class="text-2xl">Your Information</h2>
+            <p>
+                Before we begin, we would like to gather some information about you assess the representativeness of the
+                study. <br
             /><br/>
                 Please take a moment to answer the following questions:
             </p>
             <hr/>
             <div class="grid grid-cols-2 gap-8">
+                <label for="matrikelnummer" class="label text-center">
+                    <span>Student number - needed to grant you points .</span><br/>
+                    <input id="matrikelnummer" class="input w-32 py-1" bind:value={matrikelnummer}/>
+                </label>
                 <label for="age" class="label text-center">
                     <span>1) How old are you?</span><br/>
                     <select id="age" class="select w-32 py-1" bind:value={age}>
-                        <option value="">- Select -</option>
+                        <option value="" selected>- Select -</option>
                         <option value="18-24">18-24 years old</option>
                         <option value="25-34">25-34 years old</option>
                         <option value="35-44">35-44 years old</option>
@@ -224,7 +253,7 @@
                         <label class="label" for="gender-select">
                             <span>2) Gender: How do you identify? </span>
                             <select class="select py-1" name="gender" id="gender-select" bind:value={gender}>
-                                <option value="">- Select -</option>
+                                <option value="" selected>- Select -</option>
                                 <option value="man">Man</option>
                                 <option value="non-binary">Non-Binary</option>
                                 <option value="woman">Woman</option>
@@ -280,7 +309,8 @@
                             <option value="health">Health Sciences</option>
                             <option value="environmental">Environmental Sciences</option>
                             <option value="law">Law and Legal Studies</option>
-                            <option value="humanities">Humanities (including History, Philosophy, Literature)</option>
+                            <option value="humanities">Humanities (including History, Philosophy, Literature)
+                            </option>
                             <option value="business">Business and Management</option>
                             <option value="education">Education</option>
                             <option value="anonymous">Prefer not to say</option>
@@ -301,9 +331,11 @@
                 {/if}
                 <label for="familiarityML" class="label text-center">
                     <span>4) Rate your level of familiarity with artificial intelligence (AI):</span>
-                    <select bind:value={fam_domain_val} class="select py-1">
+                    <select bind:value={fam_ml_val} class="select py-1">
+                        <option value="" selected>- Select -</option>
                         <option value="0">Very low: I have little to no understanding of AI.</option>
-                        <option value="1">Low: I have basic knowledge but limited understanding of AI concepts.</option>
+                        <option value="1">Low: I have basic knowledge but limited understanding of AI concepts.
+                        </option>
                         <option value="2">Moderate: I have a fair understanding of AI concepts and its applications.
                         </option>
                         <option value="3">High: I am knowledgeable about AI and its various applications.</option>
@@ -317,11 +349,26 @@
 					<span>
 						5) What is your level of familiarity with the topic of diabetes diagnose?
 					</span>
-                    <select bind:value={fam_ml_val} class="select py-1">
+                    <select bind:value={fam_domain_val} class="select py-1">
+                        <option value="" selected>- Select -</option>
                         <option value="0">I do not know about the disease.</option>
                         <option value="1">I briefly know about the disease.</option>
                         <option value="2">I know the symptoms of the disease.</option>
                         <option value="3">I know how the disease is diagnosed.</option>
+                    </select>
+                </label>
+                <label for="englishSpeakingLevel">
+                    <span>
+                        6) What is your level of English speaking?
+                    </span>
+                    <select bind:value={english_speaking_level} class="select py-1">
+                        <option value="" selected>- Select -</option>
+                        <option value="0">Very low: I have little to no understanding of English.</option>
+                        <option value="1">Low: I can understand basic English but have difficulty speaking.</option>
+                        <option value="2">Moderate: I can understand and speak English fairly well.</option>
+                        <option value="3">High: I am fluent in English.</option>
+                        <option value="4">Very high: English is my first language.</option>
+                        <option value="anonymous">Prefer not to say</option>
                     </select>
                 </label>
             </div>
@@ -331,9 +378,6 @@
 
 
 <style>
-    h1 {
-        color: #444;
-    }
 
     ol {
         margin: 20px 0;
@@ -345,8 +389,28 @@
     }
 
     .note {
-        font-style: italic;
         font-weight: bold;
     }
+
+    .notification {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+
+    .content {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+    }
+
 
 </style>

@@ -21,28 +21,31 @@
     export let feature_tooltips: { [key: string]: string };
     export let feature_units: { [key: string]: string };
     export let prediction_question =
-        'Will the model assign a likely or unlikely Risk for diabetes for the patient?';
+        'Will the model predict that the patient is likely or unlikely to have diabetes?';
 
     export let teaching_intro = "";
     if (interactiveOrStatic === 'static') {
-        teaching_intro = "Guess the patients likelihood of diabetes. Afterward you can read the explanations to understand the prediction.";
+        teaching_intro = "Guess whether the patient is likely to have diabetes. Afterward you can read the explanations to understand the prediction.";
     } else {
-        teaching_intro = "Guess the patients risk and ask questions to understand the model's prediction.";
+        teaching_intro = "Guess whether the patient is likely to have diabetes. Afterward you can ask questions to understand the model's prediction.";
     }
 
     export let test_intro =
-        "Test your knowledge about the model. Based on what you learned before, what do you think the model will predict for this patient? This time you cannot ask questions.";
+        "<b>Test your knowledge</b> about the model. Based on what you learned before, what do you think the model will predict for this patient? <b>You will not receive \n" +
+        "explanations this time.</b>";
+
+    export let final_test_intro =
+        "<b>Final test of your knowledge</b> about the model. Based on what you learned before, what do you think the model will predict for this patient? <b>You will not receive \n" +
+        "explanations this time.</b>";
 
     export let datapoint_count: number | null = null;
 
     export let user_id: string | null = null;
 
     const options = [
-        'Surely Likely',
-        'Rather Likely',
-        "I don't know",
-        'Rather Unlikely',
-        'Surely Unlikely'
+        'Likely to have diabetes',
+        'Unlikely to have diabetes',
+        'I do not know',
     ];
 
     // get event categories
@@ -129,12 +132,17 @@
     {/if}
 
     <div class="content-align">
-        <h2 style="text-align: center">Task</h2>
         {#if testOrTeaching === 'test'}
-            <p class="mb-3">{test_intro}</p>
+            <h2 style="text-align: center; color: purple;">Testing Phase</h2>
+            <p class="mb-3">{@html test_intro}</p>
         {/if}
-        {#if testOrTeaching === 'teaching' || testOrTeaching === 'final-test'}
-            <p class="mb-3">{teaching_intro}</p>
+        {#if testOrTeaching === 'teaching'}
+            <h2 style="text-align: center; color: green;">Learning Phase</h2>
+            <p class="mb-3">{@html teaching_intro}</p>
+        {/if}
+        {#if testOrTeaching === 'final-test'}
+            <h2 style="text-align: center; color: purple;">Final Testing Phase</h2>
+            <p class="mb-3">{@html final_test_intro}</p>
         {/if}
         <h2 style="text-align: center">Patient Information</h2>
     </div>
@@ -160,7 +168,7 @@
             <form>
                 <div class="mt-6">
                     <h2 style="text-align: center">Make a prediction</h2>
-                    <p class="mb-3">{prediction_question}</p>
+                    <p class="mb-3 center-text">{prediction_question}</p>
                     <div class="variant-ghost-surface w-fit mx-auto">
                         <ListBox
                                 active="variant-filled-primary"
@@ -214,4 +222,5 @@
         font-size: 20px;
         font-weight: bold;
     }
+
 </style>

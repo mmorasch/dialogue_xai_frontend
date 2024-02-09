@@ -32,16 +32,22 @@
 </script>
 
 <div class="center-page">
-    {#if user_id}
-        <h1 class="center-text text-xl">Thank you for the participation!</h1>
-        <h2>Since this is the prestudy, please leave any opinion and your name here so we can talk and I can link the
-            experiment results to you for further analysis together. :)</h2>
-        <FeedbackWindow
-                placeholder="Please leave any opinion and your name here..."
-                submitLabel="End Experiment"
-                on:feedbackSubmit={handleFeedbackSubmit}
-        />
-    {/if}
+    <h1 class="center-text text-xl">Thank you for your participation!</h1>
+
+        <h2 class="center-text text-xl">
+        By participating, you help to bridge the gap between AI and humans. <br>
+        With our research project we aim to understand how different people understand the <br>
+        predictions of machine learning models in order to foster trust and transparency. <br> <br></h2>
+
+    <h2 class="center-text">Please leave any additional opinion about the experiment :)</h2>
+    <FeedbackWindow
+            placeholder="To me, the experiment..."
+            submitLabel="End Experiment"
+            on:feedbackSubmit={handleFeedbackSubmit}
+    />
+
+    <h2>You can contact me in case you have any questions: <br>
+        <b>dimitry.mindlin@uni-bielefeld.de</b> <br></h2>
 </div>
 
 
@@ -56,7 +62,6 @@
         justify-content: center;
         align-items: center;
         flex-direction: column;
-        height: 100vh;
         width: 100vw;
         margin: 5vh;
     }

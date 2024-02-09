@@ -76,7 +76,6 @@ export async function saveQuestionnaireAnswers(
 
 export async function logFinalFeedback(userId: string, feedback: string) {
     const timestamp = new Date().toISOString();
-    logCompleted(userId);
     return await sql`
         UPDATE users
         SET feedback = feedback || ${JSON.stringify(
@@ -94,5 +93,42 @@ export async function logCompleted(userId: string) {
     `;
 }
 
+export async function createUniParticipant(matrikulation_num: string) {
+    return await sql`
+        INSERT INTO user_completed (matrik_num)
+        VALUES (${matrikulation_num})
+    `;
+}
 
+export async function setMatrikNum(userId: string, matrikulation_num: string) {
+    return await sql`
+        UPDATE users
+        SET matrik_num = ${matrikulation_num}
+        WHERE id = ${userId}
+    `;
+}
 
+export async function getMatrikNum(userId: string) {
+    const result = await sql`
+        SELECT matrik_num
+        FROM users
+        WHERE id = ${userId}
+    `;
+    return result[0].matrik_num;
+}
+
+export async function deleteMatrikNum(userId: string) {
+    return await sql`
+        UPDATE users
+        SET matrik_num = NULL
+        WHERE id = ${userId}
+    `;
+}
+
+export async function assignFinishedUniParticipant(matrikulation_num: string) {
+    return await sql`
+        UPDATE user_completed
+        SET completed = true
+        WHERE matrik_num = ${matrikulation_num}
+    `;
+}

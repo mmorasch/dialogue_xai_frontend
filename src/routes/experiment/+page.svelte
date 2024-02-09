@@ -82,7 +82,7 @@
         let text = ((): string => {
             for (let i = 0; i < general_questions.length; i++) {
                 if (general_questions[i].id === question) {
-                    full_question = general_questions[i].question.replace('[current prediction]', '<i>' + current_prediction + '</i>');
+                    full_question = general_questions[i].question.replace('[current prediction]', '<b>' + current_prediction + '</b>');
                     const details = {
                         datapoint_count: datapoint_count,
                         question: full_question,
@@ -264,7 +264,7 @@
         const details = {
             datapoint_count: datapoint_count,
             buttonType: buttonType,
-            messageId: messageId,
+            question_id: messageId,
             user_comment: user_comment
         };
         fetch(`${base}/api/log_event`, {
@@ -283,8 +283,7 @@
 </script>
 
 {#if $popupVisible}
-    <Popup {user_id} on:confirm={handleConfirm}/>
-
+    <Popup {user_id} {feature_questions} {general_questions} {study_group} on:confirm={handleConfirm}/>
 {:else}
     <div class={test_or_teaching === 'teaching' ? "col-start-1 col-end-2" : "col-start-2 col-end-3"}>
         <TTMDatapoint
