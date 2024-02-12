@@ -113,7 +113,8 @@
             </p>
 
             <p class="m my-12">
-                Upon successful completion, and passing of the final exam, you will get <b>3 extra points in the final exam</b>. <br/><br/>
+                Upon successful completion, and passing of the final exam, you will get <b>3 extra points in the final
+                exam</b>. <br/><br/>
 
                 Thank you for your participation! <br/><br/>
 
@@ -134,11 +135,24 @@
                     participate in the study.</label>
                 <input type="checkbox" id="consent" bind:checked={consent_given}/>
             </div>
-
+        </Step>
+        <Step>
+            <h2 class="text-2xl">Your Experiment ID</h2>
+            <p>
+                Please <b>keep your experiment ID</b> for future reference. <br>
+                You will need it to <b>prove your experiment participation in case of errors</b> and to
+                delete your data from the study if you wish.
+                <br><br>
+                {user_id}
+                <br><br>
+                We value your privacy; so, your <b>student number will be anonymized and not stored</b> with your
+                experiment data.
+                This ID is essential for us to identify and delete your data upon request.
+            </p>
         </Step>
         <Step>
             <h2 class="text-2xl">
-                AI predictions in disease diagnosis
+                Experiment topic: Understanding AI predictions in disease diagnosis
             </h2>
             <p>
                 Have you ever considered the impact of AI and machine learning in the healthcare sector,
@@ -177,8 +191,8 @@
             <div class="container">
                 <h1>The experiment is structured as follows:</h1>
                 <ol>
-                    <li><b style="color: green;">Learning Phase:</b> Review one patient's information at a time and
-                        guess the ML model's decision.
+                    <li><b style="color: green;">Learning Phase:</b> Given one patient's information at a time,
+                        <b>guess the Machine Learning model's decision</b>.
                     </li>
                     {#if study_group === 'interactive'}
                         <li>{@html study_group_interactive_text}</li>
@@ -187,14 +201,14 @@
                     {/if}
                     <li>When you feel that you understand the reason for the models decision, proceed by clicking <b>Proceed</b>.
                     </li>
-                    <li><b style="color: purple;">Testing Phase:</b> Predict the outcome for a new patient based on your
-                        understanding. For this new patient, you will not
-                        receive the model's prediction or explanations, since it is a test of your understanding.
+                    <li><b style="color: purple;">Testing Phase:</b> Guess the model prediction for a new patient based on your
+                        understanding. For this <b>new patient, you will not
+                        receive the model's prediction or explanations</b>, since it is a test of your understanding.
                     </li>
                     <li>Complete this process for a total of <b>{PUBLIC_TEACH_TEST_CYCLES}
                         learning-testing patient pairs </b>.
                     </li>
-                    <li>Answer a few questions about your model understanding at the end.</li>
+                    <li>Answer a few <b>questions about your model understanding</b> at the end.</li>
                 </ol>
             </div>
         </Step>
@@ -205,22 +219,9 @@
                 about estimating what the model would predict based on the explanations you see.</p>
             <br>
             <p>
-                Do not use the browser's back button during the experiment. This will cause the experiment to restart.
+                Do not use the <b>browser's back button</b> during the experiment. This will cause the <b>experiment to restart</b>.
                 <br>
                 <br>
-            </p>
-        </Step>
-        <Step>
-            <h2 class="text-2xl">Ensuring your experiment data can be deleted</h2>
-            <p>
-                To ensure the <b>deletion of your experiment data</b>, please keep this unique experiment ID:
-                <br>
-                {user_id}
-                <br><br>
-                We value your privacy; so, your <b>student number is anonymized and not stored</b> with your data.
-                This ID is essential for us to identify and delete your data upon request.
-                It's crucial to <b>save this ID in a secure location</b>, as we will be unable to process deletion
-                requests without it.
             </p>
         </Step>
         <Step>
