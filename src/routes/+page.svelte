@@ -5,6 +5,9 @@
 
     function newExperiment() {
         userId.set(crypto.randomUUID());
+        // Get timestamp
+        const experiment_start = new Date().toISOString();
+        sessionStorage.setItem('experiment_start', experiment_start);
         goto(`${base}/intro`);
     }
 </script>

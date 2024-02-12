@@ -19,6 +19,7 @@
     let consent_given: boolean = false;
     let pdfPath = `${base}/Consent.pdf`;
     const user_id = uuidv4();
+    const experiment_start = sessionStorage.getItem('experiment_start');
 
     let study_group: any;
     onMount(() => {
@@ -74,7 +75,8 @@
             education_field_other: education_field_other,
             fam_ml_val: fam_ml_val,
             fam_domain_val: fam_domain_val,
-            english_speaking_level: english_speaking_level
+            english_speaking_level: english_speaking_level,
+            experiment_start: experiment_start
         };
 
         fetch(`${base}/api/setup`, {
