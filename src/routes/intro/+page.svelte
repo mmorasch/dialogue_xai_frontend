@@ -108,12 +108,12 @@
         <Step>
             <p>
                 This is a study on <b>understanding the decision process of Artificial Intelligence (AI) models</b>
-                which takes about 20 minutes. It is designed as part of a large research project
+                which takes about 20-30 minutes. It is designed as part of a large research project
                 that seeks to improve understanding between AI Systems (i.e. Machine learning models) and humans.<br/>
             </p>
 
             <p class="m my-12">
-                Upon successful completion, you will get <b>3 extra points in the final exam</b>. <br/><br/>
+                Upon successful completion, and passing of the final exam, you will get <b>3 extra points in the final exam</b>. <br/><br/>
 
                 Thank you for your participation! <br/><br/>
 
