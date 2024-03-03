@@ -89,6 +89,7 @@
                         data-value={question.id}
                         type="button"
                         class="btn variant-ghost-primary"
+                        style="font-size: 0.75rem;"
                         on:click={buttonOnClick}>{question.question}</button
                 >
             {/each}
@@ -99,8 +100,8 @@
                 <p>Attribute Related Questions</p>
             </Header>
             {#each feature_questions as question}
-                <button data-value={question.id} data-type="feature" type="button" class="btn variant-ghost-primary"
-                        on:click={buttonOnClick}>
+                <button data-value={question.id} data-type="feature" type="button" class="btn variant-ghost-primary text-sm"
+                        style="font-size: 0.75rem;" on:click={buttonOnClick}>
                     {question.question.split('[feature selection]')[0]}
                     <select bind:value={activeFeature} class="inline-feature-select" on:change={selectOnChange}>
                         <option value="" disabled>Select Attribute</option>
