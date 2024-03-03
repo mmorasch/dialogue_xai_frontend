@@ -3,7 +3,9 @@ import {get_study_group} from "$lib/pg";
 
 export const GET: RequestHandler = async () => {
     try {
-        const studyGroup = await get_study_group();
+        let studyGroup = await get_study_group();
+        // TODO: REMOVE LATER. Set study group to interactive
+        studyGroup = 'interactive';
         return new Response(studyGroup, {
             headers: {'Content-Type': 'text/plain'},
         });
