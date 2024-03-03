@@ -30,8 +30,6 @@ export async function get_study_group() {
 
 
         // Determine and return the less used study group
-        console.log('staticCount:', staticCount);
-        console.log('interactiveCount:', interactiveCount);
         return interactiveCount <= staticCount ? 'interactive' : 'static';
     } catch (error) {
         console.error('Error in get_study_group:', error);
