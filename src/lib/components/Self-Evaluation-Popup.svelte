@@ -201,8 +201,7 @@
                 <p class="text-center text-xl">
                     Almost done!<br> <br>
 
-                    As a last activity, you will see new patients and will be asked to make a decision whether
-                    they are high or low risk patients. You will not see explanations.<br>
+                    As a last activity, you will see new cases and will be asked to make a decision on how you think the model will predict them. You will not see explanations.<br>
                 </p>
             </Step>
         </Stepper>
