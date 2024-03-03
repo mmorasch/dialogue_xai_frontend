@@ -19,7 +19,7 @@
     let consent_given: boolean = false;
     let pdfPath = `${base}/Consent.pdf`;
     const user_id = uuidv4();
-    const experiment_start = sessionStorage.getItem('experiment_start');
+    const experiment_start = new Date().toISOString();
 
     let study_group: any;
     onMount(() => {
