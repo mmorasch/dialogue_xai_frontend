@@ -18,7 +18,7 @@
     import {base} from '$app/paths';
     import StaticExplanationReport from '$lib/components/StaticExplanationReport.svelte';
     import {writable} from "svelte/store";
-    import Popup from '$lib/components/Popup.svelte';
+    import Popup from '$lib/components/Self-Evaluation-Popup.svelte';
 
     /**
      * Data provided by the `+page.ts` load function in the same folder
@@ -45,6 +45,7 @@
     let datapoint_answer_selected: string | null = null;
     let feature_tooltips = data.feature_tooltips;
     let feature_units = data.feature_units;
+    let prediction_choices = data.prediction_choices;
 
     //-----------------------------------------------------------------
 
@@ -297,6 +298,7 @@
                 interactiveOrStatic={study_group}
                 user_id={user_id}
                 true_label={true_label}
+                prediction_choices={prediction_choices}
                 on:next={handleNext}
         />
     </div>
