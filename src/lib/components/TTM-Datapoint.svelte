@@ -14,6 +14,7 @@
     export let testOrTeaching: TTestOrTeaching;
     export let interactiveOrStatic: TInteractiveOrStatic;
     export let feature_names;
+    export let prediction_choices;
 
     export let true_label: string;
 
@@ -21,13 +22,14 @@
     export let feature_tooltips: { [key: string]: string };
     export let feature_units: { [key: string]: string };
     export let prediction_question =
-        'Will the model predict that the patient is likely or unlikely to have diabetes?';
+        'What will the model predict for the current case?';
+
 
     export let teaching_intro = "";
     if (interactiveOrStatic === 'static') {
-        teaching_intro = "Guess whether the patient is likely to have diabetes. Afterward you can read the explanations to understand the prediction.";
+        teaching_intro = "Given the current information, guess what the model will predict. Afterward you can read the explanations to understand the prediction.";
     } else {
-        teaching_intro = "Guess whether the patient is likely to have diabetes. Afterward you can ask questions to understand the model's prediction.";
+        teaching_intro = "Given the current information, guess what the model will predict. Afterward you can ask questions to understand the model's prediction.";
     }
 
     export let test_intro =
@@ -42,11 +44,8 @@
 
     export let user_id: string | null = null;
 
-    const options = [
-        'Likely to have diabetes',
-        'Unlikely to have diabetes',
-        'I do not know',
-    ];
+    // Extract values from prediction_choices dictionary to list and append "I don't know" option
+    export let options = Object.values(prediction_choices).concat(["I don't know"]);
 
     // get event categories
     export let selected_prediction: string | null = null;
@@ -125,10 +124,10 @@
         <Header>Test {datapoint_count} of {PUBLIC_TEACH_TEST_CYCLES}</Header>
     {/if}
     {#if testOrTeaching === 'teaching'}
-        <Header>Patient {datapoint_count} of {PUBLIC_TEACH_TEST_CYCLES}</Header>
+        <Header>Case {datapoint_count} of {PUBLIC_TEACH_TEST_CYCLES}</Header>
     {/if}
     {#if testOrTeaching === 'final-test'}
-        <Header>Patient {datapoint_count} of {PUBLIC_END_TEST_CYCLES}</Header>
+        <Header>Case {datapoint_count} of {PUBLIC_END_TEST_CYCLES}</Header>
     {/if}
 
     <div class="content-align">
@@ -138,13 +137,13 @@
         {/if}
         {#if testOrTeaching === 'teaching'}
             <h2 style="text-align: center; color: green;">Learning Phase</h2>
-            <p class="mb-3">{@html teaching_intro}</p>
+            <p class="mb-3 text-xs">{@html teaching_intro}</p>
         {/if}
         {#if testOrTeaching === 'final-test'}
             <h2 style="text-align: center; color: purple;">Final Testing Phase</h2>
             <p class="mb-3">{@html final_test_intro}</p>
         {/if}
-        <h2 style="text-align: center">Patient Information</h2>
+        <h2 style="text-align: center">Current Case</h2>
     </div>
 
     <main>
@@ -168,14 +167,14 @@
             <form>
                 <div class="mt-6">
                     <h2 style="text-align: center">Make a prediction</h2>
-                    <p class="mb-3 center-text">{prediction_question}</p>
+                    <p class="mb-3 center-text text-xs">{prediction_question}</p>
                     <div class="variant-ghost-surface w-fit mx-auto">
                         <ListBox
                                 active="variant-filled-primary"
                                 hover="hover:variant-soft-primary"
                                 display="flex-col">
                             {#each options as option, index}
-                                <ListBoxItem bind:group={selected_prediction} name="justify" value={option}
+                                <ListBoxItem class="text-sm" bind:group={selected_prediction} name="justify" value={option}
                                              on:click={() => {selected_prediction = option; logPrediction();}}
                                 >{option}</ListBoxItem>
                             {/each}
@@ -219,7 +218,7 @@
 
     h2 {
         color: black;
-        font-size: 20px;
+        font-size: 16px;
         font-weight: bold;
     }
 
