@@ -4,9 +4,7 @@ export function typewriter(node: HTMLElement, initialSpeed = 80): {
     update: (newSpeed: number) => void;
     destroy: () => void;
 } {
-    console.log("typewriter", node.innerHTML, initialSpeed);
     const words = (node.innerHTML || "").split(" ");
-    console.log("words", words);
     node.innerHTML = "";
 
     let i = 0;
