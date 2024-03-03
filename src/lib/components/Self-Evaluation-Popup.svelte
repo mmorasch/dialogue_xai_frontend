@@ -3,6 +3,7 @@
     import {RangeSlider, Step, Stepper} from "@skeletonlabs/skeleton";
     import backend from "$lib/backend";
     import {base} from "$app/paths";
+    import {writable} from 'svelte/store';
 
     const dispatch = createEventDispatcher();
 
@@ -16,9 +17,9 @@
 
     onMount(async () => {
         const response = await backend.xai(user_id).get_user_correctness();
-        user_correctness_string = await response.json();
-        //Extract "correctness_string" from the response
-        user_correctness_string = user_correctness_string.correctness_string;
+        user_correctness_string = await response.json().then(data => {
+            return data.correctness_string;
+        })
     });
 
     let questions = [
@@ -49,13 +50,11 @@
         ...feature_questions
     ];
 
-    let selectedGeneralValues = new Array(general_questions.length).fill(null);
-    let selectedFeatureValues = new Array(feature_questions.length).fill(null);
     let selectedValues = [];
 
     async function onComplete() {
         //merge selectedGeneralValues and selectedFeatureValues
-        selectedValues = [...selectedGeneralValues, ...selectedFeatureValues];
+        selectedValues = [...$selectedGeneralValues, ...$selectedFeatureValues];
 
         // Save questions ranking
         await fetch(`${base}/api/exit/questionnaire`, {
@@ -86,6 +85,24 @@
         dispatch('confirm');
     }
 
+    // Assuming you know the length of questions arrays beforehand or they are dynamically provided
+    let generalQuestionsLength = general_questions.length;
+    let featureQuestionsLength = feature_questions.length;
+    let totalQuestionsLength = general_questions.length + feature_questions.length;
+
+    const selectedGeneralValues = writable(Array(generalQuestionsLength).fill(''));
+    const selectedFeatureValues = writable(Array(featureQuestionsLength).fill(''));
+
+    import {derived} from 'svelte/store';
+
+    // Create a derived store to calculate disabled options based on selections in both question types
+    const disabledOptions = derived(
+        [selectedGeneralValues, selectedFeatureValues],
+        ([$selectedGeneralValues, $selectedFeatureValues]) => {
+            const disabled = [...$selectedGeneralValues, ...$selectedFeatureValues].filter(val => val !== '');
+            return disabled;
+        }
+    );
 </script>
 
 <div class="overlay">
@@ -99,20 +116,12 @@
                         <h2>General Questions</h2>
                         {#each general_questions as question, index}
                             <div class="flex my-[5px]">
-                                <select bind:value={selectedGeneralValues[index]}
-                                        on:change={(e) => {
-                                        const value = e.target.value;
-                                        if (value) {
-                                            selectedValues = [...selectedValues, value];
-                                        } else {
-                                            selectedValues = selectedValues.filter(val => val !== value);
-                                        }
-                                    }}
-                                        class="rounded-lg bg-[whitesmoke] cursor-pointer mx-2 my-[5px] px-5 py-3.5 border-2">
+                                <select bind:value={$selectedGeneralValues[index]}>
                                     <option value="">Select a rank</option>
-                                    {#each Array(ttm_questions.length).fill().map((_, i) => i + 1) as rank}
-                                        <option value={rank}
-                                                disabled={selectedValues.includes(rank.toString())}>{rank}</option>
+                                    {#each Array(totalQuestionsLength).fill().map((_, i) => i + 1) as rank}
+                                        <option value={rank} disabled={$disabledOptions.includes(rank)}>
+                                            {rank}
+                                        </option>
                                     {/each}
                                 </select>
                                 <button
@@ -130,20 +139,12 @@
                         <h2>Attribute Related Questions</h2>
                         {#each feature_questions as question, index}
                             <div class="flex my-[5px]">
-                                <select bind:value={selectedFeatureValues[index]}
-                                        on:change={(e) => {
-                                        const value = e.target.value;
-                                        if (value) {
-                                            selectedValues = [...selectedValues, value];
-                                        } else {
-                                            selectedValues = selectedValues.filter(val => val !== value);
-                                        }
-                                    }}
-                                        class="rounded-lg bg-[whitesmoke] cursor-pointer mx-2 my-[5px] px-5 py-3.5 border-2">
+                                <select bind:value={$selectedFeatureValues[index]}>
                                     <option value="">Select a rank</option>
-                                    {#each Array(ttm_questions.length).fill().map((_, i) => i + 1) as rank}
-                                        <option value={rank}
-                                                disabled={selectedValues.includes(rank.toString())}>{rank}</option>
+                                    {#each Array(totalQuestionsLength).fill().map((_, i) => i + 1) as rank}
+                                        <option value={rank} disabled={$disabledOptions.includes(rank)}>
+                                            {rank}
+                                        </option>
                                     {/each}
                                 </select>
                                 <button
