@@ -8,7 +8,10 @@ services:
     depends_on:
       - db
   db:
-    build: ./db
+    build:
+      context: ./db
+      args:
+        SCHEMA_FILE: ${PUBLIC_DATASET_NAME}_schema.sql
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}

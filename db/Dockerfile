@@ -1,2 +1,3 @@
 FROM postgres
-COPY schema.sql /docker-entrypoint-initdb.d/
+ARG SCHEMA_FILE
+COPY ${SCHEMA_FILE} /docker-entrypoint-initdb.d/
