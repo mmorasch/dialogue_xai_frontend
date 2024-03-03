@@ -19,7 +19,12 @@ export const load = (async ({url}) => {
 
     // backend returns data that is either questions or report (A/B study design)
     // TODO: Remove fixed study_group later
-    const {questions, feature_tooltips, feature_units} = await (await backend.xai(user_id, study_group).init()).json();
+    const {
+        questions,
+        feature_tooltips,
+        feature_units,
+        prediction_choices
+    } = await (await backend.xai(user_id, study_group).init()).json();
     const response = await backend.xai(user_id).get_train_datapoint();
 
     const {
@@ -37,6 +42,7 @@ export const load = (async ({url}) => {
         questions,
         feature_tooltips,
         feature_units,
+        prediction_choices,
         datapoint,
         initial_prompt,
         current_prediction,
