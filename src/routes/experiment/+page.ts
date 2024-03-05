@@ -14,11 +14,12 @@ import type {TDatapointResult} from '$lib/types';
  */
 export const load = (async ({url}) => {
     const user_id = url.searchParams.get('user_id');
-    const study_group = url.searchParams.get('sg') || undefined;
+    let study_group = url.searchParams.get('sg') || undefined;
     if (user_id === null) throw error(400, 'user_id is required as a query parameter');
 
     // backend returns data that is either questions or report (A/B study design)
     // TODO: Remove fixed study_group later
+    study_group = 'interactive';
     const {
         questions,
         feature_tooltips,
