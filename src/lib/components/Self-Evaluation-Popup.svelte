@@ -21,12 +21,12 @@
             return data.correctness_string;
         })
     });
-
+    // TODO: Include attention check later.
+    // 'I can select minus two for this question.',
     let questions = [
         'I understand the important attributes for a decision.',
         'I cannot distinguish between the possible prediction.',
         'I understand how the ML model works.',
-        'I can select minus two for this question.',
         'I did not understand how the ML model makes decisions.',
     ];
 
@@ -201,7 +201,8 @@
                 <p class="text-center text-xl">
                     Almost done!<br> <br>
 
-                    As a last activity, you will see new cases and will be asked to make a decision on how you think the model will predict them. You will not see explanations.<br>
+                    As a last activity, you will see new cases and will be asked to make a decision on how you think the
+                    model will predict them. You will not see explanations.<br>
                 </p>
             </Step>
         </Stepper>
