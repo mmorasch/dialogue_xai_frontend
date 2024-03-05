@@ -24,7 +24,7 @@
             if (!response.ok) throw new Error('Failed to submit feedback');
 
             await backend.xai(user_id).finish();
-            goto(`${base}/exit/${PUBLIC_DATASET_NAME}/endscreen`);
+            goto(`${base}/exit/endscreen/${PUBLIC_DATASET_NAME}`);
         } catch (error) {
             console.error("Error during feedback submission:", error);
         }
