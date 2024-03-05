@@ -17,7 +17,7 @@
     let fam_domain_val: number;
     let matrikelnummer: string;
     let consent_given: boolean = false;
-    let pdfPath = `${base}/Consent.pdf`;
+    let pdfPath = `${base}/Diabetes-Consent.pdf`;
     const user_id = uuidv4();
     const experiment_start = new Date().toISOString();
 

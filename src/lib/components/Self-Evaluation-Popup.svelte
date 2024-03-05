@@ -24,7 +24,7 @@
 
     let questions = [
         'I understand the important attributes for a decision.',
-        'I cannot distinguish between high risk and low risk patients.',
+        'I cannot distinguish between the possible prediction.',
         'I understand how the ML model works.',
         'I can select minus two for this question.',
         'I did not understand how the ML model makes decisions.',

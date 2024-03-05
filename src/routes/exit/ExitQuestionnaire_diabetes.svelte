@@ -28,6 +28,15 @@
         'I can see myself using the Chatbot in the future.',
         'I can rely on the chatbot.',
         'The Chatbot is easy to use.',
+        'The chatbot understands me.',
+        'I am not just clicking randomly and I can prove it by selecting -2.',
+        'I was concentrated during the interaction with the chatbot.',
+        'Learning to work with the Chatbot is easy.',
+        'The interaction captured my attention.',
+        'The chatbots’s behavior does not make sense.',
+        'The Chatbot does its task well',
+        'I dislike the Chatbot.',
+        'I am capable of succeeding with the Chatbot',
     ];
 
     let chunks = [];

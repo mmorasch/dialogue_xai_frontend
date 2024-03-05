@@ -11,7 +11,7 @@
     } from '$lib/types';
     import backend from '$lib/backend';
     import {fade} from 'svelte/transition';
-    import type {PageData} from './$types';
+    import type {PageData} from '../../../../.svelte-kit/types/src/routes';
     import {PUBLIC_TEACH_TEST_CYCLES, PUBLIC_END_TEST_CYCLES} from '$env/static/public';
 
     import {goto} from '$app/navigation';
