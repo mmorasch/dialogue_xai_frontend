@@ -33,11 +33,11 @@
     }
 
     export let test_intro =
-        "<b>Test your knowledge</b> about the model. Based on what you learned before, what do you think the model will predict for this patient? <b>You will not receive \n" +
+        "<b>Test your knowledge</b> about the model. Based on what you learned before, what do you think the model will predict for this case? <b>You will not receive \n" +
         "explanations this time.</b>";
 
     export let final_test_intro =
-        "<b>Final test of your knowledge</b> about the model. Based on what you learned before, what do you think the model will predict for this patient? <b>You will not receive \n" +
+        "<b>Final test of your knowledge</b> about the model. Based on what you learned before, what do you think the model will predict for this case? <b>You will not receive \n" +
         "explanations this time.</b>";
 
     export let datapoint_count: number | null = null;
