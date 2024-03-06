@@ -72,7 +72,7 @@
     }
 
     let study_group_interactive_text =
-        'Get familiar with the ML model\'s prediction in an <b>interactive chatbot</b>.';
+        'Get familiar with the model\'s prediction with an <b>interactive chatbot</b>.';
 
     let study_group_static_text =
         'Get familiar with the ML model\'s prediction in an <b>explanation report</b>.';
@@ -84,9 +84,9 @@
     <Stepper buttonCompleteLabel="Start Experiment" on:complete={onComplete}>
         <Step>
             <p>
-                This is a study on <b>understanding the decision process of Artificial Intelligence (AI) models</b>
-                which takes about 15-20 minutes. It is designed as part of a large research project
-                that seeks to improve understanding between AI Systems (i.e. Machine learning models) and humans.<br/>
+                This is an introductory activity on <b>understanding the decision process of Artificial Intelligence (AI) models</b>
+                which takes about 15-20 minutes. It is designed to introduce you to the type of explanations that
+                we work with and should prepare you for the in-person workshop.<br/>
             </p>
 
             <p class="m my-12">
@@ -98,26 +98,12 @@
             </p>
         </Step>
         <Step>
-            <h2 class="text-2xl">Your Experiment ID</h2>
-            <p>
-                Please <b>keep your experiment ID</b> for future reference. <br>
-                You will need it to delete your data from the study if you wish.
-                <br><br>
-                {user_id}
-                <br><br>
-                We value your privacy; so, your with your experiment data will not be shared with any third party, and
-                we cannot identify you personally from your experiment data.
-                This ID is essential for us to identify and delete your data upon request.
-            </p>
-        </Step>
-        <Step>
             <h2 class="text-2xl">
-                Experiment topic: Understanding AI predictions in predictive policing
+                Topic: Understanding AI predictions in predictive policing
             </h2>
             <p>
-                In this experiment, you will <b>discover how machine learning models make decisions</b> when predicting
-                the
-                likelihood of different crime levels for different discricts in San Francisco.
+                In this activity, you will <b>discover how machine learning models make decisions</b> when predicting
+                the likelihood of different crime levels for <b>districts in San Francisco</b>.
                 <br/>
             </p>
         </Step>
@@ -129,21 +115,20 @@
             <ul class="list">
                 <li><span class="flex-auto">- Avg Temp: 22 °C</span></li>
                 <li><span class="flex-auto">- Day Of Week: Monday</span></li>
-                <li><span class="flex-auto">- Month: 2</span></li>
+                <li><span class="flex-auto">- Month: February</span></li>
                 <li><span class="flex-auto">- Month Period: MiddleOfMonth</span></li>
                 <li><span class="flex-auto">- NFl Game Day: True</span></li>
                 <li><span class="flex-auto">- Pd District: PARK</span></li>
             </ul>
             <p>
                 The model would give a <b>prediction</b> whether this district has a <b>low crime</b>, <b>medium
-                crime</b> or <b>high crime</b> level.
+                crime</b> or <b>high crime</b> level and can help with predictive policing strategies.
             </p>
         </Step>
         <Step>
-            <h2 class="text-2xl">Experiment Introduction - How will the model predict the crime level of different
-                districts?</h2>
+            <h2 class="text-2xl">Activity - How will the model predict the crime level of different districts?</h2>
             <div class="container">
-                <h1>The experiment is structured as follows:</h1>
+                <h1>The activity is structured as follows:</h1>
                 <ol>
                     <li><b style="color: green;">Learning Phase:</b> Given one district's information at a time,
                         <b>guess the Machine Learning model's decision</b>.
@@ -158,8 +143,8 @@
                     <li><b style="color: purple;">Testing Phase:</b> Guess the model prediction for a new district based
                         on your
                         understanding. For this <b>new district, you will not
-                            receive the model's prediction or explanations</b>, since it is a test of your
-                        understanding.
+                            receive the model's prediction or explanations</b>, since it is a test of the explanation
+                        helpfulness.
                     </li>
                     <li>Complete this process for a total of <b>{PUBLIC_TEACH_TEST_CYCLES}
                         learning-testing district pairs </b>.
@@ -171,11 +156,10 @@
         <Step>
             <h2 class="text-2xl">General Information</h2>
             <p class="note">Attention: The goal isn't to be right about whether a district is high crime or not. It's
-                all
-                about estimating what the model would predict based on the explanations you see.</p>
+                all about estimating what the model would predict based on the explanations you see.</p>
             <br>
             <p>
-                Do not use the <b>browser's back button</b> during the experiment. This will cause the <b>experiment to
+                Please do not use the <b>browser's back button</b> during the experiment. This will cause the <b>whole experiment to
                 restart</b>.
                 <br>
                 <br>
