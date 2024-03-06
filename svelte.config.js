@@ -19,7 +19,7 @@ const config = {
 		// See https://kit.svelte.dev/docs/adapters for more information about adapters.
 		adapter: adapter(),
 		paths: {
-			base: '/explainable-ai',
+			base: '/predictive-pol-xai',
 		}
 	},
 };
