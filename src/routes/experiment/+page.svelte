@@ -76,18 +76,18 @@
     delete data.datapoint.true_label;
 
     async function submitQuestion(e: any) {
-        let question: number = parseInt(e.detail.question);
+        let questionId: number = parseInt(e.detail.questionId);
         let feature: number = parseInt(e.detail.feature);
         let full_question = '';
 
         let text = ((): string => {
             for (let i = 0; i < general_questions.length; i++) {
-                if (general_questions[i].id === question) {
+                if (general_questions[i].id === questionId) {
                     full_question = general_questions[i].question.replace('[current prediction]', '<b>' + current_prediction + '</b>');
                     const details = {
                         datapoint_count: datapoint_count,
                         question: full_question,
-                        question_id: question
+                        question_id: questionId
                     };
                     fetch(`${base}/api/log_event`, {
                         method: 'POST',
@@ -105,7 +105,7 @@
                 }
             }
             for (let i = 0; i < feature_questions.length; i++) {
-                if (feature_questions[i].id === question) {
+                if (feature_questions[i].id === questionId) {
                     for (let j = 0; j < feature_names.length; j++) {
                         if (feature_names[j].id === feature) {
                             full_question = feature_questions[i].question.replace(/\[feature selection\]/, function (i, match) {
@@ -114,7 +114,7 @@
                             const details = {
                                 datapoint_count: datapoint_count,
                                 question: full_question,
-                                question_id: question
+                                question_id: questionId
                             };
                             fetch(`${base}/api/log_event`, {
                                 method: 'POST',
@@ -140,20 +140,20 @@
             text: text,
             isUser: true,
             feedback: false,
-            id: question,
+            id: questionId,
         });
 
         messages = messages;
         backend
             .xai(user_id)
-            .get_response(question, feature)
+            .get_response(questionId, feature)
             .then((response) => {
                 response.text().then((text) => {
                     messages.push({
                         text: text,
                         isUser: false,
                         feedback: true,
-                        id: question,
+                        id: questionId,
                     });
                     setTimeout(() => {
                         messages = messages;
