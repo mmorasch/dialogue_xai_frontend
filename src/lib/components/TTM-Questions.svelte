@@ -2,6 +2,7 @@
     import type {TFeatureName, TFeatureQuestion, TGeneralQuestion} from '$lib/types';
     import Header from './Header.svelte';
     import {createEventDispatcher} from 'svelte';
+    import QuestionButton from '$lib/components/QuestionButton.svelte';
 
     const dispatch = createEventDispatcher();
 
@@ -34,91 +35,55 @@
         }
     }
 
-    function selectOnChange(e: any) {
-        // Get the parent button of the select element
-        const parentButton = e.target.closest('button');
+    // Handle actions from QuestionButton
+    function handleAction(event) {
+        const {type, questionId, question, feature} = event.detail;
+        if (type === 'general') {
+            // Handle general question
+            console.log(`General Question ID: ${questionId}, Question: ${question}`);
+            // Additional logic for general questions
+        } else if (type === 'feature') {
+            // Handle feature question
+            console.log(`Feature Question ID: ${questionId}, Question: ${question}, Feature: ${feature}`);
+            // Update activeFeature for feature questions
+            activeFeature = feature;
+        }
 
-        // Check if the selected value is not the default value
-        if (activeFeature === "") {
-            return;
-        }
-        // If there's a parent button, trigger a click event on it
-        if (parentButton) {
-            parentButton.click();
-        }
+        activeQuestion = questionId;
+
+        // Common submission logic can go here, if applicable
+        dispatch('submit', {questionId, question, feature});
     }
 
-    function buttonOnClick(e: any) {
-        // Check if the button is a feature question and if there's no active feature
-        if (e.target.getAttribute('data-type') === 'feature' && activeFeature === "") {
-            return;
-        }
-
-        const buttons = document.querySelectorAll('button');
-        buttons.forEach((button) => {
-            button.classList.remove('variant-filled-primary');
-            button.classList.add('variant-ghost-primary');
-        });
-
-        e.target.classList.remove('variant-ghost-primary');
-        e.target.classList.add('variant-filled-primary');
-        activeQuestion = e.target.getAttribute('data-value');
-
-        // Automatically submit the question when clicked
-        if (activeQuestion) {
-            dispatch('submit', {
-                question: activeQuestion,
-                feature: activeFeature
-            });
-        } else {
-            console.log('No question selected');
-        }
-    }
 </script>
 
-<div
-        class="inputarea max-w-[500px] shadow-[0_15px_15px_-5px_rgba(0,0,0,0.2)] text-center mx-2.5 my-0"
->
+<div class="inputarea max-w-[500px] shadow-[0_15px_15px_-5px_rgba(0,0,0,0.2)] text-center mx-2.5 my-0">
     <form class="grid">
         <div class="row-[1]">
             <Header>
                 <p>General Questions</p>
             </Header>
-            {#each general_questions as question}
-                <button
-                        data-value={question.id}
-                        type="button"
-                        class="btn variant-ghost-primary"
-                        style="font-size: 0.75rem;"
-                        on:click={buttonOnClick}>{question.question}</button
-                >
-            {/each}
+            <div class="mx-1.5">
+                {#each general_questions as question}
+                    <QuestionButton type="general" question={question.question} questionId={question.id}
+                                    on:action={handleAction} isActive={activeQuestion === question.id}/>
+                {/each}
+            </div>
         </div>
-        <hr class="m-5 border-t-[3px] border-t-[#bbb] border-solid"/>
+
         <div class="row-[2]">
             <Header>
                 <p>Attribute Related Questions</p>
             </Header>
-            {#each feature_questions as question}
-                <button data-value={question.id} data-type="feature" type="button" class="btn variant-ghost-primary text-sm"
-                        style="font-size: 0.75rem;" on:click={buttonOnClick}>
-                    {question.question.split('[feature selection]')[0]}
-                    <select bind:value={activeFeature} class="inline-feature-select" on:change={selectOnChange}>
-                        <option value="" disabled>Select Attribute</option>
-                        {#each feature_questions_dropdown as feature}
-                            <option value={feature.id}>{feature.feature_name}</option>
-                        {/each}
-                    </select>
-                    {question.question.split('[feature selection]')[1]}
-                </button>
-            {/each}
+            <div class="mx-1.5">
+                {#each feature_questions as question}
+                    <QuestionButton type="feature" question={question.question} questionId={question.id}
+                                    featureOptions={feature_questions_dropdown} on:action={handleAction}
+                                    isActive={activeQuestion === question.id}/>
+                {/each}
+            </div>
         </div>
-        <input
-                type="submit"
-                value="Proceed"
-                style="width: 70%;"
-                on:click|preventDefault={next}
-        />
+        <input type="submit" value="Proceed" style="width: 70%;" on:click|preventDefault={next}/>
     </form>
 </div>
 
