@@ -15,6 +15,7 @@ type TChatMessage = {
     isUser: boolean;
     feedback: boolean;
     id: number;
+    followup: (TGeneralQuestion | TFeatureQuestion)[];
 };
 
 type TDatapoint = {
