@@ -34,13 +34,7 @@
     // Handle actions from QuestionButton
     function handleAction(event) {
         const {type, questionId, question, feature} = event.detail;
-        if (type === 'general') {
-            // Handle general question
-            console.log(`General Question ID: ${questionId}, Question: ${question}`);
-            // Additional logic for general questions
-        } else if (type === 'feature') {
-            // Handle feature question
-            console.log(`Feature Question ID: ${questionId}, Question: ${question}, Feature: ${feature}`);
+        if (type === 'feature') {
             // Update activeFeature for feature questions
             activeFeature = feature;
         }
