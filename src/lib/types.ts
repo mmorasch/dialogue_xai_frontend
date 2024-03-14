@@ -31,11 +31,17 @@ type StaticReport = {
     anchors: string;
 };
 
+type PredictionProbability = {
+    label: string;
+    probability: string;
+};
+
 type TDatapointResult = TDatapoint & {
     current_prediction: string;
     initial_prompt: string;
     static_report: StaticReport;
     true_label: string;
+    prediction_probability: PredictionProbability[];
 };
 
 type TInitResult = {
@@ -73,5 +79,6 @@ export type {
     TTestingQuestion,
     TTestOrTeaching,
     StaticReport,
-    TInteractiveOrStatic
+    TInteractiveOrStatic,
+    PredictionProbability
 }

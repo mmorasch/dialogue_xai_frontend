@@ -75,91 +75,66 @@
 
     delete data.datapoint.true_label;
 
+    function logEvent(details: any) {
+        fetch(`${base}/api/log_event`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_id: user_id,
+                event_source: 'teaching',
+                event_type: 'question',
+                details: details,
+            })
+        });
+    }
+
+    function createAndPushMessage(text: string, isUser: boolean, feedback: boolean, id: number) {
+        messages.push({
+            text: text,
+            isUser: isUser,
+            feedback: feedback,
+            id: id,
+            followup: []
+        });
+    }
+
     async function submitQuestion(e: any) {
         let questionId: number = parseInt(e.detail.questionId);
         let feature: number = parseInt(e.detail.feature);
+
+        let generalQuestion = general_questions.find(q => q.id === questionId);
+        let featureQuestion = feature_questions.find(q => q.id === questionId);
+        let featureName = feature_names.find(f => f.id === feature);
+
         let full_question = '';
+        if (generalQuestion) {
+            full_question = generalQuestion.question.replace('[current prediction]', '<b>' + current_prediction + '</b>');
+        } else if (featureQuestion && featureName) {
+            full_question = featureQuestion.question.replace('[feature selection]', featureName.feature_name);
+        }
 
-        let text = ((): string => {
-            for (let i = 0; i < general_questions.length; i++) {
-                if (general_questions[i].id === questionId) {
-                    full_question = general_questions[i].question.replace('[current prediction]', '<b>' + current_prediction + '</b>');
-                    const details = {
-                        datapoint_count: datapoint_count,
-                        question: full_question,
-                        question_id: questionId
-                    };
-                    fetch(`${base}/api/log_event`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            user_id: user_id,
-                            event_source: 'teaching',
-                            event_type: 'question',
-                            details: details,
-                        })
-                    });
-                    return full_question;
-                }
-            }
-            for (let i = 0; i < feature_questions.length; i++) {
-                if (feature_questions[i].id === questionId) {
-                    for (let j = 0; j < feature_names.length; j++) {
-                        if (feature_names[j].id === feature) {
-                            full_question = feature_questions[i].question.replace(/\[feature selection\]/, function (i, match) {
-                                return feature_names[j].feature_name;
-                            });
-                            const details = {
-                                datapoint_count: datapoint_count,
-                                question: full_question,
-                                question_id: questionId
-                            };
-                            fetch(`${base}/api/log_event`, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({
-                                    user_id: user_id,
-                                    event_source: 'teaching',
-                                    event_type: 'question',
-                                    details: details,
-                                })
-                            });
-                            return full_question;
-                        }
-                    }
-                }
-            }
-            return '';
-        })();
+        if (full_question) {
+            const details = {
+                datapoint_count: datapoint_count,
+                question: full_question,
+                question_id: questionId
+            };
+            logEvent(details);
 
-        messages.push({
-            text: text,
-            isUser: true,
-            feedback: false,
-            id: questionId,
-        });
+            createAndPushMessage(full_question, true, false, questionId);
+            messages = messages;
 
-        messages = messages;
-        backend
-            .xai(user_id)
-            .get_response(questionId, feature)
-            .then((response) => {
-                response.text().then((text) => {
-                    messages.push({
-                        text: text,
-                        isUser: false,
-                        feedback: true,
-                        id: questionId,
-                    });
-                    setTimeout(() => {
-                        messages = messages;
-                    }, 600);
-                });
-            });
+            setTimeout(async () => {
+                let response = await backend.xai(user_id).get_response(questionId, feature);
+                let text = await response.text();
+
+                createAndPushMessage(text, false, true, questionId);
+                messages = messages;
+            }, 700);
+
+        }
     }
 
     async function handleNext(e: any) {
