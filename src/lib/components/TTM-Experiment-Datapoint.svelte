@@ -24,6 +24,11 @@
     export let prediction_question =
         'What will the model predict for the current case?';
 
+    // Check if prediction_probability is in data and remove it if it is
+    // eslint-disable-next-line no-prototype-builtins
+    if (data.hasOwnProperty('prediction_probability')) {
+        delete data['prediction_probability'];
+    }
 
     export let teaching_intro = "";
     if (interactiveOrStatic === 'static') {

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import TTMDatapoint from '$lib/components/TTM-Datapoint.svelte';
+    import TTMDatapoint from '$lib/components/TTM-Experiment-Datapoint.svelte';
     import TTMChat from '$lib/components/TTM-Chat.svelte';
     import TTMQuestions from '$lib/components/TTM-Questions.svelte';
     import type {
