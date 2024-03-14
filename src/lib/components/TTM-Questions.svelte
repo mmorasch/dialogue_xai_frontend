@@ -28,11 +28,7 @@
 
     async function next(e: any) {
         e.preventDefault();
-        if (selected_prediction) {
-            dispatch('next', null);
-        } else {
-            console.log('No question selected');
-        }
+        dispatch('next', null);
     }
 
     // Handle actions from QuestionButton
