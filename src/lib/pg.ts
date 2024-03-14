@@ -106,6 +106,14 @@ export async function setMatrikNum(userId: string, matrikulation_num: string) {
     `;
 }
 
+export async function setProlificId(userId: string, prolific_id: string) {
+    return await sql`
+        UPDATE users
+        SET prolific_id = ${prolific_id}
+        WHERE id = ${userId}
+    `;
+}
+
 export async function getMatrikNum(userId: string) {
     const result = await sql`
         SELECT matrik_num
