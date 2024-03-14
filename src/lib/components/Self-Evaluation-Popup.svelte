@@ -21,13 +21,12 @@
             return data.correctness_string;
         })
     });
-    // TODO: Include attention check later.
-    // 'I can select minus two for this question.',
     let questions = [
         'I understand the important attributes for a decision.',
         'I cannot distinguish between the possible prediction.',
         'I understand how the ML model works.',
-        'I did not understand how the ML model makes decisions.',
+        'Select -2 to show that you pay attention.',
+        'I did not understand how the ML model makes decisions.'
     ];
 
     let answers = Array(questions.length).fill(0);
