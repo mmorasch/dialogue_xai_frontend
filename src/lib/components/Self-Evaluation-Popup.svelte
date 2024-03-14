@@ -109,7 +109,8 @@
         <Stepper stepTerm="Step" on:complete={onComplete} buttonCompleteLabel="Continue Experiment">
             {#if study_group === 'interactive'}
                 <Step>
-                    <h1 class="center-text text-xl">Please rank the questions based on their usefulness.</h1>
+                    <h1 class="center-text text-xl">Please rank the questions based on their usefulness, where 1 is the
+                        most useful question.</h1>
                     <!-- General Questions -->
                     <div class="flex flex-col my-[5px]">
                         <h2>General Questions</h2>
