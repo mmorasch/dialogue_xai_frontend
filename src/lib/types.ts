@@ -48,12 +48,12 @@ type TInitResult = {
     questions: TQuestionResult;
     feature_tooltips: { [key: string]: string };
     feature_units: { [key: string]: string };
+    feature_names: TFeatureName[];
 }
 
 type TQuestionResult = {
     general_questions: TGeneralQuestion[];
     feature_questions: TFeatureQuestion[];
-    feature_names: TFeatureName[];
 };
 
 type TTestingQuestion = {
