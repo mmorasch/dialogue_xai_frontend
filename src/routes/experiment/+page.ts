@@ -24,9 +24,9 @@ export const load = (async ({url}) => {
         questions,
         feature_tooltips,
         feature_units,
-        prediction_choices
+        prediction_choices,
+        feature_names,
     } = await (await backend.xai(user_id, study_group).init()).json();
-    const response = await backend.xai(user_id).get_train_datapoint();
 
     const {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -41,6 +41,7 @@ export const load = (async ({url}) => {
         user_id,
         study_group,
         questions,
+        feature_names,
         feature_tooltips,
         feature_units,
         prediction_choices,

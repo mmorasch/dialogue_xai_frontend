@@ -67,7 +67,8 @@
     let static_report: StaticReport = data.static_report;
     //-----------------------------------------------------------------
 
-    let {feature_names, feature_questions, general_questions}: TQuestionResult = data.questions;
+    let {feature_questions, general_questions}: TQuestionResult = data.questions;
+    let feature_names = data.feature_names;
     let user_id: string = data.user_id;
     let study_group = data.study_group;
     let test_or_teaching: TTestOrTeaching = 'teaching';
