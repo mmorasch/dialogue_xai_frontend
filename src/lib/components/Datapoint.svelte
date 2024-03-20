@@ -13,6 +13,34 @@
     $: {
         firstColumnValues = body.map(row => row[0]);
     }
+
+    // Check if prediction_probability row is present in body and if so, remove it
+    $: {
+        body = body.filter(row => row[0] !== 'prediction_probability');
+    }
+
+    // Normalize a string by removing spaces and converting to lower case for comparison
+    function normalizeString(str: string): string {
+        return str.replace(/\s+/g, '').toLowerCase();
+    }
+
+    // Normalize feature_names for comparison
+    let normalizedFeatureNames = feature_names.map(f => ({
+        original: f,
+        normalized: normalizeString(f.feature_name)
+    }));
+
+    // Sort body according to normalizedFeatureNames
+    let sortedBody = [];
+    $: {
+        sortedBody = normalizedFeatureNames.reduce((acc, feature) => {
+            const bodyRow = body.find(row => normalizeString(row[0]) === feature.normalized);
+            if (bodyRow) {
+                acc.push(bodyRow);
+            }
+            return acc;
+        }, []);
+    }
 </script>
 
 <div class="table-container w-[90%] mx-auto">
@@ -25,20 +53,21 @@
         </tr>
         </thead>
         <tbody>
-        {#each body as row, rowIndex}
+        {#each sortedBody as row}
             <tr>
-                {#each row as col, colIndex}
-                    <td>
-                        {#if colIndex === 0}
-                            <span>{feature_names[rowIndex]?.feature_name}</span>
-                            {#if feature_tooltips[col.toLowerCase()]}
-                                <TooltipIcon class="tooltipIcon" message={feature_tooltips[col.toLowerCase()]}/>
-                            {/if}
-                        {:else}
-                            <span>{col} {feature_units[firstColumnValues[rowIndex]?.toLowerCase()]}</span>
-                        {/if}
-                    </td>
-                {/each}
+                <td>
+                    <span>{row[0]}</span>
+                    {#if feature_tooltips[row[0].toLowerCase()]}
+                        <TooltipIcon class="tooltipIcon" message={feature_tooltips[row[0].toLowerCase()]}/>
+                    {/if}
+                </td>
+                <td>
+                    {#if feature_units[row[0].toLowerCase()]}
+                        <span>{row[1]} {feature_units[row[0].toLowerCase()]}</span>
+                    {:else}
+                        <span>{row[1]}</span>
+                    {/if}
+                </td>
             </tr>
         {/each}
         </tbody>
@@ -48,7 +77,9 @@
 
 <style lang="postcss">
     .table tbody td {
-        padding: 0.25rem;
+        padding: 0.2rem;
+        min-width: 150px;
+        max-width: 150px;
     }
 
     /* Ensuring the tooltip is not clipped */
@@ -57,6 +88,6 @@
     }
 
     .tooltipIcon {
-        margin: 20px; /* Adjust as needed */
+        margin: 15px; /* Adjust as needed */
     }
 </style>
