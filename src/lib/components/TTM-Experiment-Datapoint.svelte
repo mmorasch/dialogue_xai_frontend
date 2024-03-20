@@ -32,9 +32,9 @@
 
     export let teaching_intro = "";
     if (interactiveOrStatic === 'static') {
-        teaching_intro = "Given the current information, guess what the model will predict. Afterward you can read the explanations to understand the prediction.";
+        teaching_intro = "Your task is to <b>guess what the model will predict</b>, based on the information below. Afterward, you can read the explanations to <b>understand the model's prediction</b>.";
     } else {
-        teaching_intro = "Given the current information, guess what the model will predict. Afterward you can ask questions to understand the model's prediction.";
+        teaching_intro = "Your task is to <b>guess what the model will predict</b>, based on the information below. Afterward, you can ask questions to <b>understand the model's prediction</b>.";
     }
 
     export let test_intro =
@@ -56,7 +56,7 @@
     export let selected_prediction: string | null = null;
 
 
-    function logPrediction() {
+    async function logPrediction() {
         // if final test, return
         if (testOrTeaching === 'final-test') {
             return;
@@ -80,7 +80,7 @@
         });
         // Check if usser_id is not null
         if (user_id !== null && selected_prediction !== null) {
-            backend.xai(user_id).set_user_prediction(selected_prediction);
+            await backend.xai(user_id).set_user_prediction(selected_prediction);
         }
         if (testOrTeaching === 'test') {
             dispatch('next', null);
@@ -142,7 +142,7 @@
         {/if}
         {#if testOrTeaching === 'teaching'}
             <h2 style="text-align: center; color: green;">Learning Phase</h2>
-            <p class="mb-3 text-xs">{@html teaching_intro}</p>
+            <p class="mb-3 text-xs centered-text">{@html teaching_intro}</p>
         {/if}
         {#if testOrTeaching === 'final-test'}
             <h2 style="text-align: center; color: purple;">Final Testing Phase</h2>
@@ -172,14 +172,15 @@
             <form>
                 <div class="mt-6">
                     <h2 style="text-align: center">Make a prediction</h2>
-                    <p class="mb-3 center-text text-xs">{prediction_question}</p>
+                    <p class="mb-3 center-text text-xs centered-text">{prediction_question}</p>
                     <div class="variant-ghost-surface w-fit mx-auto">
                         <ListBox
                                 active="variant-filled-primary"
                                 hover="hover:variant-soft-primary"
                                 display="flex-col">
                             {#each options as option, index}
-                                <ListBoxItem class="text-sm" bind:group={selected_prediction} name="justify" value={option}
+                                <ListBoxItem class="text-sm" bind:group={selected_prediction} name="justify"
+                                             value={option}
                                              on:click={() => {selected_prediction = option; logPrediction();}}
                                 >{option}</ListBoxItem>
                             {/each}
@@ -225,6 +226,10 @@
         color: black;
         font-size: 16px;
         font-weight: bold;
+    }
+
+    .centered-text {
+        text-align: center;
     }
 
 </style>
