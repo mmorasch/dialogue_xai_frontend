@@ -17,20 +17,20 @@
   color: #fff;
   text-align: center;
   border-radius: 50%;
-  width: 16px; /* Make it smaller */
-  height: 16px; /* Make it smaller */
+  width: 15px; /* Make it smaller */
+  height: 15px; /* Make it smaller */
   display: inline-block;
   line-height: 16px; /* Make it smaller */
   cursor: help;
 }
   .tooltip-text {
     visibility: hidden;
-    width: 120px;
+    min-width: 150px;
     background-color: #555;
     color: #fff;
     text-align: center;
-    border-radius: 6px;
-    padding: 5px 0;
+    border-radius: 15px;
+    padding: 10px;
     position: absolute;
     z-index: 1;
     bottom: 125%;
