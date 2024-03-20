@@ -10,7 +10,6 @@
     export let feature_questions: TFeatureQuestion[];
     export let current_prediction: string;
     export let feature_questions_dropdown: TFeatureName[];
-    export let selected_prediction: string | null = null;
 
     let activeQuestion: string;
     let activeFeature = "";
@@ -34,6 +33,7 @@
     // Handle actions from QuestionButton
     function handleAction(event) {
         const {type, questionId, question, feature} = event.detail;
+
         if (type === 'feature') {
             // Update activeFeature for feature questions
             activeFeature = feature;

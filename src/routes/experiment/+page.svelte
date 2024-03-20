@@ -303,7 +303,6 @@
                             {feature_questions}
                             {general_questions}
                             {current_prediction}
-                            bind:selected_prediction={datapoint_answer_selected}
                             feature_questions_dropdown={feature_names}
                             on:submit={submitQuestion}
                             on:next={handleNext}
