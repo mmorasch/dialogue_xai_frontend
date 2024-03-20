@@ -57,16 +57,16 @@
         type="button"
         style="font-size: 0.75rem;">
     {#if type === 'feature'}
-        {question.split('[feature selection]')[0]}
+        {@html question.split('[feature selection]')[0]}
         <select bind:value={activeFeature} on:change={handleChange} class="inline-feature-select">
             <option value="" disabled>Select Attribute</option>
             {#each featureOptions as feature}
                 <option value="{feature.id.toString()}">{feature.feature_name}</option>
             {/each}
         </select>
-        {question.split('[feature selection]')[1]}
+        {@html question.split('[feature selection]')[1]}
     {:else}
-        {question}
+        {@html question}
     {/if}
 </button>
 
