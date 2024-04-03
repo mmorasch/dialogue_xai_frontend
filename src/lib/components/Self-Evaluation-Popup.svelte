@@ -4,6 +4,7 @@
     import backend from "$lib/backend";
     import {base} from "$app/paths";
     import {writable} from 'svelte/store';
+    import QuestionButton from '$lib/components/QuestionButton.svelte';
 
     const dispatch = createEventDispatcher();
 
@@ -21,13 +22,17 @@
             return data.correctness_string;
         })
     });
+
+    // Setup questions and attention check
     let questions = [
         'I understand the important attributes for a decision.',
         'I cannot distinguish between the possible prediction.',
-        'I understand how the ML model works.',
+        'I understand how the Machine Learning model works.',
         'Select -2 to show that you pay attention.',
-        'I did not understand how the ML model makes decisions.'
+        'I did not understand how the Machine Learning model makes decisions.'
     ];
+    const attention_check_question_id = 3;
+    const correct_attribute = '-2';
 
     let answers = Array(questions.length).fill(0);
 
@@ -52,6 +57,43 @@
     let selectedValues = [];
 
     async function onComplete() {
+        // Log attention check seperately
+        let attention_check_selection = answers[attention_check_question_id].toString();
+        // For logging the attention check
+        let logging_information = {
+            correct: correct_attribute,
+            selected: attention_check_selection
+        };
+        const attention_check_id = "2";
+        fetch(`${base}/api/log_attention_check`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_id: user_id,
+                check_id: attention_check_id,
+                information: logging_information
+            })
+        });
+
+        // Check if 2 attention checks were answered correctly
+        fetch(`${base}/api/get_attention_check_passed`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({user_id: user_id}),
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Redirecting to:', data.redirectUrl);
+                if (data.status === 'Failed' && data.redirectUrl) {
+                    window.location.href = data.redirectUrl;
+                }
+            })
+            .catch(error => console.error('Error:', error));
+
         //merge selectedGeneralValues and selectedFeatureValues
         selectedValues = [...$selectedGeneralValues, ...$selectedFeatureValues];
 
@@ -88,6 +130,15 @@
     let generalQuestionsLength = general_questions.length;
     let featureQuestionsLength = feature_questions.length;
     let totalQuestionsLength = general_questions.length + feature_questions.length;
+    let staticExplanationLabels = [
+        '1. Attribute ranking',
+        '2. Possible alternative scenarios',
+        '3. Decision rules for similar people',
+        '4. What would happen if individual attributes were changed?',
+        '5. Attribute ranges and frequencies'];
+
+    let explanationsOrQuestions = study_group === 'interactive' ? ttm_questions : staticExplanationLabels;
+    let totalItemsLength = explanationsOrQuestions.length;
 
     const selectedGeneralValues = writable(Array(generalQuestionsLength).fill(''));
     const selectedFeatureValues = writable(Array(featureQuestionsLength).fill(''));
@@ -109,14 +160,16 @@
         <Stepper stepTerm="Step" on:complete={onComplete} buttonCompleteLabel="Continue Experiment">
             {#if study_group === 'interactive'}
                 <Step>
-                    <h1 class="center-text text-xl">Please rank the questions based on their usefulness, where 1 is the
-                        most useful question.</h1>
+                    <h1 class="center-text text-xl">Please <b>rank the questions</b> based on their usefulness, where
+                        <b>1 is the
+                            most useful</b> question. <br> (<b>Usefull</b> as in helpful to understand the model
+                        decision process.)</h1>
                     <!-- General Questions -->
                     <div class="flex flex-col my-[5px]">
                         <h2>General Questions</h2>
                         {#each general_questions as question, index}
                             <div class="flex my-[5px]">
-                                <select bind:value={$selectedGeneralValues[index]}>
+                                <select bind:value={$selectedGeneralValues[index]} class="select-margin">>
                                     <option value="">Select a rank</option>
                                     {#each Array(totalQuestionsLength).fill().map((_, i) => i + 1) as rank}
                                         <option value={rank} disabled={$disabledOptions.includes(rank)}>
@@ -124,12 +177,7 @@
                                         </option>
                                     {/each}
                                 </select>
-                                <button
-                                        data-value={question.id}
-                                        type="button"
-                                        class="btn variant-ghost-primary left-aligned-button">
-                                    {question.question}
-                                </button>
+                                <QuestionButton type="general" question={question.question} questionId={question.id}/>
                             </div>
                         {/each}
                     </div>
@@ -139,7 +187,7 @@
                         <h2>Attribute Related Questions</h2>
                         {#each feature_questions as question, index}
                             <div class="flex my-[5px]">
-                                <select bind:value={$selectedFeatureValues[index]}>
+                                <select bind:value={$selectedFeatureValues[index]} class="select-margin">>
                                     <option value="">Select a rank</option>
                                     {#each Array(totalQuestionsLength).fill().map((_, i) => i + 1) as rank}
                                         <option value={rank} disabled={$disabledOptions.includes(rank)}>
@@ -147,26 +195,48 @@
                                         </option>
                                     {/each}
                                 </select>
-                                <button
-                                        data-value={question.id}
-                                        type="button"
-                                        class="btn variant-ghost-primary left-aligned-button">
-                                    {question.question}
-                                </button>
+                                <QuestionButton type="general" question={question.question} questionId={question.id}/>
                             </div>
                         {/each}
                     </div>
                 </Step>
+            {:else}
+                <Step>
+                    <h1 class="center-text text-xl">Please <b>rank the explanations</b> based on their usefulness, where
+                        <b>1 is the
+                            most useful</b> question. <br> (<b>Usefull</b> as in helpful to understand the model
+                        decision process.)</h1>
+                    <!-- Adjusted Ranking UI for static explanations -->
+                    <div class="flex flex-col my-[5px]">
+                        {#each explanationsOrQuestions as item, index}
+                            <div class="flex my-[5px]">
+                                <select bind:value={$selectedGeneralValues[index]} class="select-margin">
+                                    <option value="">Select a rank</option>
+                                    {#each Array(totalItemsLength).fill().map((_, i) => i + 1) as rank}
+                                        <option value={rank} disabled={$disabledOptions.includes(rank)}>
+                                            {rank}
+                                        </option>
+                                    {/each}
+                                </select>
+                                <span>{item}</span>
+                                <!-- For explanations, item is a label; for questions, it might need adjustment -->
+                            </div>
+                        {/each}
+                    </div>
+                    <p>You can see a screenshot of the explanations to remember how they looked like here:</p>
+                    <img src="{base}/StaticReportImage.png" alt="Static Report Image">
+                </Step>
             {/if}
             <Step>
-                <h2 class="text-2xl">You are done with the initial phase where you had the possibility to learn about
+                <h1 class="text-center text-2xl">You are done with the <b>explanation phase</b> <br> where you had the
+                    possibility to learn about
                     the model decision.
-                    <br>
-                    You <b>correctly answered {user_correctness_string}</b> of the test cases.</h2>
+                    <br><br>
+                    You <b>correctly answered {user_correctness_string}</b> of the test cases.</h1>
             </Step>
             <Step>
                 <p class="text-center text-xl">
-                    How would you rate your understanding of the model decision process? <br>
+                    How would you rate your understanding of the model's decision process? <br>
                 </p>
 
                 {#each questions as question, i}
@@ -195,14 +265,16 @@
                             </div>
                         </div>
                     </div>
+                    <hr>
                 {/each}
             </Step>
             <Step>
                 <p class="text-center text-xl">
-                    Almost done!<br> <br>
+                    <b>Almost done!</b><br> <br>
 
-                    As a last activity, you will see new cases and will be asked to make a decision on how you think the
-                    model will predict them. You will not see explanations.<br>
+                    As a <b>last activity</b>, you will see new people<br> and will be asked to make a decision on what
+                    you think the
+                    model will predict for them. <br> You will not see explanations.<br>
                 </p>
             </Step>
         </Stepper>
@@ -210,6 +282,10 @@
 </div>
 
 <style>
+    .question-margin {
+        margin-top: 20px; /* adjust this value to create more space */
+    }
+
     .overlay {
         position: fixed;
         top: 0;
@@ -244,7 +320,7 @@
         display: flex;
         justify-content: space-between;
         margin-bottom: 20px; /* adjust this value to create more space between the rows */
-        border-bottom: 1px solid #000; /* add a bottom border to each row */
+
         align-items: center;
     }
 
@@ -269,6 +345,12 @@
 
     .left-aligned-button {
         align-self: flex-start;
+        margin-top: 10px;
+    }
+
+    .select-margin {
+        margin-right: 20px; /* adjust this value to create more space */
+        padding-right: 35px;
     }
 
 </style>

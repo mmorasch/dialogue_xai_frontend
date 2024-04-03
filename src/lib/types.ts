@@ -18,8 +18,13 @@ type TChatMessage = {
     followup: (TGeneralQuestion | TFeatureQuestion)[];
 };
 
+type TDatapointValueWithHistory = {
+    current: string;
+    old: string;
+};
+
 type TDatapoint = {
-    [key: string]: string
+    [key: string]: string | TDatapointValueWithHistory;
 };
 
 type StaticReport = {
@@ -63,7 +68,7 @@ type TTestingQuestion = {
     feature_id: number;
 };
 
-type TTestOrTeaching = 'test' | 'teaching' | 'final-test';
+type TTestOrTeaching = 'test' | 'teaching' | 'final-test' | 'intro-test';
 
 type TInteractiveOrStatic = 'static' | 'interactive';
 

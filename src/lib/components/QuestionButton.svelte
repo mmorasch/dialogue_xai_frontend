@@ -30,8 +30,8 @@
     }
 
     function submitQuestion() {
+        console.log(activeFeature);
         // Dispatch includes the question type to allow for differentiated handling
-        console.log('Dispatching action for question:', question);
         dispatch('action', {
             type,
             questionId,
@@ -42,12 +42,12 @@
 
     function handleChange(event) {
         activeFeature = event.target.value;
-
         // Proceed to submit the question automatically if a valid feature is selected
         if (type === 'feature' && activeFeature !== '') {
             submitQuestion();
         }
     }
+
 </script>
 
 <button
@@ -81,20 +81,5 @@
     select {
         @apply rounded-lg bg-[whitesmoke] cursor-pointer mx-0 my-0 px-2 py-2 border-2 w-auto;
         /* Adjust margin and padding to fit within the button */
-    }
-
-    /* Adjust inline-feature-select to align well with button text */
-    .inline-feature-select {
-        @apply inline-block cursor-pointer mx-1 px-1 border-2;
-        font-size: inherit;
-        height: fit-content;
-        vertical-align: middle;
-        line-height: 1.5; /* Adjust for better vertical alignment */
-        border-radius: 0.375rem; /* Optionally round corners to match button */
-        padding: 0 0.5rem; /* Adjust padding */
-    }
-
-    .inline-feature-select option {
-        @apply px-1 py-0.5;
     }
 </style>

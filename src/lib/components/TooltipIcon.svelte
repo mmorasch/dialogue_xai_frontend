@@ -25,7 +25,7 @@
 }
   .tooltip-text {
     visibility: hidden;
-    min-width: 150px;
+    min-width: 200px;
     background-color: #555;
     color: #fff;
     text-align: center;

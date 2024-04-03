@@ -3,6 +3,7 @@
     import Header from './Header.svelte';
     import {createEventDispatcher} from 'svelte';
     import QuestionButton from '$lib/components/QuestionButton.svelte';
+    import '$lib/../global.css';
 
     const dispatch = createEventDispatcher();
 
@@ -44,7 +45,6 @@
         // Common submission logic can go here, if applicable
         dispatch('submit', {questionId, question, feature});
     }
-
 </script>
 
 <div class="inputarea max-w-[500px] shadow-[0_15px_15px_-5px_rgba(0,0,0,0.2)] text-center mx-2.5 my-0">
@@ -92,21 +92,6 @@
     /* Style the selection field like tailwind */
     select {
         @apply rounded-lg bg-[whitesmoke] cursor-pointer mx-0 my-[5px] px-5 py-3.5 border-2;
-    }
-
-    /* Refined styles for inline dropdown */
-    .inline-feature-select {
-        @apply inline-block cursor-pointer mx-1 px-1 border-2;
-        font-size: inherit;
-        height: fit-content;
-        vertical-align: middle;
-        padding: 0; /* Remove default padding */
-        line-height: 1; /* Adjust line-height */
-        border-radius: 0; /* Make it square */
-    }
-
-    .inline-feature-select option {
-        @apply px-1 py-0.5;
     }
 
     input[type='submit'] {

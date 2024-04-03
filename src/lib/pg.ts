@@ -1,4 +1,5 @@
-import postgres from 'postgres'
+import postgres from 'postgres';
+import type { JSONValue } from 'postgres';
 import {POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, POSTGRES_HOST} from "$env/static/private"
 
 const sql = postgres({
@@ -35,6 +36,40 @@ export async function get_study_group() {
         console.error('Error in get_study_group:', error);
         throw error; // or handle error as needed
     }
+}
+
+export async function getFirstTwoAttentionChecksPassed(userId: string): Promise<boolean> {
+    const result = await sql`
+        SELECT attention_checks
+        FROM user_completed
+        WHERE user_id = ${userId}
+    `;
+
+    if (result.length === 0) {
+        return false;
+    }
+
+    const attentionChecks = result[0].attention_checks;
+    if (attentionChecks === null) {
+        return false;
+    }
+
+    const checkIds = Object.keys(attentionChecks);
+
+    // Ensure there are at least two checks.
+    if (checkIds.length < 2) {
+        return false;
+    }
+
+    // Check if the first two checks are passed.
+    for (let i = 1; i <= 2; i++) {
+        const check = attentionChecks[i.toString()];
+        if (check.correct !== check.selected) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 export async function set_study_group(userId: string, studyGroup: string) {
@@ -83,6 +118,16 @@ export async function logFinalFeedback(userId: string, feedback: string) {
     `;
 }
 
+export async function logAttentionChecks(userId: string, checkId: string, attentionData: JSONValue) {
+    return await sql`
+        INSERT INTO user_completed (user_id, attention_checks)
+        VALUES (${userId}, ${sql.json({ [checkId]: attentionData })})
+        ON CONFLICT (user_id)
+        DO UPDATE SET attention_checks = user_completed.attention_checks || ${sql.json({ [checkId]: attentionData })}
+        WHERE user_completed.user_id = ${userId}
+    `;
+}
+
 export async function logCompleted(userId: string) {
     return await sql`
         UPDATE users
@@ -95,6 +140,13 @@ export async function createUniParticipant(matrikulation_num: string) {
     return await sql`
         INSERT INTO user_completed (matrik_num)
         VALUES (${matrikulation_num})
+    `;
+}
+
+export async function createProlificParticipant(user_id: string, prolific_id: string) {
+    return await sql`
+        INSERT INTO user_completed (user_id, prolific_id)
+        VALUES (${user_id}, ${prolific_id})
     `;
 }
 

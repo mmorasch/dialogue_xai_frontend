@@ -7,13 +7,6 @@
     import TooltipIcon from './TooltipIcon.svelte';
     import type {TFeatureName} from '$lib/types';
 
-    let firstColumnValues = []; // Array to store the values of the first column
-
-    // Populate firstColumnValues with the values of the first column
-    $: {
-        firstColumnValues = body.map(row => row[0]);
-    }
-
     // Check if prediction_probability row is present in body and if so, remove it
     $: {
         body = body.filter(row => row[0] !== 'prediction_probability');
@@ -54,7 +47,7 @@
         </thead>
         <tbody>
         {#each sortedBody as row}
-            <tr>
+            <tr class="{row[1].includes('Current:') ? 'highlighted' : ''}">
                 <td>
                     <span>{row[0]}</span>
                     {#if feature_tooltips[row[0].toLowerCase()]}
@@ -62,10 +55,14 @@
                     {/if}
                 </td>
                 <td>
-                    {#if feature_units[row[0].toLowerCase()]}
-                        <span>{row[1]} {feature_units[row[0].toLowerCase()]}</span>
+                    {#if row[1].includes('Current:')}
+                        {@html row[1].replace(/Current: ([^,]+), Old: (.+)/, (match, current, old) =>
+                            `<strong>${current}</strong> <s>${old}</s>`)}
                     {:else}
                         <span>{row[1]}</span>
+                    {/if}
+                    {#if feature_units[row[0].toLowerCase()]}
+                        <span> {feature_units[row[0].toLowerCase()]}</span>
                     {/if}
                 </td>
             </tr>
@@ -89,5 +86,20 @@
 
     .tooltipIcon {
         margin: 15px; /* Adjust as needed */
+    }
+
+    .highlighted {
+        background-color: purple; /* or any light color for highlighting */
+        color: white;
+    }
+
+    s {
+        color: #999; /* Light grey for the old value */
+        text-decoration: line-through;
+    }
+
+    strong {
+        color: #000; /* Black or a bold color for the new value */
+        font-weight: bold;
     }
 </style>

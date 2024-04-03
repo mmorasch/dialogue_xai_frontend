@@ -53,7 +53,7 @@
         followup: []
     }];
 
-    let {feature_names, feature_questions, general_questions}: TQuestionResult = data.questions;
+    let {feature_questions, general_questions}: TQuestionResult = data.questions;
     delete data.datapoint.true_label;
 
     function logEvent(details: any) {

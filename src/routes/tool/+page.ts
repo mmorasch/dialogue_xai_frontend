@@ -17,6 +17,7 @@ export const load = (async ({url}) => {
     const user_id = "";
     const study_group = "interactive";
 
+    // Init
     const {
         questions,
         feature_tooltips,
@@ -24,6 +25,7 @@ export const load = (async ({url}) => {
         prediction_choices
     } = await (await backend.xai(user_id, study_group).init()).json();
 
+    // Get Initial Train Datapoint
     const {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         id,
@@ -33,6 +35,7 @@ export const load = (async ({url}) => {
         prediction_probability,
         ...datapoint
     } = await (await backend.xai(user_id).get_train_datapoint()).json() as TDatapointResult;
+
     return {
         user_id,
         study_group,

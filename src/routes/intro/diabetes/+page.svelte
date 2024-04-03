@@ -108,7 +108,7 @@
         <Step>
             <p>
                 This is a study on <b>understanding the decision process of Artificial Intelligence (AI) models</b>
-                which takes about 20-30 minutes. It is designed as part of a large research project
+                which takes about 30 minutes. It is designed as part of a large research project
                 that seeks to improve understanding between AI Systems (i.e. Machine learning models) and humans.<br/>
             </p>
 

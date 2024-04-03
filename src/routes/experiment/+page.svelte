@@ -3,37 +3,44 @@
     import TTMChat from '$lib/components/TTM-Chat.svelte';
     import TTMQuestions from '$lib/components/TTM-Questions.svelte';
     import type {
-        TChatMessage,
         TDatapoint,
         TQuestionResult,
         TTestOrTeaching,
-        StaticReport
+        StaticReport, TDatapointResult
     } from '$lib/types';
     import backend from '$lib/backend';
     import {fade} from 'svelte/transition';
     import type {PageData} from '../../../../.svelte-kit/types/src/routes';
-    import {PUBLIC_TEACH_TEST_CYCLES, PUBLIC_END_TEST_CYCLES} from '$env/static/public';
+    import {PUBLIC_TEACH_TEST_CYCLES, PUBLIC_END_TEST_CYCLES, PUBLIC_DATASET_NAME} from '$env/static/public';
 
     import {goto} from '$app/navigation';
     import {base} from '$app/paths';
     import StaticExplanationReport from '$lib/components/StaticExplanationReport.svelte';
     import {writable} from "svelte/store";
-    import Popup from '$lib/components/Self-Evaluation-Popup.svelte';
+    import SelfEvalPopup from '$lib/components/Self-Evaluation-Popup.svelte';
+    import IntroDonePopup from '$lib/components/Intro-Done-Popup.svelte';
+    import Spinner from '$lib/components/Spinner.svelte';
 
     /**
      * Data provided by the `+page.ts` load function in the same folder
      */
     export let data: PageData;
-    export const popupVisible = writable(false);
+    export const selfAssesmentPopupVisible = writable(false);
+    export const introPopupVisible = writable(false);
 
     //-----------------------------------------------------------------
 
-    popupVisible.subscribe(value => {
-        $popupVisible = value;
+    selfAssesmentPopupVisible.subscribe(value => {
+        $selfAssesmentPopupVisible = value;
+    });
+
+    introPopupVisible.subscribe(value => {
+        $introPopupVisible = value;
     });
 
     function handleConfirm() {
-        popupVisible.set(false);
+        selfAssesmentPopupVisible.set(false);
+        introPopupVisible.set(false);
     }
 
     /**
@@ -52,7 +59,14 @@
     /**
      * Chat relevant
      */
-    let messages: TChatMessage[] = [{isUser: false, feedback: false, text: data.initial_prompt, id: 1000}];
+    let messages: { feedback: boolean; text: string; id: number; isUser: boolean }[] = [{
+        isUser: false,
+        feedback: false,
+        text: data.initial_prompt,
+        id: 1000
+    }];
+
+    let isLoading = false;
 
     //-----------------------------------------------------------------
 
@@ -60,6 +74,7 @@
      * Test relevant
      */
     let cycles_completed = 0;
+    let transition_done: boolean;
     //-----------------------------------------------------------------
     /**
      * Static Report relevant
@@ -71,25 +86,13 @@
     let feature_names = data.feature_names;
     let user_id: string = data.user_id;
     let study_group = data.study_group;
-    let test_or_teaching: TTestOrTeaching = 'teaching';
+    let experiment_phase: TTestOrTeaching = 'intro-test';
     let true_label: string = data.datapoint.true_label;
 
     delete data.datapoint.true_label;
 
-    function logEvent(details: any) {
-        fetch(`${base}/api/log_event`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                user_id: user_id,
-                event_source: 'teaching',
-                event_type: 'question',
-                details: details,
-            })
-        });
-    }
+    let new_datapoint: TDatapoint;
+    let initial_prompt = '';
 
     function createAndPushMessage(text: string, isUser: boolean, feedback: boolean, id: number) {
         messages.push({
@@ -122,7 +125,18 @@
                 question: full_question,
                 question_id: questionId
             };
-            logEvent(details);
+            fetch(`${base}/api/log_event`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    user_id: user_id,
+                    event_source: 'teaching',
+                    event_type: 'question',
+                    details: details,
+                })
+            });
 
             createAndPushMessage(full_question, true, false, questionId);
             messages = messages;
@@ -139,100 +153,106 @@
     }
 
     async function handleNext(e: any) {
-        /**
-         * Change from test to teach or vice versa
-         */
-        let id: string = '';
-        let initial_prompt: string = '';
-        let new_datapoint: TDatapoint;
+        isLoading = true;
+        transition_done = false;
+        let next_phase = experiment_phase;
+        if (experiment_phase !== 'teaching') {
+            datapoint_count++;
+            cycles_completed++;
+        }
 
-        if (cycles_completed === parseInt(PUBLIC_TEACH_TEST_CYCLES) + parseInt(PUBLIC_END_TEST_CYCLES)) {
+        // Check if intro is over. Intro test has same number of cycles as end test
+        if (experiment_phase === 'intro-test' && datapoint_count > parseInt(PUBLIC_END_TEST_CYCLES)) {
+            // After completing pre-test, switch to teaching
+            cycles_completed = 0; // Reset for teaching cycle
+            datapoint_count = 1; // Reset for teaching cycle
+            next_phase = 'teaching';
+            transition_done = true;
+            introPopupVisible.set(true);
+        }
+
+        // Check if all cycles (teach-test cycles + end-test cycles) are completed
+        if (cycles_completed >= parseInt(PUBLIC_TEACH_TEST_CYCLES) + parseInt(PUBLIC_END_TEST_CYCLES)) {
             if (study_group === 'static') {
-                goto(`${base}/exit/feedback?user_id=${user_id}`);
+                goto(`${base}/exit/feedback/${PUBLIC_DATASET_NAME}/?user_id=${user_id}`);
             } else {
                 goto(`${base}/exit?user_id=${user_id}`);
             }
+            return;
         }
 
-        if (test_or_teaching === 'test') {
-            // Change to TRAIN CASE
-            datapoint_count++;
-            cycles_completed++;
-
-            // Check if we have completed the teach-test cycles
-            if (cycles_completed === parseInt(PUBLIC_TEACH_TEST_CYCLES)) {
-                // Show intermediate screen
-                popupVisible.set(true);
-                // After showing the intermediate screen, switch to test
-                test_or_teaching = 'final-test';
-                // reset datapoint count
-                datapoint_count = 0;
+        if (experiment_phase === 'test') {
+            if (cycles_completed == parseInt(PUBLIC_TEACH_TEST_CYCLES)) {
+                // If teach-test cycles are complete, move to final-test
+                selfAssesmentPopupVisible.set(true);
+                next_phase = 'final-test';
+                datapoint_count = 1; // Reset datapoint count for final-test phase
+                transition_done = true;
             } else {
-                ({id, current_prediction, initial_prompt, static_report, ...new_datapoint} = await (
-                    await backend.xai(user_id).get_train_datapoint()
-                ).json());
-                test_or_teaching = 'teaching';
+                // Switch to teaching after a test, if not yet completed all teach-test cycles
+                next_phase = 'teaching';
+                transition_done = true;
             }
-        } else if (test_or_teaching === 'teaching') {
-            // Log timing of next button for teaching
-            const details = {
-                datapoint_count: datapoint_count,
-            };
-            fetch(`${base}/api/log_event`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    user_id: user_id,
-                    event_source: 'teaching',
-                    event_type: 'handleNext',
-                    details: details,
-                })
-            });
-
-            // Change to Test CASE
-            ({id, current_prediction, initial_prompt, ...new_datapoint} = await (
-                await backend.xai(user_id).get_test_datapoint()
-            ).json());
-
-            test_or_teaching = 'test';
+        } else if (experiment_phase === 'teaching' && !transition_done) {
+            // After teaching, if not coming from test_intro, always switch to testing in the next cycle
+            next_phase = 'test';
         }
 
-        // If we are in the final test
-        if (test_or_teaching === 'final-test') {
-            // final-test
-            datapoint_count++;
-            // Log timing of next button for testing
-            const details = {
-                datapoint_count: datapoint_count,
+        // Fetch the appropriate datapoint based on the current phase
+        await getDatapoint(next_phase);
+        setNewCurrentDatapoint();
+        experiment_phase = next_phase;
+        logNextEvent();
+        isLoading = false;
+    }
 
-            };
-            fetch(`${base}/api/log_event`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    user_id: user_id,
-                    event_source: 'teaching',
-                    event_type: 'handleNext',
-                    details: details,
-                })
-            });
-            ({id, current_prediction, initial_prompt, ...new_datapoint} = await (
-                await backend.xai(user_id).get_test_datapoint()
-            ).json());
-            cycles_completed++;
+    async function getDatapoint(type: TTestOrTeaching) {
+        let endpoint = '';
+        switch (type) {
+            case 'intro-test':
+                endpoint = 'get_intro_test_datapoint';
+                break;
+            case 'teaching':
+                endpoint = 'get_train_datapoint';
+                break;
+            case 'test':
+                endpoint = 'get_test_datapoint';
+                break;
+            case 'final-test':
+                endpoint = 'get_final_test_datapoint';
+                break;
         }
 
+        if (type === 'teaching') {
+            let result = await (await backend.xai(user_id).get_train_datapoint()).json() as TDatapointResult;
+            initial_prompt = result.initial_prompt;
+            current_prediction = result.current_prediction;
+            static_report = result.static_report;
+            new_datapoint = result;
+        } else {
+            ({current_prediction, initial_prompt, ...new_datapoint} = await (
+                await backend.xai(user_id)[endpoint]()
+            ).json());
+        }
+    }
+
+    function setNewCurrentDatapoint() {
         messages = [{isUser: false, feedback: false, text: initial_prompt, id: 1000}];
+        true_label = <string> new_datapoint.true_label;
         delete new_datapoint.true_label;
         current_datapoint = new_datapoint;
-
-        //-----------------------------------------------------------------
-        datapoint_answer_selected = null;
+        datapoint_answer_selected = null; // Reset selected answer
     }
+
+    function logNextEvent() {
+        const details = {datapoint_count_new: datapoint_count};
+        fetch(`${base}/api/log_event`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({user_id, event_source: experiment_phase, event_type: 'handleNext', details})
+        });
+    }
+
 
     function handleFeedbackButtonClick(event) {
         const {buttonType} = event.detail;
@@ -259,16 +279,22 @@
     }
 </script>
 
-{#if $popupVisible}
-    <Popup {user_id} {feature_questions} {general_questions} {study_group} on:confirm={handleConfirm}/>
+
+{#if $introPopupVisible}
+    <IntroDonePopup {user_id} {feature_questions} {general_questions} {study_group} on:confirm={handleConfirm}/>
+{:else if $selfAssesmentPopupVisible}
+    <SelfEvalPopup {user_id} {feature_questions} {general_questions} {study_group} on:confirm={handleConfirm}/>
 {:else}
-    <div class={test_or_teaching === 'teaching' ? "col-start-1 col-end-2" : "col-start-2 col-end-3"}>
+    {#if isLoading}
+        <Spinner />
+    {/if}
+    <div class={experiment_phase === 'teaching' ? "col-start-1 col-end-2" : "col-start-2 col-end-3"}>
         <TTMDatapoint
-                data={current_datapoint}
+                datapoint={current_datapoint}
                 feature_tooltips={feature_tooltips}
                 bind:selected_prediction={datapoint_answer_selected}
                 bind:datapoint_count
-                testOrTeaching={test_or_teaching}
+                experimentPhase={experiment_phase}
                 feature_names={feature_names}
                 feature_units={feature_units}
                 interactiveOrStatic={study_group}
@@ -279,14 +305,15 @@
         />
     </div>
     {#if datapoint_answer_selected}
-        {#if test_or_teaching === 'teaching'}
+        {#if experiment_phase === 'teaching'}
             {#if study_group === 'static'}
                 <div
                         class="col-start-2 col-end-4 overflow-y-scroll"
                         transition:fade={{ delay: 250, duration: 500 }}
                 >
                     <StaticExplanationReport
-                            {static_report}
+                            static_report={static_report}
+                            true_label={true_label}
                             on:next={handleNext}
                     />
                 </div>

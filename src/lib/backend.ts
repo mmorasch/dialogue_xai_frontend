@@ -7,6 +7,8 @@ export default {
         finish: () => fetch(PUBLIC_BACKEND_URL + "finish" + "?user_id=" + user_id, {method: 'DELETE',}),
         get_train_datapoint: () => fetch(PUBLIC_BACKEND_URL + "get_train_datapoint" + "?user_id=" + user_id),
         get_test_datapoint: () => fetch(PUBLIC_BACKEND_URL + "get_test_datapoint" + "?user_id=" + user_id),
+        get_final_test_datapoint: () => fetch(PUBLIC_BACKEND_URL + "get_final_test_datapoint" + "?user_id=" + user_id),
+        get_intro_test_datapoint: () => fetch(PUBLIC_BACKEND_URL + "get_intro_test_datapoint" + "?user_id=" + user_id),
         get_testing_questions: () => fetch(PUBLIC_BACKEND_URL + "get_testing_questions" + "?user_id=" + user_id),
         get_response: (question: number, feature: number) => fetch(PUBLIC_BACKEND_URL + "get_response" + "?user_id=" + user_id, {
             method: "POST",

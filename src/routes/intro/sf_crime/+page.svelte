@@ -133,12 +133,13 @@
                     <li><b style="color: green;">Learning Phase:</b> Given one district's information at a time,
                         <b>guess the Machine Learning model's decision</b>.
                     </li>
+                    <li>
                     {#if study_group === 'interactive'}
-                        <li>{@html study_group_interactive_text}</li>
+                        {@html study_group_interactive_text}
                     {:else}
-                        <li>{@html study_group_static_text}</li>
+                        {@html study_group_static_text}
                     {/if}
-                    <li>When you feel that you understand the reason for the models decision, proceed by clicking <b>Proceed</b>.
+                    When you feel that you understand the reason for the models decision, proceed by clicking <b>Proceed</b>.
                     </li>
                     <li><b style="color: purple;">Testing Phase:</b> Guess the model prediction for a new district based
                         on your

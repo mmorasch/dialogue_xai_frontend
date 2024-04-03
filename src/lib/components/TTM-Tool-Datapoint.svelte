@@ -1,10 +1,9 @@
 <script lang="ts">
     import Datapoint from './Datapoint.svelte';
-    import {createEventDispatcher} from "svelte";
     import Header from "$lib/components/Header.svelte";
     import type {PredictionProbability} from "$lib/types";
+    import '$lib/../global.css';
 
-    const dispatch = createEventDispatcher();
     export let feature_names;
     export let data: { [key: string]: string };
     export let feature_tooltips: { [key: string]: string };
@@ -22,7 +21,7 @@
 
 
     <div class="content-align">
-        <h2 style="text-align: center">Current Case</h2>
+        <h2 style="text-align: center">Current Person</h2>
     </div>
 
     <main class="mb-2">
@@ -73,12 +72,6 @@
     .content-align {
         width: 90%; /* Same width as table */
         margin: 0 auto; /* To center it */
-    }
-
-    h2 {
-        color: black;
-        font-size: 16px;
-        font-weight: bold;
     }
 
     progress::-webkit-progress-value {

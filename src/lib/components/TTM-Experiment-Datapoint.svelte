@@ -8,42 +8,45 @@
     import backend from "$lib/backend";
     import FeedbackWindow from "$lib/components/FeedbackWindow.svelte";
     import {createEventDispatcher} from "svelte";
+    import '$lib/../global.css';
 
     const dispatch = createEventDispatcher();
 
-    export let testOrTeaching: TTestOrTeaching;
+    export let experimentPhase: TTestOrTeaching;
     export let interactiveOrStatic: TInteractiveOrStatic;
     export let feature_names;
     export let prediction_choices;
 
     export let true_label: string;
 
-    export let data: { [key: string]: string };
+    export let datapoint: { [key: string]: string };
     export let feature_tooltips: { [key: string]: string };
     export let feature_units: { [key: string]: string };
     export let prediction_question =
         'What will the model predict for the current case?';
 
-    // Check if prediction_probability is in data and remove it if it is
-    // eslint-disable-next-line no-prototype-builtins
-    if (data.hasOwnProperty('prediction_probability')) {
-        delete data['prediction_probability'];
-    }
+    export let confidence_level = "-1";
+    export let feedback = "";
 
     export let teaching_intro = "";
     if (interactiveOrStatic === 'static') {
-        teaching_intro = "Your task is to <b>guess what the model will predict</b>, based on the information below. Afterward, you can read the explanations to <b>understand the model's prediction</b>.";
+        teaching_intro = "Task: <b>Guess what the model will predict</b>, based on the information below. Afterward, you can read the explanations to <b>understand the model's prediction</b>.";
     } else {
-        teaching_intro = "Your task is to <b>guess what the model will predict</b>, based on the information below. Afterward, you can ask questions to <b>understand the model's prediction</b>.";
+        teaching_intro = "Task: <b>Guess what the model will predict</b>, based on the information below. Afterward, you can ask questions to <b>understand the model's prediction</b>.";
     }
 
     export let test_intro =
-        "<b>Test your knowledge</b> about the model. Based on what you learned before, what do you think the model will predict for this case? <b>You will not receive \n" +
-        "explanations this time.</b>";
+        "<b>Test your knowledge</b> about the model. <br> What do you think the model will predict for this case? <br> </b> <b>Note</b>: You will not receive \n" +
+        "explanations this time. <br> <b><span style=\"color: purple;\">Purple rows</span></b> indicate changes in the attribute values with the old value (the one in the previous training phase) struck through.";
 
     export let final_test_intro =
-        "<b>Final test of your knowledge</b> about the model. Based on what you learned before, what do you think the model will predict for this case? <b>You will not receive \n" +
-        "explanations this time.</b>";
+        "<b>Final test of your knowledge</b> about the model's decision process.<br> Based on what you learned before, what do you think the model will predict for this case? <br> <b>Note:</b> You will not receive \n" +
+        "explanations this time.";
+
+    export let introduction_test_intro =
+        "The table shows a <b>description of a person</b>. <br> " +
+        "<b>Task</b>: Guess if the current person is earning <b>more or less than 50k$</b> a year.<br>" +
+        "<b>Note</b>: You will not see the model prediction and explanations in the Introduction Phase.";
 
     export let datapoint_count: number | null = null;
 
@@ -55,48 +58,38 @@
     // get event categories
     export let selected_prediction: string | null = null;
 
-
-    async function logPrediction() {
-        // if final test, return
-        if (testOrTeaching === 'final-test') {
-            return;
-        }
-        const details = {
-            datapoint_count: datapoint_count,
-            prediction: selected_prediction,
-            true_label: true_label
-        };
-        fetch(`${base}/api/log_event`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                user_id: user_id,
-                event_source: testOrTeaching,
-                event_type: 'user_prediction',
-                details: details,
-            })
-        });
-        // Check if usser_id is not null
-        if (user_id !== null && selected_prediction !== null) {
-            await backend.xai(user_id).set_user_prediction(selected_prediction);
-        }
-        if (testOrTeaching === 'test') {
-            dispatch('next', null);
+    $: {
+        if (confidence_level !== "-1" && experimentPhase === 'intro-test') {
+            logPrediction();
+            dispatch('next');
         }
     }
 
-    function logFinalTestPrediction(event) {
-        // Get the feedback from the event
-        const {feedback} = event.detail;
+    async function logPrediction(event?) {
+        const isFinalTest = experimentPhase === 'final-test';
+        const isIntroTest = experimentPhase === 'intro-test';
 
+        // If intro and confidence level not set, return
+        if (isIntroTest && confidence_level === "-1") {
+            return;
+        }
+
+        // Extract feedback and confidence level if applicable
+        let confidenceLevelToSend = confidence_level;
+        if ((isFinalTest) && event) {
+            feedback = event?.detail?.feedback || '';
+        }
+
+        // Prepare common details object with optional properties based on the phase
         const details = {
             datapoint_count: datapoint_count,
             prediction: selected_prediction,
             true_label: true_label,
-            feedback: feedback,
+            ...(isIntroTest || isFinalTest) && {confidence_level: confidenceLevelToSend},
+            ...(isFinalTest && {feedback: feedback})
         };
+
+        // Log event
         fetch(`${base}/api/log_event`, {
             method: 'POST',
             headers: {
@@ -104,71 +97,132 @@
             },
             body: JSON.stringify({
                 user_id: user_id,
-                event_source: testOrTeaching,
+                event_source: experimentPhase,
                 event_type: 'user_prediction',
                 details: details,
             })
         });
-        // Check if usser_id is not null
+
+        // Check if user_id and selected_prediction are not null and log asynchronously
         if (user_id !== null && selected_prediction !== null) {
-            backend.xai(user_id).set_user_prediction(selected_prediction);
+            await backend.xai(user_id).set_user_prediction(selected_prediction);
         }
-        // Dispatch next event
-        dispatch('next', null);
+        // Reset confidence level and dispatch next event if not in teaching.
+        if (experimentPhase !== 'teaching' && experimentPhase !== "final-test") {
+            confidence_level = "-1";
+        }
+
+        if (experimentPhase === "test") {
+            dispatch('next');
+        }
+
+        // Don't dispatch next event confidence or feedback are not set
+        if (isFinalTest && event) {
+            const checks = [
+                {condition: confidence_level === "-1", message: 'Please select your confidence before proceeding.'},
+                {condition: feedback === "", message: 'Please describe why you made the decision.'}
+            ];
+            for (let check of checks) {
+                if (check.condition) {
+                    alert(check.message);
+                    return;
+                }
+            }
+        }
+
+        if (isFinalTest && confidence_level !== "-1") {
+            // Dispatch next event if confidence level is set
+            confidence_level = "-1";
+            console.log("Dispatching next event");
+            dispatch('next');
+            return;
+        }
     }
 </script>
 
 
 <div
-        class:teaching-color={testOrTeaching === 'teaching'}
-        class:testing-color={testOrTeaching === 'test'}
-        class:final-testing-color={testOrTeaching === 'final-test'}
+        class:teaching-color={experimentPhase === 'teaching'}
+        class:testing-color={experimentPhase === 'test'}
+        class:final-testing-color={experimentPhase === 'final-test'}
+        class:intro-testing-color={experimentPhase === 'intro-test'}
         class="inputarea h-full flex-1 overflow-y-auto shadow-[0_15px_15px_-5px_rgba(0,0,0,0.2)] mx-1.5 my-0"
 >
-    {#if testOrTeaching === 'test'}
+    {#if experimentPhase === 'test'}
         <Header>Test {datapoint_count} of {PUBLIC_TEACH_TEST_CYCLES}</Header>
     {/if}
-    {#if testOrTeaching === 'teaching'}
+    {#if experimentPhase === 'teaching'}
         <Header>Case {datapoint_count} of {PUBLIC_TEACH_TEST_CYCLES}</Header>
     {/if}
-    {#if testOrTeaching === 'final-test'}
+    {#if experimentPhase === 'final-test'}
         <Header>Case {datapoint_count} of {PUBLIC_END_TEST_CYCLES}</Header>
     {/if}
 
     <div class="content-align">
-        {#if testOrTeaching === 'test'}
+        {#if experimentPhase === 'test'}
             <h2 style="text-align: center; color: purple;">Testing Phase</h2>
-            <p class="mb-3">{@html test_intro}</p>
+            <p class="mb-3 centered-text">{@html test_intro}</p>
         {/if}
-        {#if testOrTeaching === 'teaching'}
+        {#if experimentPhase === 'teaching'}
             <h2 style="text-align: center; color: green;">Learning Phase</h2>
             <p class="mb-3 text-xs centered-text">{@html teaching_intro}</p>
         {/if}
-        {#if testOrTeaching === 'final-test'}
-            <h2 style="text-align: center; color: purple;">Final Testing Phase</h2>
-            <p class="mb-3">{@html final_test_intro}</p>
+        {#if experimentPhase === 'final-test'}
+            <h2 style="text-align: center; color: dodgerblue;">Final Testing Phase</h2>
+            <p class="mb-3 centered-text">{@html final_test_intro}</p>
         {/if}
-        <h2 style="text-align: center">Current Case</h2>
+        {#if experimentPhase === 'intro-test'}
+            <h2 style="text-align: center; color: dodgerblue; margin-top: 15px;">Introduction Phase</h2>
+            <p class="mb-3 centered-text">{@html introduction_test_intro}</p>
+        {/if}
+        <h2 style="text-align: center">Current Person</h2>
     </div>
 
     <main>
         <Datapoint
                 header={['Attribute', 'Value']}
-                body={Object.keys(data).map((key) => [key, data[key].toString()])}
+                body={Object.entries(datapoint).map(([key, value]) => {
+                // Check if the value is an object with 'current' and 'old' properties
+                if (value && typeof value === 'object' && 'current' in value) {
+                    // Format the value to include both current and old information
+                    let formattedValue = `Current: ${value.current}`;
+                    if ('old' in value) {
+                        formattedValue += `, Old: ${value.old}`;
+                    }
+                    return [key, formattedValue];
+                } else {
+                    // For simple string values or other types that do not require formatting
+                    return [key, typeof value === 'string' ? value : JSON.stringify(value)];
+                }
+            })}
                 feature_tooltips={feature_tooltips}
                 feature_units={feature_units}
                 feature_names={feature_names}
         />
     </main>
     <div class="content-align">
-        {#if testOrTeaching === 'final-test' && selected_prediction != null}
-            <FeedbackWindow
-                    placeholder="Please describe why you made the decision..."
-                    submitLabel="Proceed"
-                    on:feedbackSubmit={logFinalTestPrediction}
-            />
+        {#if (experimentPhase === 'final-test' || experimentPhase === 'intro-test') && selected_prediction != null}
+            <div style="display: flex; align-items: center;">
+                <h2 style="text-align: center; margin-right: 10px; margin-top: 15px;">How confident are you in your
+                    choice?</h2>
+                <select id="confidence" name="confidence" bind:value={confidence_level} class="inline-feature-select"
+                        style="margin-top: 17px; font-size: 17px; padding: 9px; padding-right: 25px;">
+                    <option value="-1">-- Select --</option>
+                    <option value="0">Not confident at all</option>
+                    <option value="1">Slightly confident</option>
+                    <option value="2">Somewhat confident</option>
+                    <option value="3">Fairly confident</option>
+                    <option value="4">Completely confident</option>
+                </select>
+            </div>
+            {#if (experimentPhase === 'final-test')}
+                <FeedbackWindow
+                        placeholder="Please describe why you made the decision..."
+                        submitLabel="Next"
+                        on:feedbackSubmit={logPrediction}
+                />
+            {/if}
         {:else}
-            <hr class="!border-t-4 my-3"/>
             <form>
                 <div class="mt-6">
                     <h2 style="text-align: center">Make a prediction</h2>
@@ -220,12 +274,6 @@
 
     .testing-color {
         background-color: lightgray;
-    }
-
-    h2 {
-        color: black;
-        font-size: 16px;
-        font-weight: bold;
     }
 
     .centered-text {

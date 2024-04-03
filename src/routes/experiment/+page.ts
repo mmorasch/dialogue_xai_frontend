@@ -18,8 +18,6 @@ export const load = (async ({url}) => {
     if (user_id === null) throw error(400, 'user_id is required as a query parameter');
 
     // backend returns data that is either questions or report (A/B study design)
-    // TODO: Remove fixed study_group later
-    study_group = 'interactive';
     const {
         questions,
         feature_tooltips,
@@ -31,11 +29,8 @@ export const load = (async ({url}) => {
     const {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         id,
-        initial_prompt,
-        current_prediction,
-        static_report,
         ...datapoint
-    } = await (await backend.xai(user_id).get_train_datapoint()).json() as TDatapointResult;
+    } = await (await backend.xai(user_id).get_intro_test_datapoint()).json() as TDatapointResult;
 
     return {
         user_id,
@@ -45,10 +40,7 @@ export const load = (async ({url}) => {
         feature_tooltips,
         feature_units,
         prediction_choices,
-        datapoint,
-        initial_prompt,
-        current_prediction,
-        static_report,
+        datapoint
     }
-
 }) satisfies PageLoad;
+

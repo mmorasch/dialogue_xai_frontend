@@ -1,5 +1,12 @@
 import type {RequestHandler} from './$types';
-import {createUniParticipant, set_study_group, setMatrikNum, setProlificId, setupUserProfile} from '$lib/pg'
+import {
+    createProlificParticipant,
+    createUniParticipant,
+    set_study_group,
+    setMatrikNum,
+    setProlificId,
+    setupUserProfile
+} from '$lib/pg'
 
 export const POST: RequestHandler = async ({request}) => {
     const body = await request.json();
@@ -10,6 +17,7 @@ export const POST: RequestHandler = async ({request}) => {
         await setMatrikNum(body.user_id, body.matrikelnummer);
     }
     if (body.prolific_id !== undefined) {
+        await createProlificParticipant(body.user_id, body.prolific_id);
         await setProlificId(body.user_id, body.prolific_id);
     }
     return new Response('ok');

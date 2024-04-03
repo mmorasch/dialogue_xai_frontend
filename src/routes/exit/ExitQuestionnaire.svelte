@@ -16,19 +16,22 @@
     }
 
     let shuffled_questions = [
-        'The Chatbot is cooperative.',
+        'The chatbot is cooperative.',
         'I like the Chatbot.',
         'The chatbot has no clue of what it is doing.',
         'The chatbot always gives good advice.',
         'The chatbot can collaborate in a productive way.',
         'The chatbot acts truthfully.',
         'The chatbots appears confused.',
-        'The Chatbot interacts socially with me.',
+        'The chatbot interacts socially with me.',
+        'I pay attention. Select -1 to prove it.',
         'The chatbot acts intentionally',
         'I can see myself using the Chatbot in the future.',
         'I can rely on the chatbot.',
         'The Chatbot is easy to use.',
     ];
+    const attention_check_col_id = 8;
+    const attention_ckeck_correct_answer = "-1";
 
     let chunks = [];
     const questions_per_page = 7;
@@ -41,6 +44,25 @@
 
     // Save Answers to Database
     async function onComplete() {
+         // Log attention check seperately
+        let attention_check_selection = answers[attention_check_col_id].toString();
+        // For logging the attention check
+        let logging_information = {
+            correct: attention_ckeck_correct_answer,
+            selected: attention_check_selection
+        };
+        const attention_check_id = "3";
+        fetch(`${base}/api/log_attention_check`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_id: user_id,
+                check_id: attention_check_id,
+                information: logging_information
+            })
+        });
         // Save the answers when the user completes the questionnaire
         await Promise.all([
             fetch(`${base}/api/exit/questionnaire`, {
@@ -95,6 +117,7 @@
                             </div>
                         </div>
                     </div>
+                    <hr>
                 {/each}
             </Step>
         {/each}
@@ -115,7 +138,6 @@
         display: flex;
         justify-content: space-between;
         margin-bottom: 20px; /* adjust this value to create more space between the rows */
-        border-bottom: 1px solid #000; /* add a bottom border to each row */
         align-items: center;
     }
 
