@@ -1,6 +1,7 @@
 import postgres from 'postgres';
-import type { JSONValue } from 'postgres';
+import type {JSONValue} from 'postgres';
 import {POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, POSTGRES_HOST} from "$env/static/private"
+import {PUBLIC_A_B_SELECTION} from '$env/static/public';
 
 const sql = postgres({
     host: POSTGRES_HOST,
@@ -18,25 +19,37 @@ export async function setupUserProfile(userId: string, profileData: object) {
 
 export async function get_study_group() {
     try {
-        // Execute SQL queries to count users in each study group
-        const staticCountResult = await sql`SELECT COUNT(*) as count
-                                            FROM users
-                                            WHERE study_group = 'static' AND completed = true`;
-        const interactiveCountResult = await sql`SELECT COUNT(*) as count
-                                                 FROM users
-                                                 WHERE study_group = 'interactive' AND completed = true`;
-        // Extract counts from query results
-        const staticCount = parseInt(staticCountResult[0].count, 10);
-        const interactiveCount = parseInt(interactiveCountResult[0].count, 10);
+        // Directly return based on PUBLIC_A_B_SELECTION if not 'alternate'
+        if (PUBLIC_A_B_SELECTION === 'static') {
+            return 'static';
+        } else if (PUBLIC_A_B_SELECTION === 'interactive') {
+            return 'interactive';
+        } else if (PUBLIC_A_B_SELECTION === 'alternate') {
+            // Proceed with original logic for 'alternate'
 
+            // Execute SQL queries to count users in each study group
+            const staticCountResult = await sql`SELECT COUNT(*) as count
+                                                FROM users
+                                                WHERE study_group = 'static' AND completed = true`;
+            const interactiveCountResult = await sql`SELECT COUNT(*) as count
+                                                     FROM users
+                                                     WHERE study_group = 'interactive' AND completed = true`;
+            // Extract counts from query results
+            const staticCount = parseInt(staticCountResult[0].count, 10);
+            const interactiveCount = parseInt(interactiveCountResult[0].count, 10);
 
-        // Determine and return the less used study group
-        return interactiveCount <= staticCount ? 'interactive' : 'static';
+            // Determine and return the less used study group
+            return interactiveCount <= staticCount ? 'interactive' : 'static';
+        } else {
+            // Handle unexpected PUBLIC_A_B_SELECTION values
+            throw new Error('Invalid PUBLIC_A_B_SELECTION value');
+        }
     } catch (error) {
         console.error('Error in get_study_group:', error);
         throw error; // or handle error as needed
     }
 }
+
 
 export async function getFirstTwoAttentionChecksPassed(userId: string): Promise<boolean> {
     const result = await sql`
@@ -121,9 +134,9 @@ export async function logFinalFeedback(userId: string, feedback: string) {
 export async function logAttentionChecks(userId: string, checkId: string, attentionData: JSONValue) {
     return await sql`
         INSERT INTO user_completed (user_id, attention_checks)
-        VALUES (${userId}, ${sql.json({ [checkId]: attentionData })})
-        ON CONFLICT (user_id)
-        DO UPDATE SET attention_checks = user_completed.attention_checks || ${sql.json({ [checkId]: attentionData })}
+        VALUES (${userId}, ${sql.json({[checkId]: attentionData})}) ON CONFLICT (user_id)
+        DO
+        UPDATE SET attention_checks = user_completed.attention_checks || ${sql.json({[checkId]: attentionData})}
         WHERE user_completed.user_id = ${userId}
     `;
 }

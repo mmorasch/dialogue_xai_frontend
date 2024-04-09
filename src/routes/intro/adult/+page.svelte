@@ -183,10 +183,10 @@
             <h2 class="text-2xl">
                 Concrete Example
             </h2>
-            <p>For example, look at the individual with the following information (attributes their values):</p>
+            <p>For example, look at the individual with the following information (attributes and their values):</p>
             <img src="{base}/adult_datapoint.png" alt="Adult Datapoint img" style="width: 25vw;">
             <p>
-                The trained Machine Learning can <b>predict</b> whether this individual has an income
+                The trained Machine Learning can accurately <b>predict</b> whether this individual has an income
                 of <b>more than 50k</b> a year or less.
             </p>
         </Step>

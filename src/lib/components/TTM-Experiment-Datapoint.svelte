@@ -148,16 +148,7 @@
         class:intro-testing-color={experimentPhase === 'intro-test'}
         class="inputarea h-full flex-1 overflow-y-auto shadow-[0_15px_15px_-5px_rgba(0,0,0,0.2)] mx-1.5 my-0"
 >
-    {#if experimentPhase === 'test'}
-        <Header>Test {datapoint_count} of {PUBLIC_TEACH_TEST_CYCLES}</Header>
-    {/if}
-    {#if experimentPhase === 'teaching'}
-        <Header>Case {datapoint_count} of {PUBLIC_TEACH_TEST_CYCLES}</Header>
-    {/if}
-    {#if experimentPhase === 'final-test'}
-        <Header>Case {datapoint_count} of {PUBLIC_END_TEST_CYCLES}</Header>
-    {/if}
-
+    <Header>Task Description</Header>
     <div class="content-align">
         {#if experimentPhase === 'test'}
             <h2 style="text-align: center; color: purple;">Testing Phase</h2>
@@ -175,7 +166,18 @@
             <h2 style="text-align: center; color: dodgerblue; margin-top: 15px;">Introduction Phase</h2>
             <p class="mb-3 centered-text">{@html introduction_test_intro}</p>
         {/if}
-        <h2 style="text-align: center">Current Person</h2>
+        <h2 style="text-align: center">
+            Current Person ({datapoint_count} of
+            {#if experimentPhase === 'test'}
+                {PUBLIC_TEACH_TEST_CYCLES}
+            {:else if experimentPhase === 'teaching'}
+                {PUBLIC_TEACH_TEST_CYCLES}
+            {:else if experimentPhase === 'final-test'}
+                {PUBLIC_END_TEST_CYCLES}
+            {:else if experimentPhase === 'intro-test'}
+                {PUBLIC_TEACH_TEST_CYCLES}
+            {/if})
+        </h2>
     </div>
 
     <main>

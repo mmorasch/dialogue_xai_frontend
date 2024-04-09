@@ -77,23 +77,6 @@
             })
         });
 
-        // Check if 2 attention checks were answered correctly
-        fetch(`${base}/api/get_attention_check_passed`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({user_id: user_id}),
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Redirecting to:', data.redirectUrl);
-                if (data.status === 'Failed' && data.redirectUrl) {
-                    window.location.href = data.redirectUrl;
-                }
-            })
-            .catch(error => console.error('Error:', error));
-
         //merge selectedGeneralValues and selectedFeatureValues
         selectedValues = [...$selectedGeneralValues, ...$selectedFeatureValues];
 

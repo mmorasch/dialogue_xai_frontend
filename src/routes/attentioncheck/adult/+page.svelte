@@ -32,14 +32,8 @@
 
     // Function to handle the selection, if needed
     async function handleSelection() {
-        if (attention_check_tries < 2) {
-            attention_check_tries++;
-            if (selected_statement !== correct_statement) {
-                alert("You have selected the wrong answer. Please read the instructions and try again.");
-                selected_statement = "";
-            }
-        } else {
-            // Last try, log final result
+        // If correct, log and proceed
+        if (selected_statement === correct_statement) {
             isLoading = true;
             let logging_information = {
                 correct: correct_statement,
@@ -60,17 +54,21 @@
             } catch (error) {
                 console.error('Error logging attention check:', error);
             }
+            // Use correct function or method for redirection
+            await goto(`${base}/experiment?user_id=${user_id}&sg=${study_group}`);
             isLoading = false;
-
-            // last try. If wrong, fail the attention check
-            if (selected_statement !== correct_statement) {
-                // Send to return url
-                if (return_url) {
-                    window.location.href = return_url;
-                    return;
-                }
+            return; // Prevent further execution
+        }
+        // Handling incorrect selections
+        if (attention_check_tries < 1) {
+            attention_check_tries++;
+            alert("You have selected the wrong answer. Please read the instructions and try again.");
+            selected_statement = ""; // Reset for a new attempt
+        } else {
+            // Final attempt logic
+            if (return_url) {
+                window.location.href = return_url;
             }
-            goto(`${base}/experiment?user_id=${user_id}&sg=${study_group}`);
         }
     }
 </script>
@@ -83,6 +81,9 @@
         the model's reasoning, using what you learned earlier. You'll go through several rounds of this process to
         better grasp how the model makes predictions about different people's earnings.</h2>
     <br>
+    {#if isLoading}
+        <Spinner dark_background={false}/>
+    {/if}
     <p>Based on the task description you read above, when you see a profile of an individual, what will you be asked to
         do?</p>
     <p><i>Pleas re-read the instructions if you are not sure. You will have two opportunities to get this question
@@ -93,9 +94,6 @@
             <option value={statement}>{statement}</option>
         {/each}
     </select>
-    {#if isLoading}
-        <Spinner/>
-    {/if}
     <SubmitButton next={handleSelection}/>
 </div>
 
