@@ -51,7 +51,7 @@ export async function get_study_group() {
 }
 
 
-export async function getFirstTwoAttentionChecksPassed(userId: string): Promise<boolean> {
+export async function getTwoAttentionChecksFailed(userId: string): Promise<boolean> {
     const result = await sql`
         SELECT attention_checks
         FROM user_completed
@@ -69,20 +69,61 @@ export async function getFirstTwoAttentionChecksPassed(userId: string): Promise<
 
     const checkIds = Object.keys(attentionChecks);
 
-    // Ensure there are at least two checks.
-    if (checkIds.length < 2) {
+    // Counter for failed checks.
+    let failedChecks = 0;
+
+    for (let i = 0; i < checkIds.length; i++) {
+        const check = attentionChecks[checkIds[i]];
+        if (check.check_id === "1") { // Ignore comprehension check
+            continue;
+        }
+        if (Array.isArray(check.correct)) {
+            // If check.correct is an array, check if check.selected is in the array
+            if (!check.correct.includes(check.selected)) {
+                failedChecks++;
+            }
+        } else {
+            // If check.correct is not an array, perform direct comparison
+            if (check.correct !== check.selected) {
+                failedChecks++;
+            }
+        }
+
+        // If at least two checks have failed, return true.
+        if (failedChecks >= 2) {
+            return true;
+        }
+    }
+    // If less than two checks have failed, return false.
+    return false;
+}
+
+export async function getComprehensionCheckFailed(userId: string): Promise<boolean> {
+    // Check if comprehension check was failed ( id = 1 )
+    const result = await sql`
+        SELECT attention_checks
+        FROM user_completed
+        WHERE user_id = ${userId}
+    `;
+
+    if (result.length === 0) {
         return false;
     }
 
-    // Check if the first two checks are passed.
-    for (let i = 1; i <= 2; i++) {
-        const check = attentionChecks[i.toString()];
-        if (check.correct !== check.selected) {
-            return false;
-        }
+
+    const attentionChecks = result[0].attention_checks;
+
+    if (attentionChecks === null) {
+        return false;
     }
 
-    return true;
+    const check = attentionChecks["1"]; // Comprehension check id is 1
+
+    if (check && check.correct !== check.selected) {
+        return true;
+    }
+
+    return false;
 }
 
 export async function set_study_group(userId: string, studyGroup: string) {
@@ -201,5 +242,13 @@ export async function assignFinishedUniParticipant(matrikulation_num: string) {
         UPDATE user_completed
         SET completed = true
         WHERE matrik_num = ${matrikulation_num}
+    `;
+}
+
+export async function assignFinishedProlificParticipant(user_id: string) {
+    return await sql`
+        UPDATE user_completed
+        SET completed = true
+        WHERE user_id = ${user_id}
     `;
 }

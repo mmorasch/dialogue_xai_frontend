@@ -4,8 +4,11 @@
     import {Step, Stepper, RangeSlider} from '@skeletonlabs/skeleton';
     import backend from '$lib/backend';
     import {PUBLIC_DATASET_NAME} from '$env/static/public';
+    import {logAttentionCheck} from '$lib/attentioncheck.ts';
 
     export let user_id: string;
+    export let study_group: string;
+
     let currentStep = 0;
 
     function onNext() {
@@ -15,7 +18,7 @@
         }
     }
 
-    let shuffled_questions = [
+    let interactive_group_questions = [
         'The chatbot is cooperative.',
         'I like the Chatbot.',
         'The chatbot has no clue of what it is doing.',
@@ -30,39 +33,50 @@
         'I can rely on the chatbot.',
         'The Chatbot is easy to use.',
     ];
+
+    let static_group_questions = [
+        "The explanation report is coherent.",
+        "I find the explanation report useful.",
+        "The explanation report is clear and understandable.",
+        "The explanation report provides insightful information.",
+        "The explanation report supports productive insights.",
+        "The information in the report is presented accurately.",
+        "The explanation report seems confusing.",
+        "The explanation report is engaging.",
+        'I pay attention. Select -1 to prove it.',
+        "The explanation report presents information purposefully.",
+        "I can see myself referring to this type of explanation report in the future.",
+        "I can rely on the information provided in the explanation report.",
+        "The explanation report is easy to navigate and understand."
+    ];
+
+    // Decide which questions to use based on the study group
+    let study_questions: string[] = [];
+    if (study_group === 'interactive') {
+        study_questions = interactive_group_questions;
+    } else {
+        study_questions = static_group_questions;
+    }
+
     const attention_check_col_id = 8;
-    const attention_ckeck_correct_answer = "-1";
+    const attention_check_correct_answer = "-1";
+    const attention_check_id = "4";
 
     let chunks = [];
     const questions_per_page = 7;
-    for (let i = 0; i < shuffled_questions.length; i += questions_per_page) {
-        chunks.push(shuffled_questions.slice(i, i + questions_per_page));
+    for (let i = 0; i < study_questions.length; i += questions_per_page) {
+        chunks.push(study_questions.slice(i, i + questions_per_page));
     }
 
     // Create Answer Array
-    let answers = new Array(shuffled_questions.length).fill(0);
+    let answers = new Array(study_questions.length).fill(0);
 
     // Save Answers to Database
     async function onComplete() {
-         // Log attention check seperately
-        let attention_check_selection = answers[attention_check_col_id].toString();
-        // For logging the attention check
-        let logging_information = {
-            correct: attention_ckeck_correct_answer,
-            selected: attention_check_selection
-        };
-        const attention_check_id = "3";
-        fetch(`${base}/api/log_attention_check`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                user_id: user_id,
-                check_id: attention_check_id,
-                information: logging_information
-            })
-        });
+        // Log attention check seperately
+        let user_answer = answers[attention_check_col_id].toString();
+        await logAttentionCheck(user_id, attention_check_id, user_answer, attention_check_correct_answer);
+
         // Save the answers when the user completes the questionnaire
         await Promise.all([
             fetch(`${base}/api/exit/questionnaire`, {
@@ -72,7 +86,7 @@
                 },
                 body: JSON.stringify({
                     user_id: user_id,
-                    questions: shuffled_questions,
+                    questions: study_questions,
                     answers: answers,
                     questionnaire_name: 'exit'
                 })
@@ -88,6 +102,7 @@
     <Stepper {currentStep} stepTerm="Questions" on:step={onNext} on:complete={onComplete}>
         {#each chunks as chunk, chunkIndex}
             <Step>
+                <h1 class="center-text text-xl">You are done with the tasks. Thank you.</h1>
                 <h1 class="center-text text-xl">Please answer the following questions and give us feedback to
                     improve.</h1>
                 {#each chunk as question, i}

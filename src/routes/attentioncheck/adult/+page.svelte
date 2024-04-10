@@ -7,10 +7,10 @@
     import {onMount} from 'svelte';
     import {userId, studyGroup} from '$lib/shared.ts';
     import Spinner from '$lib/components/Spinner.svelte';
+    import {logAttentionCheck} from '$lib/attentioncheck.ts';
 
     let user_id;
     let study_group;
-    const return_url = "https://app.prolific.com/submissions/complete?cc=C6V091I4";
 
     let isLoading = false;
 
@@ -25,7 +25,8 @@
         "Assess whether the individual is a good employee",
         "Guess, which machine learning model is used",
         "Guess, whether the machine learning model would predict the individual to earn more or less than 50k a year",
-        "Describe whether how the individual can adap to earn more than 50k a year"];
+        "Describe how the individual can adap to earn more than 50k a year",
+        "Guess whether the individual is a good person",];
     const correct_statement = "Guess, whether the machine learning model would predict the individual to earn more or less than 50k a year";
     const attention_check_counter = "1";
     let attention_check_tries = 0;
@@ -35,25 +36,7 @@
         // If correct, log and proceed
         if (selected_statement === correct_statement) {
             isLoading = true;
-            let logging_information = {
-                correct: correct_statement,
-                selected: selected_statement
-            };
-            try {
-                await fetch(`${base}/api/log_attention_check`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        user_id: user_id,
-                        check_id: attention_check_counter,
-                        information: logging_information
-                    })
-                });
-            } catch (error) {
-                console.error('Error logging attention check:', error);
-            }
+            logAttentionCheck(user_id, attention_check_counter, selected_statement, correct_statement);
             // Use correct function or method for redirection
             await goto(`${base}/experiment?user_id=${user_id}&sg=${study_group}`);
             isLoading = false;
@@ -66,9 +49,12 @@
             selected_statement = ""; // Reset for a new attempt
         } else {
             // Final attempt logic
-            if (return_url) {
-                window.location.href = return_url;
-            }
+            logAttentionCheck(user_id, attention_check_counter, selected_statement, correct_statement);
+            await alert("ATTENTION: You have selected the wrong answer twice. We ask you to return the study. Please close the survey and click " +
+                "'Stop Without Completing' on Prolific.");
+            isLoading = true;
+            await goto(`${base}/experiment?user_id=${user_id}&sg=${study_group}`);
+            isLoading = false;
         }
     }
 </script>

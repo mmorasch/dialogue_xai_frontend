@@ -163,13 +163,14 @@
                 {user_id}
                 <br><br>
                 Your privacy is paramount to us. Therefore, your <b>prolific ID will not be stored</b> alongside your
-                experiment data. It will solely be used for the issuance of bonus payments, should you qualify, and deleted afterward.
+                experiment data. It will solely be used for the issuance of bonus payments, should you qualify, and
+                deleted afterward.
                 Should you desire to delete your experiment data, kindly reach out to us, providing your experiment ID.
             </p>
         </Step>
         <Step>
             <h2 class="text-2xl">
-                Experiment topic: Understanding AI predictions about people's income
+                Experiment topic: Understanding AI predictions about individual's income
             </h2>
             <p>
                 Have you ever considered the impact of AI and Machine Learning in the financial sector,
@@ -238,14 +239,15 @@
                 <p><b>Predict the model's output for a new individual</b> without access to the model's prediction or
                     explanations.</p>
                 <img alt="Step4 gif" src={step4_gif_path} style="height: 50vh;"/>
-                <p>In this last segment, correct answers give points and participants in the <b>top 15% qualify for a bonus payment</b>.</p>
+                <p>In this last segment, correct answers give points and participants in the <b>top 15% qualify for a
+                    bonus payment</b>.</p>
             </div>
         </Step>
 
         <Step>
             <h2 class="text-2xl">General Information</h2>
             <p>
-                Do not use the <b>browser's back button</b> during the experiment. This will cause the <b>experiment to
+                <b>Attention:</b> Do not use the <b>browser's back button</b> during the experiment. This will cause the <b>experiment to
                 restart</b>.
                 <br>
                 <br>
@@ -254,10 +256,8 @@
         <Step>
             <h2 class="text-2xl">Your Information</h2>
             <p>
-                Before we begin, we would like to gather some information about you assess the representativeness of the
-                study. <br
-            /><br/>
-                Please take a moment to answer the following questions:
+                We would like to know your prolific_id to pay the bonus payment and
+                to assess your knowledge of Machine Learning.
             </p>
             <hr/>
             <div class="grid grid-cols-2 gap-8">
@@ -265,102 +265,8 @@
                     <span>Prolific id</span><br/>
                     <input id="prolific_id" class="input w-32 py-1" bind:value={prolific_id}/>
                 </label>
-                <label for="age" class="label text-center">
-                    <span>1) How old are you?</span><br/>
-                    <select id="age" class="select w-32 py-1" bind:value={age}>
-                        <option value="" selected>- Select -</option>
-                        <option value="18-24">18-24 years old</option>
-                        <option value="25-34">25-34 years old</option>
-                        <option value="35-44">35-44 years old</option>
-                        <option value="45-54">45-54 years old</option>
-                        <option value="55-64">55-64 years old</option>
-                        <option value="65+">65+ years old</option>
-                        <option value="anonymous">Prefer not to say</option>
-                    </select>
-                </label>
-                <label for="gender" class="label text-center">
-                    <div>
-                        <label class="label" for="gender-select">
-                            <span>2) Gender: How do you identify? </span>
-                            <select class="select py-1" name="gender" id="gender-select" bind:value={gender}>
-                                <option value="" selected>- Select -</option>
-                                <option value="man">Man</option>
-                                <option value="non-binary">Non-Binary</option>
-                                <option value="woman">Woman</option>
-                                <option value="anonymous">Prefer not to say</option>
-                                <option value="self-describe">Prefer to self-describe, below</option>
-                            </select>
-                        </label>
-                    </div>
-                    {#if gender === 'self-describe'}
-                        <div>
-                            <input
-                                    type="text"
-                                    name="gender_text"
-                                    id="gender_text"
-                                    class="input py-1"
-                                    bind:value={gender_self_identify}
-                            />
-                        </div>
-                    {/if}
-                </label>
-                <label for="educationalBackground" class="label text-center col-span-1">
-                    <span> 3) Which of the following best describes your educational background? </span>
-                    <select class="select mb-8 py-1" id="educationalBackground" bind:value={degree}>
-                        <option value="" selected>- Select -</option>
-                        <option value="no degree">Did not complete high school</option>
-                        <option value="high school">High school graduate</option>
-                        <option value="college">Attended college but no degree</option>
-                        <option value="bachelor">Bachelor's degree</option>
-                        <option value="master">Master's degree</option>
-                        <option value="doctor">Doctoral degree</option>
-                        <option value="anonymous">Prefer not to say</option>
-                    </select>
-                </label>
-                {#if degree === 'college' || degree === 'bachelor' || degree === 'master' || degree === 'doctor'}
-
-                    <label for="educationalBackgroundField" class="label text-center col-span-1">
-                        <span> What is your general field of studies? </span>
-                        <select
-                                class="select mb-8 py-1"
-                                id="educationalBackgroundField"
-                                bind:value={education_field}
-                        >
-                            <option value="" selected>- Select -</option>
-                            <option value="maths">Mathematics</option>
-                            <option value="cs">Computer Science</option>
-                            <option value="bio">Biological Sciences</option>
-                            <option value="economics">Economics</option>
-                            <option value="social">Social Sciences</option>
-                            <option value="physics">Physics</option>
-                            <option value="chemistry">Chemistry</option>
-                            <option value="arts">Arts and Humanities</option>
-                            <option value="engineering">Engineering and Technology</option>
-                            <option value="health">Health Sciences</option>
-                            <option value="environmental">Environmental Sciences</option>
-                            <option value="law">Law and Legal Studies</option>
-                            <option value="humanities">Humanities (including History, Philosophy, Literature)
-                            </option>
-                            <option value="business">Business and Management</option>
-                            <option value="education">Education</option>
-                            <option value="anonymous">Prefer not to say</option>
-                            <option value="other">Other (describe below)</option>
-                        </select>
-                        {#if education_field === 'other'}
-                            <div>
-                                <input
-                                        type="text"
-                                        name="study_field_text"
-                                        id="study_field_text"
-                                        class="input py-1"
-                                        bind:value={education_field_other}
-                                />
-                            </div>
-                        {/if}
-                    </label>
-                {/if}
                 <label for="familiarityML" class="label text-center">
-                    <span>4) Rate your level of familiarity with artificial intelligence (AI):</span>
+                    <span>Rate your level of familiarity with artificial intelligence (AI):</span>
                     <select bind:value={fam_ml_val} class="select py-1">
                         <option value="" selected>- Select -</option>
                         <option value="0">Very low: I have little to no understanding of AI.</option>
@@ -380,11 +286,6 @@
 
 
 <style>
-
-    ol {
-        margin: 20px 0;
-        list-style-type: decimal;
-    }
 
     li {
         margin: 10px 0;

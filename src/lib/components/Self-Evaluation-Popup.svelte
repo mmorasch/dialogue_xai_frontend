@@ -1,10 +1,12 @@
 <script>
     import {createEventDispatcher, onMount} from 'svelte';
-    import {RangeSlider, Step, Stepper} from "@skeletonlabs/skeleton";
+    import {RadioGroup, RadioItem, Step, Stepper} from "@skeletonlabs/skeleton";
     import backend from "$lib/backend";
     import {base} from "$app/paths";
     import {writable} from 'svelte/store';
     import QuestionButton from '$lib/components/QuestionButton.svelte';
+    import {logAttentionCheck} from '$lib/attentioncheck.ts';
+
 
     const dispatch = createEventDispatcher();
 
@@ -28,11 +30,12 @@
         'I understand the important attributes for a decision.',
         'I cannot distinguish between the possible prediction.',
         'I understand how the Machine Learning model works.',
-        'Select -2 to show that you pay attention.',
+        'Select "Strongly Disagree" for this selection.',
         'I did not understand how the Machine Learning model makes decisions.'
     ];
     const attention_check_question_id = 3;
     const correct_attribute = '-2';
+    const attention_check_id = "3";
 
     let answers = Array(questions.length).fill(0);
 
@@ -58,24 +61,8 @@
 
     async function onComplete() {
         // Log attention check seperately
-        let attention_check_selection = answers[attention_check_question_id].toString();
-        // For logging the attention check
-        let logging_information = {
-            correct: correct_attribute,
-            selected: attention_check_selection
-        };
-        const attention_check_id = "2";
-        fetch(`${base}/api/log_attention_check`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                user_id: user_id,
-                check_id: attention_check_id,
-                information: logging_information
-            })
-        });
+        let user_answer = answers[attention_check_question_id].toString();
+        await logAttentionCheck(user_id, attention_check_id, user_answer, correct_attribute);
 
         //merge selectedGeneralValues and selectedFeatureValues
         selectedValues = [...$selectedGeneralValues, ...$selectedFeatureValues];
@@ -145,7 +132,7 @@
                 <Step>
                     <h1 class="center-text text-xl">Please <b>rank the questions</b> based on their usefulness, where
                         <b>1 is the
-                            most useful</b> question. <br> (<b>Usefull</b> as in helpful to understand the model
+                            most useful</b> question. <br> (<b>Usefull</b> as in helpful to understand the model's
                         decision process.)</h1>
                     <!-- General Questions -->
                     <div class="flex flex-col my-[5px]">
@@ -187,7 +174,7 @@
                 <Step>
                     <h1 class="center-text text-xl">Please <b>rank the explanations</b> based on their usefulness, where
                         <b>1 is the
-                            most useful</b> question. <br> (<b>Usefull</b> as in helpful to understand the model
+                            most useful</b> question. <br> (<b>Usefull</b> as in helpful to understand the model's
                         decision process.)</h1>
                     <!-- Adjusted Ranking UI for static explanations -->
                     <div class="flex flex-col my-[5px]">
@@ -212,8 +199,7 @@
             {/if}
             <Step>
                 <h1 class="text-center text-2xl">You are done with the <b>explanation phase</b> <br> where you had the
-                    possibility to learn about
-                    the model decision.
+                    possibility to learn about the model's decision.
                     <br><br>
                     You <b>correctly answered {user_correctness_string}</b> of the test cases.</h1>
             </Step>
@@ -230,22 +216,14 @@
                             </span>
                         </div>
                         <div class="slider-column">
-                            <RangeSlider name="range-slider" bind:value={answers[i]} min={-3} max={3} step={1} ticked>
-                                <div class="slider-flex justify-between items-center">
-                                    <div class="text-xs">Strongly Disagree</div>
-                                    <div class="text-xs">Neither agree nor disagree</div>
-                                    <div class="text-xs">Strongly Agree</div>
-                                </div>
-                            </RangeSlider>
-                            <div class="labels slider-flex justify-between">
-                                <span class="small-text">-3</span>
-                                <span class="small-text">-2</span>
-                                <span class="small-text">-1</span>
-                                <span class="small-text">0</span>
-                                <span class="small-text">1</span>
-                                <span class="small-text">2</span>
-                                <span class="small-text">3</span>
-                            </div>
+                            <RadioGroup>
+                                <RadioItem name="likert" bind:group={answers[i]} value={-2}>Strongly disagree
+                                </RadioItem>
+                                <RadioItem name="likert" bind:group={answers[i]} value={-1}>Somewhat disagree
+                                </RadioItem>
+                                <RadioItem name="likert" bind:group={answers[i]} value={1}>Somewhat agree</RadioItem>
+                                <RadioItem name="likert" bind:group={answers[i]} value={2}>Strongly agree</RadioItem>
+                            </RadioGroup>
                         </div>
                     </div>
                     <hr>
@@ -265,10 +243,6 @@
 </div>
 
 <style>
-    .question-margin {
-        margin-top: 20px; /* adjust this value to create more space */
-    }
-
     .overlay {
         position: fixed;
         top: 0;
@@ -324,11 +298,6 @@
     /* Style the selection field like tailwind */
     select {
         @apply rounded-lg bg-[whitesmoke] cursor-pointer mx-0 my-[5px] px-5 py-3.5 border-2;
-    }
-
-    .left-aligned-button {
-        align-self: flex-start;
-        margin-top: 10px;
     }
 
     .select-margin {

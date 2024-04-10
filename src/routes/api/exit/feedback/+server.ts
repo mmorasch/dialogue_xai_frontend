@@ -1,5 +1,12 @@
 import type {RequestHandler} from './$types';
-import {assignFinishedUniParticipant, deleteMatrikNum, getMatrikNum, logCompleted, logFinalFeedback} from '$lib/pg'
+import {
+    assignFinishedProlificParticipant,
+    assignFinishedUniParticipant,
+    deleteMatrikNum,
+    getMatrikNum,
+    logCompleted,
+    logFinalFeedback
+} from '$lib/pg'
 
 export const POST: RequestHandler = async ({request}) => {
     const body = await request.json()
@@ -9,5 +16,6 @@ export const POST: RequestHandler = async ({request}) => {
     //const matrikelnummer = await getMatrikNum(body.user_id);
     //await assignFinishedUniParticipant(matrikelnummer);
     //await deleteMatrikNum(body.user_id);
+    await assignFinishedProlificParticipant(body.user_id);
     return new Response('ok');
 };

@@ -173,11 +173,7 @@
 
         // Check if all cycles (teach-test cycles + end-test cycles) are completed
         if (cycles_completed >= parseInt(PUBLIC_TEACH_TEST_CYCLES) + parseInt(PUBLIC_END_TEST_CYCLES)) {
-            if (study_group === 'static') {
-                goto(`${base}/exit/feedback/${PUBLIC_DATASET_NAME}/?user_id=${user_id}`);
-            } else {
-                goto(`${base}/exit?user_id=${user_id}`);
-            }
+            goto(`${base}/exit?user_id=${user_id}&sg=${study_group}`);
             return;
         }
 
