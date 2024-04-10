@@ -89,21 +89,23 @@
             ...(isFinalTest && {feedback: feedback})
         };
 
-        // Log event
-        fetch(`${base}/api/log_event`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                user_id: user_id,
-                event_source: experimentPhase,
-                event_type: 'user_prediction',
-                details: details,
-            })
-        });
+        // Log event if not final test
+        if (!isFinalTest) {
+            await fetch(`${base}/api/log_event`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    user_id: user_id,
+                    event_source: experimentPhase,
+                    event_type: 'user_prediction',
+                    details: details,
+                })
+            });
+        }
 
-        // Check if user_id and selected_prediction are not null and log asynchronously
+        // Check if user_id and selected_prediction are not null and log
         if (user_id !== null && selected_prediction !== null) {
             await backend.xai(user_id).set_user_prediction(selected_prediction);
         }
@@ -116,7 +118,7 @@
             dispatch('next');
         }
 
-        // Don't dispatch next event confidence or feedback are not set
+        // Don't dispatch next event if final and confidence or feedback are not set
         if (isFinalTest && event) {
             const checks = [
                 {condition: confidence_level === "-1", message: 'Please select your confidence before proceeding.'},
@@ -132,6 +134,18 @@
 
         if (isFinalTest && confidence_level !== "-1") {
             // Dispatch next event if confidence level is set
+            await fetch(`${base}/api/log_event`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    user_id: user_id,
+                    event_source: experimentPhase,
+                    event_type: 'user_prediction',
+                    details: details,
+                })
+            });
             confidence_level = "-1";
             console.log("Dispatching next event");
             dispatch('next');
