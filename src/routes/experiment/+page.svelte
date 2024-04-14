@@ -153,6 +153,11 @@
     }
 
     async function handleNext(e: any) {
+        // Check if clicked twice
+        if (isLoading) {
+            return;
+        }
+
         isLoading = true;
         transition_done = false;
         let next_phase = experiment_phase;
