@@ -170,12 +170,13 @@
         </Step>
         <Step>
             <h2 class="text-2xl">
-                Experiment topic: Understanding AI predictions about individual's income
+                Experiment topic: Understanding AI predictions in credit risk assessment
             </h2>
             <p>
                 Have you ever considered the impact of AI and Machine Learning in the financial sector,
-                particularly in <b>predicting the income of individuals</b>? This is where the world of
-                Machine Learning can be used to recognize patterns from past years of census data.<br/><br/>
+                particularly in <b>predicting the credit risk of applicants</b>? This is where the world of
+                Machine Learning can be used to recognize patterns from past years of credit approvals and learn
+                to distinguish between high risk and low risk applicants.<br/><br/>
 
                 In this experiment, you will <b>discover why Machine Learning model's predict a specific outcome</b>.
             </p>
@@ -184,19 +185,19 @@
             <h2 class="text-2xl">
                 Concrete Example
             </h2>
-            <p>For example, look at the individual with the following information (attributes and their values):</p>
-            <img src="{base}/adult_datapoint.png" alt="Adult Datapoint img" style="width: 25vw;">
+            <p>For example, look at the applicant with the following information (attributes and their values):</p>
+            <img src="{base}/german_credit_datapoint.png" alt="German Credit Datapoint img" style="width: 25vw;">
             <p>
-                The trained Machine Learning can accurately <b>predict</b> whether this individual has an income
-                of <b>more than 50k</b> a year or less.
+                The trained Machine Learning can accurately <b>predict</b> whether this applicant is <b>low risk</b>
+                or <b>high risk</b> of defaulting the credit.
             </p>
         </Step>
         <Step>
             <h2 class="text-2xl">Experiment Structure</h2>
             <div class="container">
                 <div>
-                    <h3><b style="color: dodgerblue;">Introduction Phase:</b> Using information about an indididual, <b>try
-                        to guess the yearly income to the best of your knowledge</b>.</h3>
+                    <h3><b style="color: dodgerblue;">Introduction Phase:</b> Using information about an applicant, <b>try
+                        to guess the risk level (low or high).</b>.</h3>
                     <img alt="Step1 gif" src={step1_gif_path} style="height: 50vh;"/>
                 </div>
             </div>
@@ -205,8 +206,8 @@
             <!-- Learning Phase -->
             <h2 class="text-2xl">Experiment Structure</h2>
             <div class="container">
-                <h3><b style="color: green;">Learning Phase:</b> After guessing the individual's income,</h3>
-                <p>You can see the Machine Learning model's prediction and get explanations for the prediction.</p>
+                <h3><b style="color: green;">Learning Phase:</b> After guessing the applicants risk level,</h3>
+                <p>you will see the Machine Learning model's prediction and get explanations for the prediction.</p>
                 {#if study_group === 'interactive'}
                     {@html study_group_interactive_text}
                     <img alt="Step2 gif" src={step2_gif_path_interactive} style="height: 50vh;"/>
@@ -223,8 +224,8 @@
             <h2 class="text-2xl">Experiment Structure</h2>
             <div class="container">
                 <h3><b style="color: purple;">Testing Phase:</b> Guess the model prediction for a <b>similar
-                    individual</b> as seen before.</h3>
-                <p>For this <b>new individual, you will not receive the model's prediction or explanations</b>.</p>
+                    applicant</b> as seen before.</h3>
+                <p>For this <b>new applicant, you will not receive the model's prediction or explanations</b>.</p>
                 <img alt="Step3 gif" src={step3_gif_path} style="height: 50vh;"/>
                 <p>You will repeat the "learning - testing" cycle for a total of <b>{PUBLIC_TEACH_TEST_CYCLES}</b>
                     times.</p>
@@ -234,12 +235,12 @@
             <!-- Final Testing Phase -->
             <h2 class="text-2xl">Experiment Structure</h2>
             <div class="container">
-                <h3><b style="color: dodgerblue;">Final Testing Phase</b>: As in the earlier testing component of the
+                <h3><b style="color: dodgerblue;">Final Testing Phase</b>: As in the earlier testing step of the
                     learning-testing cycle,</h3>
-                <p><b>Predict the model's output for a new individual</b> without access to the model's prediction or
+                <p><b>predict the model's output for a new applicant</b> without access to the model's prediction or
                     explanations.</p>
                 <img alt="Step4 gif" src={step4_gif_path} style="height: 50vh;"/>
-                <p>In this last segment, correct answers give points and participants in the <b>top 15% qualify for a
+                <p>In this last segment, correct answers give points and participants in the <b>top 10% qualify for a
                     bonus payment</b>.</p>
             </div>
         </Step>

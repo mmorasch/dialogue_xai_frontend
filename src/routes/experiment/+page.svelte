@@ -11,7 +11,7 @@
     import backend from '$lib/backend';
     import {fade} from 'svelte/transition';
     import type {PageData} from '../../../../.svelte-kit/types/src/routes';
-    import {PUBLIC_TEACH_TEST_CYCLES, PUBLIC_END_TEST_CYCLES, PUBLIC_DATASET_NAME} from '$env/static/public';
+    import {PUBLIC_TEACH_TEST_CYCLES, PUBLIC_END_TEST_CYCLES} from '$env/static/public';
 
     import {goto} from '$app/navigation';
     import {base} from '$app/paths';
@@ -53,6 +53,7 @@
     let feature_tooltips = data.feature_tooltips;
     let feature_units = data.feature_units;
     let prediction_choices = data.prediction_choices;
+    let dataset_task_description = data.dataset_task_description;
 
     //-----------------------------------------------------------------
 
@@ -105,13 +106,16 @@
     }
 
     async function submitQuestion(e: any) {
+        // Get Information
         let questionId: number = parseInt(e.detail.questionId);
         let feature: number = parseInt(e.detail.feature);
 
+        // Get correct question id and feature id
         let generalQuestion = general_questions.find(q => q.id === questionId);
         let featureQuestion = feature_questions.find(q => q.id === questionId);
         let featureName = feature_names.find(f => f.id === feature);
 
+        // Create full question to log and show to user
         let full_question = '';
         if (generalQuestion) {
             full_question = generalQuestion.question.replace('[current prediction]', '<b>' + current_prediction + '</b>');
@@ -119,6 +123,7 @@
             full_question = featureQuestion.question.replace('[feature selection]', featureName.feature_name);
         }
 
+        // Log and show
         if (full_question) {
             const details = {
                 datapoint_count: datapoint_count,
@@ -142,14 +147,28 @@
             messages = messages;
 
             setTimeout(async () => {
-                let response = await backend.xai(user_id).get_response(questionId, feature);
+                let response = await backend.xai(user_id).get_question_selection_response(questionId, feature);
                 let text = await response.text();
 
                 createAndPushMessage(text, false, true, questionId);
                 messages = messages;
             }, 700);
-
         }
+    }
+
+    async function submitWrittenQuestion(e: any) {
+        const user_message = e.detail.message;
+        createAndPushMessage(user_message, true, false, 0);
+        messages = messages;
+        setTimeout(async () => {
+            let response = await backend.xai(user_id).get_user_message_response(user_message);
+            console.log(response);
+            let text = await response.text();
+            let questionId = 2 // TODO: Correct here.
+
+            createAndPushMessage(text, false, true, questionId);
+            messages = messages;
+        }, 700);
     }
 
     async function handleNext(e: any) {
@@ -239,7 +258,7 @@
 
     function setNewCurrentDatapoint() {
         messages = [{isUser: false, feedback: false, text: initial_prompt, id: 1000}];
-        true_label = <string> new_datapoint.true_label;
+        true_label = <string>new_datapoint.true_label;
         delete new_datapoint.true_label;
         current_datapoint = new_datapoint;
         datapoint_answer_selected = null; // Reset selected answer
@@ -282,12 +301,13 @@
 
 
 {#if $introPopupVisible}
-    <IntroDonePopup {user_id} {feature_questions} {general_questions} {study_group} on:confirm={handleConfirm}/>
+    <IntroDonePopup {user_id} {feature_questions} {general_questions} {study_group} {dataset_task_description}
+                    on:confirm={handleConfirm}/>
 {:else if $selfAssesmentPopupVisible}
     <SelfEvalPopup {user_id} {feature_questions} {general_questions} {study_group} on:confirm={handleConfirm}/>
 {:else}
     {#if isLoading}
-        <Spinner />
+        <Spinner/>
     {/if}
     <div class={experiment_phase === 'teaching' ? "col-start-1 col-end-2" : "col-start-2 col-end-3"}>
         <TTMDatapoint
@@ -323,7 +343,10 @@
                         class="col-start-2 col-end-3 overflow-y-scroll"
                         transition:fade={{ delay: 250, duration: 500 }}
                 >
-                    <TTMChat {messages} on:feedbackButtonClick={handleFeedbackButtonClick}/>
+                    <TTMChat {messages}
+                             on:feedbackButtonClick={handleFeedbackButtonClick}
+                             on:submit={submitWrittenQuestion}
+                    />
                 </div>
                 <div class="col-start-3 col-end-4"
                      transition:fade={{ delay: 250, duration: 500 }}>

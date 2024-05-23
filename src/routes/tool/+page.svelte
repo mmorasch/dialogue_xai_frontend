@@ -108,7 +108,7 @@
             messages = messages;
 
             setTimeout(async () => {
-                let response = await backend.xai(user_id).get_response(questionId, feature);
+                let response = await backend.xai(user_id).get_question_selection_response(questionId, feature);
                 let text = await response.text();
 
                 createAndPushMessage(text, false, true, questionId);

@@ -3,10 +3,13 @@
     import {base} from '$app/paths';
     import backend from "$lib/backend";
     import {goto} from "$app/navigation";
+    import {userId} from '$lib/shared';
+    import {PUBLIC_DATASET_NAME} from '$env/static/public';
 
-    // Get user_id from URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const user_id = urlParams.get('user_id');
+    let user_id;
+    if (typeof window !== 'undefined') {
+        user_id = userId.get();
+    }
 
     async function handleFeedbackSubmit(event) {
         const {feedback} = event.detail;
@@ -24,7 +27,7 @@
             if (!response.ok) throw new Error('Failed to submit feedback');
 
             await backend.xai(user_id).finish();
-            goto(`${base}/exit/endscreen`);
+            goto(`${base}/exit/endscreen/${PUBLIC_DATASET_NAME}`);
         } catch (error) {
             console.error("Error during feedback submission:", error);
         }
@@ -32,22 +35,23 @@
 </script>
 
 <div class="center-page">
-    <h1 class="center-text text-xl">Thank you for your participation!</h1>
+    <h1 class="center-text text-xl"><b>Thank you for your participation!</b></h1>
 
-        <h2 class="center-text text-xl">
-        By participating, you help to bridge the gap between AI and humans. <br>
-        With our research project we aim to understand how different people understand the <br>
-        predictions of machine learning models in order to foster trust and transparency. <br> <br></h2>
+    <h1 class="center-text text-xl">
+        By participating, you help to <b>bridge the gap between AI and humans.</b> <br>
+        With our research project we aim to understand how different people <b>understand the <br>
+        predictions of machine learning models</b> in order to <b>foster trust in AI and transparency.</b> <br> <br>
+    </h1>
 
-    <h2 class="center-text">Please leave any additional opinion about the experiment :)</h2>
+    <h1 class="center-text">Please leave any <b>additional opinion and feedback</b> about the experiment :)</h1>
     <FeedbackWindow
-            placeholder="To me, the experiment..."
+            placeholder="To me, the experiment was... I liked ... I did not understand ..."
             submitLabel="End Experiment"
             on:feedbackSubmit={handleFeedbackSubmit}
     />
 
-    <h2>You can contact me in case you have any questions: <br>
-        <b>dimitry.mindlin@uni-bielefeld.de</b> <br></h2>
+    <h1>You can contact me in case you have any questions: <br>
+        <b>dimitry.mindlin@uni-bielefeld.de</b> <br></h1>
 </div>
 
 
