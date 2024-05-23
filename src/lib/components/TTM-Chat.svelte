@@ -1,20 +1,34 @@
 <script lang="ts">
     import type {TChatMessage} from '$lib/types';
-    import {afterUpdate, beforeUpdate, tick} from 'svelte';
+    import {afterUpdate, beforeUpdate} from 'svelte';
     import Header from './Header.svelte';
     import Message from './Message.svelte';
-    import { createEventDispatcher } from 'svelte';
+    import {createEventDispatcher} from 'svelte';
 
     export let messages: TChatMessage[] = [];
     let element: HTMLElement;
+    let inputMessage = '';
+    export let user_input = true;
 
     let autoscroll = false;
 
     const dispatch = createEventDispatcher();
 
-     function forwardEvent(event) {
-       dispatch('feedbackButtonClick', event.detail);
-     }
+    function forwardEvent(event) {
+        dispatch('feedbackButtonClick', event.detail);
+    }
+
+    function handleKeydown(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // Stop the form from submitting
+            sendMessage();
+        }
+    }
+
+    function sendMessage() {
+        dispatch('submit', {message: inputMessage});
+        inputMessage = '';
+    }
 
     beforeUpdate(() => {
         if (element) {
@@ -42,6 +56,13 @@
             <Message {message} on:feedbackButtonClick={forwardEvent}/>
         {/each}
     </main>
+    {#if user_input}
+        <div class="input-area">
+            <input class="variant-ghost-surface" bind:value={inputMessage} type="text" placeholder="Ask a question..."
+                   on:keydown={handleKeydown}/>
+            <button class="variant-ghost-primary" on:click={sendMessage}>Send</button>
+        </div>
+    {/if}
 </div>
 
 
@@ -51,5 +72,20 @@
         background: var(--ttm-bg);
         min-height: 97vh;
         max-height: 97vh;
+    }
+
+    .input-area {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px;
+    }
+
+    .input-area input {
+        flex-grow: 1;
+        margin-right: 10px;
+    }
+    
+    .input-area button {
+        @apply rounded-lg cursor-pointer mx-0 px-5 py-2.5 border-2;
     }
 </style>
