@@ -24,6 +24,7 @@ export const load = (async ({url}) => {
         feature_units,
         prediction_choices,
         feature_names,
+        dataset_task_description
     } = await (await backend.xai(user_id, study_group).init()).json();
 
     const {
@@ -40,7 +41,8 @@ export const load = (async ({url}) => {
         feature_tooltips,
         feature_units,
         prediction_choices,
-        datapoint
+        datapoint,
+        dataset_task_description
     }
 }) satisfies PageLoad;
 

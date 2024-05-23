@@ -10,9 +10,13 @@ export default {
         get_final_test_datapoint: () => fetch(PUBLIC_BACKEND_URL + "get_final_test_datapoint" + "?user_id=" + user_id),
         get_intro_test_datapoint: () => fetch(PUBLIC_BACKEND_URL + "get_intro_test_datapoint" + "?user_id=" + user_id),
         get_testing_questions: () => fetch(PUBLIC_BACKEND_URL + "get_testing_questions" + "?user_id=" + user_id),
-        get_response: (question: number, feature: number) => fetch(PUBLIC_BACKEND_URL + "get_response" + "?user_id=" + user_id, {
+        get_question_selection_response: (question: number, feature: number) => fetch(PUBLIC_BACKEND_URL + "get_response" + "?user_id=" + user_id, {
             method: "POST",
             body: JSON.stringify({question, feature})
+        }),
+        get_user_message_response: (message: string) => fetch(PUBLIC_BACKEND_URL + "get_nl_response" + "?user_id=" + user_id, {
+            method: "POST",
+            body: JSON.stringify({message})
         }),
         set_user_prediction: (user_prediction: string) => fetch(PUBLIC_BACKEND_URL + 'set_user_prediction' + `?user_id=${user_id}`, {
             method: "POST",
