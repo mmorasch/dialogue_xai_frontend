@@ -98,12 +98,13 @@
     let new_datapoint: TDatapoint;
     let initial_prompt = '';
 
-    function createAndPushMessage(text: string, isUser: boolean, feedback: boolean, id: number) {
+    function createAndPushMessage(text: string, isUser: boolean, feedback: boolean, id: number, feature_id?: number) {
         messages.push({
             text: text,
             isUser: isUser,
             feedback: feedback,
             id: id,
+            feature_id: feature_id,
             followup: []
         });
     }
@@ -163,14 +164,43 @@
         const user_message = e.detail.message;
         createAndPushMessage(user_message, true, false, 0);
         messages = messages;
-        setTimeout(async () => {
-            let response = await backend.xai(user_id).get_user_message_response(user_message);
-            console.log(response);
-            let text = await response.text();
-            let questionId = 2 // TODO: Correct here.
+        let question_id;
+        let feature_id;
+        let responseData;
 
-            createAndPushMessage(text, false, true, questionId);
+        // Get Response
+        setTimeout(async () => {
+            await backend.xai(user_id).get_user_message_response(user_message)
+                .then(response => response.json())
+                .then(data => {
+                    responseData = data;
+                });
+            let response_text = responseData['response'];
+            question_id = responseData['question_id'];
+            feature_id = responseData['feature_id'];
+            createAndPushMessage(response_text, false, true, question_id, feature_id);
             messages = messages;
+
+            // Log event
+            let interpreted_intent = question_id + ',' + feature_id;
+            console.log(interpreted_intent);
+            const details = {
+                datapoint_count: datapoint_count,
+                question: user_message,
+                question_id: interpreted_intent,
+            };
+            fetch(`${base}/api/log_event`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    user_id: user_id,
+                    event_source: 'teaching',
+                    event_type: 'question',
+                    details: details,
+                })
+            });
         }, 700);
     }
 
