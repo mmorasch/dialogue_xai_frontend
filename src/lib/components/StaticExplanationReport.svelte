@@ -5,7 +5,7 @@
     import {createEventDispatcher} from 'svelte';
 
     const dispatch = createEventDispatcher();
-    export let true_label: string;
+    export let instance_prediction: string;
     let instance_type = static_report.instance_type;
     let feature_importance = static_report.feature_importance;
     let opposite_class = static_report.opposite_class;
@@ -28,14 +28,15 @@
 
     <main class="flex-1 overflow-y-auto h-full p-3">
         <h1>Prediction</h1>
-        <h3>The model predicts <b>{true_label}</b> for the current {instance_type}. Here are
+        <h3>The model predicts <b>{instance_prediction}</b> for the current {instance_type}. Here are
             explanations for the prediction:</h3>
         <div class="grid-container">
             <div class="grid-item" style="grid-area: area1;">
                 <br>
                 <h1>1. Attribute ranking</h1>
                 <h3>Each <b>attribute has a contribution</b> to the decision. <br>The attributions are of different
-                    strengths and can contribute toward or against the current AI prediction. <br>The strength is indicated on
+                    strengths and can contribute toward or against the current AI prediction. <br>The strength is
+                    indicated on
                     the bottom:</h3>
                 <div class="feature-importance-plot">
                     {@html feature_importance}
@@ -47,7 +48,8 @@
             <div class="grid-item" style="grid-area: area2;">
                 <br>
                 <h1>2. Possible alternative scenarios</h1>
-                <h3>The model would predict <b>{opposite_class}</b> if any of the following features change scenarios was applied:</h3>
+                <h3>The model would predict <b>{opposite_class}</b> if any of the following features change scenarios
+                    was applied:</h3>
                 <p>{@html counterfactuals}</p>
                 <hr class="my-5">
             </div>
@@ -55,7 +57,7 @@
             <div class="grid-item" style="grid-area: area3;">
                 <br>
                 <h1>3. Decision rules for similar people</h1><br>
-                <h3>This group of attributes most definetly predicts <b>{true_label}</b>:</h3>
+                <h3>This group of attributes most definetly predicts <b>{instance_prediction}</b>:</h3>
                 <p>{@html anchors}</p>
                 <hr class="my-5">
             </div>

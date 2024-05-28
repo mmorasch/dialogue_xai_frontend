@@ -17,7 +17,7 @@
     export let feature_names;
     export let prediction_choices;
 
-    export let true_label: string;
+    export let instance_prediction: string;
 
     export let datapoint: { [key: string]: string };
     export let feature_tooltips: { [key: string]: string };
@@ -86,7 +86,7 @@
         const details = {
             datapoint_count: datapoint_count,
             prediction: selected_prediction,
-            true_label: true_label,
+            true_label: instance_prediction,
             ...(isIntroTest || isFinalTest) && {confidence_level: confidenceLevelToSend},
             ...(isFinalTest && {feedback: feedback})
         };
