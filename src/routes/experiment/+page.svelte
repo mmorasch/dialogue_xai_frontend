@@ -88,9 +88,12 @@
     let user_id: string = data.user_id;
     let study_group = data.study_group;
     let experiment_phase: TTestOrTeaching = 'intro-test';
-    let true_label: string = data.datapoint.true_label;
 
+    // Information that should not be shown to the user
+    let true_label: string = data.datapoint.true_label;
+    let ml_label_prediction: string = data.datapoint.ml_prediction;
     delete data.datapoint.true_label;
+    delete data.datapoint.ml_prediction;
 
     let new_datapoint: TDatapoint;
     let initial_prompt = '';
@@ -259,7 +262,9 @@
     function setNewCurrentDatapoint() {
         messages = [{isUser: false, feedback: false, text: initial_prompt, id: 1000}];
         true_label = <string>new_datapoint.true_label;
+        ml_label_prediction = <string>new_datapoint.ml_prediction;
         delete new_datapoint.true_label;
+        delete new_datapoint.ml_prediction;
         current_datapoint = new_datapoint;
         datapoint_answer_selected = null; // Reset selected answer
     }
@@ -320,7 +325,7 @@
                 feature_units={feature_units}
                 interactiveOrStatic={study_group}
                 user_id={user_id}
-                true_label={true_label}
+                instance_prediction={ml_label_prediction}
                 prediction_choices={prediction_choices}
                 on:next={handleNext}
         />
@@ -334,7 +339,7 @@
                 >
                     <StaticExplanationReport
                             static_report={static_report}
-                            true_label={true_label}
+                            instance_prediction={ml_label_prediction}
                             on:next={handleNext}
                     />
                 </div>
