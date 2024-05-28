@@ -20,11 +20,9 @@ export async function setupUserProfile(userId: string, profileData: object) {
 export async function get_study_group() {
     try {
         // Directly return based on PUBLIC_A_B_SELECTION if not 'alternate'
-        if (PUBLIC_A_B_SELECTION === 'static') {
-            return 'static';
-        } else if (PUBLIC_A_B_SELECTION === 'interactive') {
-            return 'interactive';
-        } else if (PUBLIC_A_B_SELECTION === 'alternate') {
+        if (PUBLIC_A_B_SELECTION !== 'alternate') {
+            return PUBLIC_A_B_SELECTION;
+        }  else if (PUBLIC_A_B_SELECTION === 'alternate') {
             // Proceed with original logic for 'alternate'
 
             // Execute SQL queries to count users in each study group

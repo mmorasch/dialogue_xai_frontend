@@ -52,10 +52,10 @@
 
     // Decide which questions to use based on the study group
     let study_questions: string[] = [];
-    if (study_group === 'interactive') {
-        study_questions = interactive_group_questions;
-    } else {
+    if (study_group === 'static') {
         study_questions = static_group_questions;
+    } else { // interactive or chat
+        study_questions = interactive_group_questions;
     }
 
     const attention_check_col_id = 8;

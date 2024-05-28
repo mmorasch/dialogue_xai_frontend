@@ -70,7 +70,7 @@ type TTestingQuestion = {
 
 type TTestOrTeaching = 'test' | 'teaching' | 'final-test' | 'intro-test';
 
-type TInteractiveOrStatic = 'static' | 'interactive';
+type TInteractiveOrStatic = 'static' | 'interactive' | 'chat';
 
 export type {
     TChatMessage,

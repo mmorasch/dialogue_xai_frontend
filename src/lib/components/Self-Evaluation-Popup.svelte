@@ -107,7 +107,24 @@
         '4. What would happen if individual attributes were changed?',
         '5. Attribute ranges and frequencies'];
 
-    let explanationsOrQuestions = study_group === 'interactive' ? ttm_questions : staticExplanationLabels;
+    let chatExplanationLabels = [
+        '1. Visualisation of attribute influences',
+        '2. Top 3 impacting attributes',
+        '3. Least 3 impacting attributes',
+        '4. Attribute changes that lead to a model prediction change',
+        '5. Attributes that most definitely predict current outcome',
+        '6. If change of individual attribute can change model prediction',
+        '7. Attribute ranges and frequencies',
+    ];
+
+    let explanationsOrQuestions;
+    if (study_group === 'interactive') {
+        explanationsOrQuestions = ttm_questions;
+    } else if (study_group === 'static') {
+        explanationsOrQuestions = staticExplanationLabels;
+    } else { // chat
+        explanationsOrQuestions = chatExplanationLabels;
+    }
     let totalItemsLength = explanationsOrQuestions.length;
 
     const selectedGeneralValues = writable(Array(generalQuestionsLength).fill(''));
@@ -169,6 +186,31 @@
                             </div>
                         {/each}
                     </div>
+                </Step>
+            {:else if study_group === 'chat'}
+                <Step>
+                    <h1 class="center-text text-xl">Please <b>rank the explanations</b> based on their usefulness,
+                        where <b>1 is the most useful</b> explanation. <br> (<b>Useful</b> as in helpful to understand the
+                        model's decision process.) <br> If you did <b>not receive</b> one of the explanations, mark them as -1. <br>
+                        You can see how the explanations looked like in the chat in the <b>image on the bottom of the page</b>.</h1>
+                    <!-- Adjusted Ranking UI for chat explanations -->
+                    <div class="flex flex-col my-[5px]">
+                        {#each explanationsOrQuestions as item, index}
+                            <div class="flex my-[5px]">
+                                <select bind:value={$selectedGeneralValues[index]} class="select-margin">
+                                    <option value="">Select a rank</option>
+                                    {#each [-1, ...Array(totalQuestionsLength).fill().map((_, i) => i + 1)] as rank}
+                                        <option value={rank} disabled={rank !== -1 && $disabledOptions.includes(rank)}>
+                                            {rank}
+                                        </option>
+                                    {/each}
+                                </select>
+                                <span>{item}</span>
+                            </div>
+                        {/each}
+                    </div>
+                    <p>You can see a screenshot of all possible explanations below:</p>
+                    <img src="{base}/ChatExplanationsImage.png" alt="Chat Explanations Image">
                 </Step>
             {:else}
                 <Step>
@@ -233,9 +275,8 @@
                 <p class="text-center text-xl">
                     <b>Almost done!</b><br> <br>
 
-                    As a <b>last activity</b>, you will see new people<br> and will be asked to make a decision on what
-                    you think the
-                    model will predict for them. <br> You will not see explanations.<br>
+                    As a <b>last activity</b>, you will see new indidivuals<br> and will be asked to make a decision on what
+                    you think the model will predict for them. <br> You will not see explanations.<br>
                 </p>
             </Step>
         </Stepper>

@@ -31,7 +31,9 @@
     export let teaching_intro = "";
     if (interactiveOrStatic === 'static') {
         teaching_intro = "Task: <b>Guess what the model will predict</b>, based on the information below. Afterward, you can read the explanations to <b>understand the model's prediction</b>.";
-    } else {
+    } else if (interactiveOrStatic === 'interactive') {
+        teaching_intro = "Task: <b>Guess what the model will predict</b>, based on the information below. Afterward, you can ask questions to <b>understand the model's prediction</b>.";
+    } else { // chat
         teaching_intro = "Task: <b>Guess what the model will predict</b>, based on the information below. Afterward, you can ask questions to <b>understand the model's prediction</b>.";
     }
 

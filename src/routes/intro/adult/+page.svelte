@@ -21,6 +21,7 @@
     let step1_gif_path = `${base}/intro-test.gif`;
     let step2_gif_path_static = `${base}/learning-teaching-static.gif`;
     let step2_gif_path_interactive = `${base}/learning-teaching-interactive.gif`;
+    let step2_gif_path_chat = `${base}/learning-teaching-chat.gif`;
     let step3_gif_path = `${base}/learning-testing.gif`;
     let step4_gif_path = `${base}/final-test.gif`;
     const experiment_start = new Date().toISOString();
@@ -41,11 +42,11 @@
                 });
             } else {
                 console.error('Server responded with non-OK status');
-                study_group = 'static';
+                study_group = 'chat';
             }
         }).catch((error) => {
             console.error('Error:', error);
-            study_group.set('static');
+            study_group.set('chat');
         });
 
         user_id = await userId.get();
@@ -106,6 +107,9 @@
 
     let study_group_interactive_text =
         'in an <b>interactive chatbot</b>.';
+
+    let study_group_chat_text =
+        'in a <b>chatbot</b>.';
 
     let study_group_static_text =
         'in an <b>explanation report</b>.';
@@ -210,6 +214,9 @@
                 {#if study_group === 'interactive'}
                     {@html study_group_interactive_text}
                     <img alt="Step2 gif" src={step2_gif_path_interactive} style="height: 50vh;"/>
+                {:else if study_group === 'chat'}
+                    {@html study_group_chat_text}
+                    <img alt="Step2 gif" src={step2_gif_path_chat} style="height: 50vh;"/>
                 {:else}
                     {@html study_group_static_text}
                     <img alt="Step2 gif" src={step2_gif_path_static} style="height: 50vh;"/>
@@ -239,7 +246,7 @@
                 <p><b>Predict the model's output for a new individual</b> without access to the model's prediction or
                     explanations.</p>
                 <img alt="Step4 gif" src={step4_gif_path} style="height: 50vh;"/>
-                <p>In this last segment, correct answers give points and participants in the <b>top 15% qualify for a
+                <p>In this last phase, correct answers give points and participants in the <b>top 10% qualify for a
                     bonus payment</b>.</p>
             </div>
         </Step>
@@ -247,8 +254,9 @@
         <Step>
             <h2 class="text-2xl">General Information</h2>
             <p>
-                <b>Attention:</b> Do not use the <b>browser's back button</b> during the experiment. This will cause the <b>experiment to
-                restart</b>.
+                <b>Attention:</b> Do not use the <b>browser's back button</b> during the experiment. This will cause the
+                <b>experiment to
+                    restart</b>.
                 <br>
                 <br>
             </p>
