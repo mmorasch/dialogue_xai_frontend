@@ -7,8 +7,6 @@
     if (typeof window !== 'undefined') {
         user_id = userId.get();
         study_group = studyGroup.get();
-        console.log(user_id);
-        console.log(study_group);
     }
 </script>
 
