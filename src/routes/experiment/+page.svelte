@@ -373,6 +373,24 @@
                             on:next={handleNext}
                     />
                 </div>
+            {:else if study_group === 'chat'}
+                <div
+                        class="col-start-2 col-end-4 overflow-y-scroll"
+                        transition:fade={{ delay: 250, duration: 500 }}
+                >
+                    <TTMChat {messages}
+                             on:feedbackButtonClick={handleFeedbackButtonClick}
+                             on:submit={submitWrittenQuestion}
+                    />
+                    <TTMQuestions
+                            {feature_questions}
+                            {general_questions}
+                            {current_prediction}
+                            feature_questions_dropdown={feature_names}
+                            on:submit={submitQuestion}
+                            on:next={handleNext}
+                    />
+                </div>
             {:else}
                 <div
                         class="col-start-2 col-end-3 overflow-y-scroll"
