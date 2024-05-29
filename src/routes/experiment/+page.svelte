@@ -382,14 +382,6 @@
                              on:feedbackButtonClick={handleFeedbackButtonClick}
                              on:submit={submitWrittenQuestion}
                     />
-                    <TTMQuestions
-                            {feature_questions}
-                            {general_questions}
-                            {current_prediction}
-                            feature_questions_dropdown={feature_names}
-                            on:submit={submitQuestion}
-                            on:next={handleNext}
-                    />
                 </div>
             {:else}
                 <div
