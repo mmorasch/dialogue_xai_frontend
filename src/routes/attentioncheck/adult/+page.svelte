@@ -2,12 +2,12 @@
 
     import {goto} from "$app/navigation";
     import {base} from "$app/paths";
-    import SubmitButton from '$lib/components/SubmitButton.svelte';
     import '../../../global.css';
     import {onMount} from 'svelte';
     import {userId, studyGroup} from '$lib/shared.ts';
     import Spinner from '$lib/components/Spinner.svelte';
     import {logAttentionCheck} from '$lib/attentioncheck.ts';
+    import SubmitButton from '$lib/components/SubmitButton.svelte';
 
     let user_id;
     let study_group;
@@ -80,7 +80,8 @@
             <option value={statement}>{statement}</option>
         {/each}
     </select>
-    <SubmitButton next={handleSelection}/>
+    <SubmitButton next={handleSelection}
+                  customStyle="padding: 10px; margin-top: 10px;" />
 </div>
 
 <style>

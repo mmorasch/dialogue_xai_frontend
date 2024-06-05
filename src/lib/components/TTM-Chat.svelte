@@ -4,11 +4,13 @@
     import Header from './Header.svelte';
     import Message from './Message.svelte';
     import {createEventDispatcher} from 'svelte';
+    import SubmitButton from "$lib/components/SubmitButton.svelte";
 
     export let messages: TChatMessage[] = [];
     let element: HTMLElement;
     let inputMessage = '';
     export let user_input = true;
+    export let study_group = '';
 
     let autoscroll = false;
 
@@ -26,8 +28,16 @@
     }
 
     function sendMessage() {
+        if (inputMessage.trim() === '') {
+            return;
+        }
         dispatch('submit', {message: inputMessage});
         inputMessage = '';
+    }
+
+    async function next(e: any) {
+        e.preventDefault();
+        dispatch('next', null);
     }
 
     beforeUpdate(() => {
@@ -61,6 +71,10 @@
             <input class="variant-ghost-surface" bind:value={inputMessage} type="text" placeholder="Ask a question..."
                    on:keydown={handleKeydown}/>
             <button class="variant-ghost-primary" on:click={sendMessage}>Send</button>
+            {#if study_group === 'chat'}
+                <div class="vertical-divider"></div>
+                <SubmitButton next={next} label="Proceed"/>
+            {/if}
         </div>
     {/if}
 </div>
@@ -84,8 +98,16 @@
         flex-grow: 1;
         margin-right: 10px;
     }
-    
+
     .input-area button {
-        @apply rounded-lg cursor-pointer mx-0 px-5 py-2.5 border-2;
+        @apply rounded-lg cursor-pointer px-8 py-2.5 border-2;
+        margin-right: 10px;
+    }
+
+    .vertical-divider {
+        width: 2px;
+        height: 45px; /* Adjust the height as needed */
+        background-color: #ccc; /* Adjust the color as needed */
+        margin: 0 20px; /* Adjust the margin as needed */
     }
 </style>

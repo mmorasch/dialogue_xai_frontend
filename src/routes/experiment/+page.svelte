@@ -94,9 +94,10 @@
     let ml_label_prediction: string = data.datapoint.ml_prediction;
     delete data.datapoint.true_label;
     delete data.datapoint.ml_prediction;
-
     let new_datapoint: TDatapoint;
     let initial_prompt = '';
+
+    console.log('ml_label_prediction', ml_label_prediction);
 
     function createAndPushMessage(text: string, isUser: boolean, feedback: boolean, id: number, feature_id?: number) {
         messages.push({
@@ -378,9 +379,10 @@
                         class="col-start-2 col-end-4 overflow-y-scroll"
                         transition:fade={{ delay: 250, duration: 500 }}
                 >
-                    <TTMChat {messages}
+                    <TTMChat {messages} {study_group}
                              on:feedbackButtonClick={handleFeedbackButtonClick}
                              on:submit={submitWrittenQuestion}
+                             on:next={handleNext}
                     />
                 </div>
             {:else}
@@ -388,7 +390,7 @@
                         class="col-start-2 col-end-3 overflow-y-scroll"
                         transition:fade={{ delay: 250, duration: 500 }}
                 >
-                    <TTMChat {messages}
+                    <TTMChat {messages} {study_group}
                              on:feedbackButtonClick={handleFeedbackButtonClick}
                              on:submit={submitWrittenQuestion}
                     />
