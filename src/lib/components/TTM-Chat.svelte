@@ -20,6 +20,10 @@
         dispatch('feedbackButtonClick', event.detail);
     }
 
+     function forwardQuestionClick(event) {
+        dispatch('questionClick', event.detail);
+    }
+
     function handleKeydown(event) {
         if (event.key === 'Enter') {
             event.preventDefault(); // Stop the form from submitting
@@ -63,7 +67,7 @@
             class="flex-1 overflow-y-auto h-full p-3"
     >
         {#each messages as message}
-            <Message {message} on:feedbackButtonClick={forwardEvent}/>
+            <Message {message} on:feedbackButtonClick={forwardEvent} on:questionClick={forwardQuestionClick}/>
         {/each}
     </main>
     {#if user_input}
