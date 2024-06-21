@@ -90,18 +90,24 @@
     delete data.datapoint.true_label;
     delete data.datapoint.ml_prediction;
     let new_datapoint: TDatapoint;
-    let initial_prompt = '';
+    let initial_message: TChatMessage;
+    let just_used_proceeding_stop = false;
 
     console.log('ml_label_prediction', ml_label_prediction);
 
-    function createAndPushMessage(text: string, isUser: boolean, feedback: boolean, id: number, feature_id?: number) {
+    function createAndPushMessage(text: string,
+                                  isUser: boolean,
+                                  feedback: boolean,
+                                  id: string,
+                                  feature_id?: number,
+                                  followup?: (TGeneralQuestion | TFeatureQuestion)[]) {
         messages.push({
             text: text,
             isUser: isUser,
             feedback: feedback,
             id: id,
             feature_id: feature_id,
-            followup: []
+            followup: followup
         });
     }
 
