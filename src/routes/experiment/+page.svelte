@@ -6,7 +6,7 @@
         TDatapoint,
         TQuestionResult,
         TTestOrTeaching,
-        StaticReport, TDatapointResult
+        StaticReport, TDatapointResult, TChatMessage, TGeneralQuestion, TFeatureQuestion
     } from '$lib/types';
     import backend from '$lib/backend';
     import {fade} from 'svelte/transition';
@@ -53,19 +53,14 @@
     let feature_tooltips = data.feature_tooltips;
     let feature_units = data.feature_units;
     let prediction_choices = data.prediction_choices;
-    let dataset_task_description = data.dataset_task_description;
+    let user_study_task_description = data.user_study_task_description;
 
     //-----------------------------------------------------------------
 
     /**
      * Chat relevant
      */
-    let messages: { feedback: boolean; text: string; id: number; isUser: boolean }[] = [{
-        isUser: false,
-        feedback: false,
-        text: data.initial_prompt,
-        id: 1000
-    }];
+    let messages: TChatMessage[] = [];
 
     let isLoading = false;
 
