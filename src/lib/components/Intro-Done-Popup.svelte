@@ -8,7 +8,7 @@
     export let user_id;
     export let study_group;
 
-    export let dataset_task_description;
+    export let user_study_task_description;
 
     let teaching_intro = "";
 
@@ -51,7 +51,7 @@
     // Create Answer Array
     let answers = new Array(questions.length).fill(0);
 
-    const taskDescription = `Your <b>next task</b> will once again be to guess <b>${dataset_task_description}</b>, based on the shown information.<br><br>`;
+    const taskDescription = `Your <b>next task</b> will be to guess <b>${user_study_task_description}</b>.<br><br>`;
     const followUpActionStatic = "Afterward, you can <b>see the AI's prediction</b> and read the provided explanations";
     const followUpActionDynamic = "Afterward, you can <b>see the AI's prediction</b> and ask questions through the chatbot";
     const commonConclusion = "to <b>understand the reason for the model's prediction</b> and enhance your understanding of the decision-making process";
