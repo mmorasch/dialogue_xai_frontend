@@ -67,6 +67,23 @@
         }
     }
 
+    function feedbackClicked(event) {
+        feedback = event.detail.feedback;
+        // Check if feedback and confidence level are set
+        console.log("Checking");
+        const checks = [
+            {condition: confidence_level === "-1", message: 'Please select your confidence before proceeding.'},
+            {condition: feedback === "", message: 'Please describe why you made the decision.'}
+        ];
+        for (let check of checks) {
+            if (check.condition) {
+                alert(check.message);
+                return;
+            }
+        }
+        logPrediction(event);
+    }
+
     async function logPrediction(event?) {
         const isFinalTest = experimentPhase === 'final-test';
         const isIntroTest = experimentPhase === 'intro-test';
@@ -78,8 +95,13 @@
 
         // Extract feedback and confidence level if applicable
         let confidenceLevelToSend = confidence_level;
-        if ((isFinalTest) && event) {
+
+        if (isFinalTest) {
             feedback = event?.detail?.feedback || '';
+            if (feedback === '') {
+                console.log("Feedback is empty");
+                return; // Don't log if feedback is empty in final test
+            }
         }
 
         // Prepare common details object with optional properties based on the phase
@@ -118,20 +140,6 @@
 
         if (experimentPhase === "test") {
             dispatch('next');
-        }
-
-        // Don't dispatch next event if final and confidence or feedback are not set
-        if (isFinalTest && event) {
-            const checks = [
-                {condition: confidence_level === "-1", message: 'Please select your confidence before proceeding.'},
-                {condition: feedback === "", message: 'Please describe why you made the decision.'}
-            ];
-            for (let check of checks) {
-                if (check.condition) {
-                    alert(check.message);
-                    return;
-                }
-            }
         }
 
         if (isFinalTest && confidence_level !== "-1") {
@@ -237,7 +245,7 @@
                 <FeedbackWindow
                         placeholder="Please describe why you made the decision..."
                         submitLabel="Next"
-                        on:feedbackSubmit={logPrediction}
+                        on:feedbackSubmit={feedbackClicked}
                 />
             {/if}
         {:else}
