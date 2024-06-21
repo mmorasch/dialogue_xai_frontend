@@ -149,12 +149,14 @@
 
             createAndPushMessage(full_question, true, false, questionId);
             messages = messages;
-
+            let responseMessage: TChatMessage;
             setTimeout(async () => {
-                let response = await backend.xai(user_id).get_question_selection_response(questionId, feature);
-                let text = await response.text();
-
-                createAndPushMessage(text, false, true, questionId);
+                await backend.xai(user_id).get_question_selection_response(questionId, featureName)
+                    .then(response => response.json())
+                    .then(data => {
+                        responseMessage = data;
+                    });
+                messages.push(responseMessage);
                 messages = messages;
             }, 700);
         }
@@ -162,7 +164,7 @@
 
     async function submitWrittenQuestion(e: any) {
         const user_message = e.detail.message;
-        createAndPushMessage(user_message, true, false, 0);
+        createAndPushMessage(user_message, true, false, "0");
         messages = messages;
         let question_id;
         let feature_id;
@@ -175,19 +177,18 @@
                 .then(data => {
                     responseData = data;
                 });
-            let response_text = responseData['response'];
-            question_id = responseData['question_id'];
-            feature_id = responseData['feature_id'];
-            createAndPushMessage(response_text, false, true, question_id, feature_id);
+            messages.push(responseData);
+            question_id = responseData.id;
+            feature_id = responseData.feature_id;
             messages = messages;
 
             // Log event
             let interpreted_intent = question_id + ',' + feature_id;
-            console.log(interpreted_intent);
             const details = {
                 datapoint_count: datapoint_count,
-                question: user_message,
+                message: responseData,
                 question_id: interpreted_intent,
+                feature_id: feature_id,
             };
             fetch(`${base}/api/log_event`, {
                 method: 'POST',
@@ -210,6 +211,23 @@
             return;
         }
 
+        // Check if enough questions were asked and suggest some questions.
+        // only if study_group is chat
+        if (study_group === 'chat' && experiment_phase === 'teaching' && !just_used_proceeding_stop) {
+            let result = await (await backend.xai(user_id).get_proceeding_okay()).json() as {
+                proceeding_okay: boolean,
+                message: TChatMessage,
+            };
+            if (!result.proceeding_okay) {
+                // Send message to user stating that they need to ask more questions and include follow-up questions
+                messages.push(result.message);
+                messages = messages;
+                just_used_proceeding_stop = true;
+                return;
+            }
+        }
+
+        just_used_proceeding_stop = false;
         isLoading = true;
         transition_done = false;
         let next_phase = experiment_phase;
@@ -278,19 +296,19 @@
 
         if (type === 'teaching') {
             let result = await (await backend.xai(user_id).get_train_datapoint()).json() as TDatapointResult;
-            initial_prompt = result.initial_prompt;
+            initial_message = result.initial_message;
             current_prediction = result.current_prediction;
             static_report = result.static_report;
             new_datapoint = result;
         } else {
-            ({current_prediction, initial_prompt, ...new_datapoint} = await (
+            ({current_prediction, initial_message, ...new_datapoint} = await (
                 await backend.xai(user_id)[endpoint]()
             ).json());
         }
     }
 
     function setNewCurrentDatapoint() {
-        messages = [{isUser: false, feedback: false, text: initial_prompt, id: 1000}];
+        messages = [initial_message];
         true_label = <string>new_datapoint.true_label;
         ml_label_prediction = <string>new_datapoint.ml_prediction;
         delete new_datapoint.true_label;
@@ -336,7 +354,7 @@
 
 
 {#if $introPopupVisible}
-    <IntroDonePopup {user_id} {feature_questions} {general_questions} {study_group} {dataset_task_description}
+    <IntroDonePopup {user_id} {feature_questions} {general_questions} {study_group} {user_study_task_description}
                     on:confirm={handleConfirm}/>
 {:else if $selfAssesmentPopupVisible}
     <SelfEvalPopup {user_id} {feature_questions} {general_questions} {study_group} on:confirm={handleConfirm}/>
