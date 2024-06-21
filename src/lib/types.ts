@@ -44,7 +44,7 @@ type PredictionProbability = {
 
 type TDatapointResult = TDatapoint & {
     current_prediction: string;
-    initial_prompt: string;
+    initial_message: TChatMessage;
     static_report: StaticReport;
     true_label: string;
     prediction_probability: PredictionProbability[];
