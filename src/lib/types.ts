@@ -1,12 +1,12 @@
 type TGeneralQuestion = {
-    id: number;
+    id: string;
     question: string;
 };
 
 type TFeatureQuestion = TGeneralQuestion;
 
 type TFeatureName = {
-    id: number;
+    id: string;
     feature_name: string;
 };
 
@@ -14,7 +14,8 @@ type TChatMessage = {
     text: string;
     isUser: boolean;
     feedback: boolean;
-    id: number;
+    id: string;
+    feature_id: number;
     followup: (TGeneralQuestion | TFeatureQuestion)[];
 };
 
