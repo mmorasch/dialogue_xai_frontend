@@ -96,7 +96,7 @@
         // Extract feedback and confidence level if applicable
         let confidenceLevelToSend = confidence_level;
 
-        if (isFinalTest) {
+        if ((isFinalTest) && event)  {
             feedback = event?.detail?.feedback || '';
             if (feedback === '') {
                 console.log("Feedback is empty");

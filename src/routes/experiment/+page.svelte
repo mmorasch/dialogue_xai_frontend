@@ -147,8 +147,10 @@
                 })
             });
 
+            // Push user question to chat
             createAndPushMessage(full_question, true, false, questionId);
             messages = messages;
+
             let responseMessage: TChatMessage;
             setTimeout(async () => {
                 await backend.xai(user_id).get_question_selection_response(questionId, featureName)
