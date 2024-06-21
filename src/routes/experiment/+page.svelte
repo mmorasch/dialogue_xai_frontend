@@ -93,7 +93,6 @@
     let initial_message: TChatMessage;
     let just_used_proceeding_stop = false;
 
-    console.log('ml_label_prediction', ml_label_prediction);
 
     function createAndPushMessage(text: string,
                                   isUser: boolean,
@@ -113,20 +112,19 @@
 
     async function submitQuestion(e: any) {
         // Get Information
-        let questionId: number = parseInt(e.detail.questionId);
-        let feature: number = parseInt(e.detail.feature);
+        let questionId: string = e.detail.questionId;
+        let featureName: string = e.detail.featureId;
 
         // Get correct question id and feature id
         let generalQuestion = general_questions.find(q => q.id === questionId);
         let featureQuestion = feature_questions.find(q => q.id === questionId);
-        let featureName = feature_names.find(f => f.id === feature);
 
         // Create full question to log and show to user
         let full_question = '';
         if (generalQuestion) {
             full_question = generalQuestion.question.replace('[current prediction]', '<b>' + current_prediction + '</b>');
         } else if (featureQuestion && featureName) {
-            full_question = featureQuestion.question.replace('[feature selection]', featureName.feature_name);
+            full_question = featureQuestion.question.replace('[feature selection]', featureName);
         }
 
         // Log and show
