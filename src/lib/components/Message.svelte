@@ -15,9 +15,8 @@
     }
 
     // Function to handle button click for questions
-    function buttonOnClick(questionId: number) {
-        console.log(`Question with ID ${questionId} clicked`);
-        dispatch('questionClick', {questionId});
+    function buttonOnClick(questionId: string, featureId: string) {
+        dispatch('questionClick', {questionId, featureId});
     }
 </script>
 
@@ -31,19 +30,19 @@
                 <DislikeButton {message} on:feedbackButtonClick={forwardEvent}/>
             </span>
             <!-- Check if the followup array is not empty -->
-            {#if message.followup && message.followup.length > 0}
-                <div class="follow-up-questions mt-4">
-                    <p>Suggested Follow-up Questions:</p>
-                    {#each message.followup as question}
-                        <button
-                                data-value={question.id}
-                                type="button"
-                                class="btn variant-ghost-primary"
-                                style="font-size: 0.75rem;"
-                                on:click={() => buttonOnClick(question.id)}>{question.question}</button>
-                    {/each}
-                </div>
-            {/if}
+        {/if}
+        {#if message.followup && message.followup.length > 0}
+            <div class="">
+                <p>Suggested questions:</p>
+                {#each message.followup as question}
+                    <button
+                            data-value={question.id}
+                            type="button"
+                            class="btn variant-ghost-primary"
+                            style="font-size: 0.75rem;"
+                            on:click={() => buttonOnClick(question.id, question.feature)}>{question.question}</button>
+                {/each}
+            </div>
         {/if}
     </div>
 </div>
@@ -69,8 +68,9 @@
         @apply m-1 p-2 bg-transparent border border-solid border-gray-300 rounded cursor-pointer text-left block w-full;
         white-space: normal; /* Ensure text wraps */
         overflow: hidden; /* Keep the content within the button */
-        max-width: 100%; /* Ensure button does not exceed its container */
+        max-width: 100%;
         transition: background-color 0.3s ease;
+
         &:hover {
             @apply bg-gray-200;
         }
