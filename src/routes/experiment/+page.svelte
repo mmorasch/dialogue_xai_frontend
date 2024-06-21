@@ -400,6 +400,7 @@
                              on:feedbackButtonClick={handleFeedbackButtonClick}
                              on:submit={submitWrittenQuestion}
                              on:next={handleNext}
+                             on:questionClick={submitQuestion}
                     />
                 </div>
             {:else}
@@ -410,6 +411,7 @@
                     <TTMChat {messages} {study_group}
                              on:feedbackButtonClick={handleFeedbackButtonClick}
                              on:submit={submitWrittenQuestion}
+                             on:next={handleNext}
                     />
                 </div>
                 <div class="col-start-3 col-end-4"
