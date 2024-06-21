@@ -4,13 +4,14 @@ export default {
     xai: (user_id: string, study_group = 'A') => ({
         init: () => fetch(`${PUBLIC_BACKEND_URL}init?user_id=${user_id}&study_group=${study_group}`),
         get_user_correctness: () => fetch(`${PUBLIC_BACKEND_URL}get_user_correctness?user_id=${user_id}`),
+        get_proceeding_okay: () => fetch(`${PUBLIC_BACKEND_URL}get_proceeding_okay?user_id=${user_id}`),
         finish: () => fetch(PUBLIC_BACKEND_URL + "finish" + "?user_id=" + user_id, {method: 'DELETE',}),
         get_train_datapoint: () => fetch(PUBLIC_BACKEND_URL + "get_train_datapoint" + "?user_id=" + user_id),
         get_test_datapoint: () => fetch(PUBLIC_BACKEND_URL + "get_test_datapoint" + "?user_id=" + user_id),
         get_final_test_datapoint: () => fetch(PUBLIC_BACKEND_URL + "get_final_test_datapoint" + "?user_id=" + user_id),
         get_intro_test_datapoint: () => fetch(PUBLIC_BACKEND_URL + "get_intro_test_datapoint" + "?user_id=" + user_id),
         get_testing_questions: () => fetch(PUBLIC_BACKEND_URL + "get_testing_questions" + "?user_id=" + user_id),
-        get_question_selection_response: (question: number, feature: number) => fetch(PUBLIC_BACKEND_URL + "get_response" + "?user_id=" + user_id, {
+        get_question_selection_response: (question: string, feature: string) => fetch(PUBLIC_BACKEND_URL + "get_response" + "?user_id=" + user_id, {
             method: "POST",
             body: JSON.stringify({question, feature})
         }),
