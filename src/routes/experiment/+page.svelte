@@ -192,11 +192,11 @@
             messages = messages;
 
             // Log event
-            let interpreted_intent = question_id + ',' + feature_id;
             const details = {
                 datapoint_count: datapoint_count,
+                user_question: user_message,
                 message: responseData,
-                question_id: interpreted_intent,
+                question_id: question_id,
                 feature_id: feature_id,
             };
             fetch(`${base}/api/log_event`, {
