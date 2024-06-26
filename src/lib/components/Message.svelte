@@ -30,10 +30,10 @@
                 <DislikeButton {message} on:feedbackButtonClick={forwardEvent}/>
             </span>
             <!-- Check if the followup array is not empty -->
-        {/if}
+        {/if}<br/>
         {#if message.followup && message.followup.length > 0}
             <div class="">
-                <p>Suggested questions:</p>
+                <p><b>Question Suggestions</b></p>
                 {#each message.followup as question}
                     <button
                             data-value={question.id}
