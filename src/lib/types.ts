@@ -17,6 +17,7 @@ type TChatMessage = {
     id: string;
     feature_id: number;
     followup: (TGeneralQuestion | TFeatureQuestion)[];
+    reasoning: string;
 };
 
 type TDatapointValueWithHistory = {
