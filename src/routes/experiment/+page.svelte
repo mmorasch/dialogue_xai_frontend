@@ -18,6 +18,7 @@
     import StaticExplanationReport from '$lib/components/StaticExplanationReport.svelte';
     import {writable} from "svelte/store";
     import SelfEvalPopup from '$lib/components/Self-Evaluation-Popup.svelte';
+    import QuestionRankingPopup from '$lib/components/QuestionRanking-Popup.svelte';
     import IntroDonePopup from '$lib/components/Intro-Done-Popup.svelte';
     import Spinner from '$lib/components/Spinner.svelte';
 
@@ -28,6 +29,8 @@
     export const selfAssesmentPopupVisible = writable(false);
     export const introPopupVisible = writable(false);
 
+    export const questionRankingDone = writable(false);
+
     //-----------------------------------------------------------------
 
     selfAssesmentPopupVisible.subscribe(value => {
@@ -37,6 +40,10 @@
     introPopupVisible.subscribe(value => {
         $introPopupVisible = value;
     });
+
+    function handleRankingDone() {
+        questionRankingDone.set(true);
+    }
 
     function handleConfirm() {
         selfAssesmentPopupVisible.set(false);
@@ -359,7 +366,12 @@
     <IntroDonePopup {user_id} {feature_questions} {general_questions} {study_group} {user_study_task_description}
                     on:confirm={handleConfirm}/>
 {:else if $selfAssesmentPopupVisible}
-    <SelfEvalPopup {user_id} {feature_questions} {general_questions} {study_group} on:confirm={handleConfirm}/>
+    {#if $questionRankingDone}
+        <SelfEvalPopup {user_id} {feature_questions} {general_questions} {study_group} on:confirm={handleConfirm}/>
+    {:else}
+        <QuestionRankingPopup {user_id} {feature_questions} {general_questions} {study_group}
+                              on:confirm={handleRankingDone}/>
+    {/if}
 {:else}
     {#if isLoading}
         <Spinner/>
