@@ -13,9 +13,10 @@
     let decision_rules_text = "";
 
     let study_questions = [
-        "Which attribute was, on average, the most important for the model’s decision?",
-        "Which attribute was, on average, the least important for the model’s decision?",
-        "What rules do you think the model uses to differentiate between individuals earning over 50k and under 50k?"
+        "1. Which attribute was, on average, the <b>most important</b> for the model’s decision?",
+        "2. Which attribute was, on average, the <b>least important</b> for the model’s decision?",
+        "3. What <b>rules</b> do you think the model uses to <b>differentiate between\n" +
+        "                individuals</b> earning over 50k and under 50k?"
     ];
 
     // Validate form before submitting
@@ -54,13 +55,13 @@
 
 <div>
     <!-- https://www.skeleton.dev/components/steppers -->
-    <Stepper stepTerm="Question">
+    <Stepper stepTerm="Final Test">
         <Step>
             <h1 class="center-text text-xl">Almost done! <br> Here are <b>three final questions</b> about your <b>model
                 understanding</b>.</h1>
             <div class="flex-container">
                 <label class="label text-center flex-item">
-                    <span>Which attribute was, on average, the <b>most important</b> for the model’s decision?</span>
+                    <span>{@html study_questions[0]}</span>
                     <select bind:value={most_imp_val} class="select py-1">
                         <option value="" selected>- Select -</option>
                         <option value="age">Age</option>
@@ -71,7 +72,7 @@
                     </select>
                 </label>
                 <label class="label text-center flex-item">
-                    <span>Which attribute was, on average, the <b>least important</b> for the model’s decision?</span>
+                    <span>{@html study_questions[1]}</span>
                     <select bind:value={lest_imp_val} class="select py-1">
                         <option value="" selected>- Select -</option>
                         <option value="age">Age</option>
@@ -82,9 +83,8 @@
                     </select>
                 </label>
             </div>
-            <h1 class="center-text">What <b>rules</b> do you think the model uses to <b>differentiate between
-                individuals</b>
-                earning over 50k and under 50k?</h1>
+            <br>
+            <span>{@html study_questions[2]}</span>
             <textarea bind:value={decision_rules_text} class="textarea-full-width"
                       placeholder="I found that the model uses... I think the model distinguishes by..."></textarea>
             <div class="button-container">

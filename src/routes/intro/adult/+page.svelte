@@ -13,9 +13,9 @@
     let education_field: string;
     let education_field_other: string;
     let english_speaking_level: string;
-    let fam_ml_val: number;
+    let fam_ml_val = -1;
     let fam_domain_val: number;
-    let prolific_id: string;
+    let prolific_id = "";
     let consent_given: boolean = false;
     let pdfPath = `${base}/Adult-Consent.pdf`;
     let step1_gif_path = `${base}/intro-test.gif`;
@@ -56,17 +56,7 @@
         // First check if all the fields are filled out
         const checks = [
             {condition: prolific_id === '', message: 'Please insert your prolific id before proceeding.'},
-            {condition: degree === '', message: 'Please select your highest degree before proceeding.'},
-            {
-                condition: education_field === '',
-                message: 'Please select your field of study before proceeding.'
-            },
-            {
-                condition: education_field === 'other' && education_field_other === '',
-                message: 'Please enter your field of study before proceeding.'
-            },
-            {condition: age === '', message: 'Please enter your age before proceeding.'},
-            {condition: gender === '', message: 'Please select your gender degree before proceeding.'}
+            {condition: fam_ml_val === -1, message: 'Please rate your familiarity with AI.'},
         ];
 
         for (let check of checks) {
@@ -282,8 +272,8 @@
                         </option>
                         <option value="2">Moderate: I have a fair understanding of AI concepts and its applications.
                         </option>
-                        <option value="3">High: I am knowledgeable about AI and its various applications.</option>
-                        <option value="4">Very high: I am highly in AI.</option>
+                        <option value="3">High: I am knowledgeable about AI and how it is developed.</option>
+                        <option value="4">Very high: I am highly knowledgeable in AI and can train algorithms.</option>
                         <option value="anonymous">Prefer not to say</option>
                     </select>
                 </label>
