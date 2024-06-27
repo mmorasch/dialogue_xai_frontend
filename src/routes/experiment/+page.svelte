@@ -232,6 +232,23 @@
                 messages.push(result.message);
                 messages = messages;
                 just_used_proceeding_stop = true;
+                // log event
+                const details = {
+                    datapoint_count: datapoint_count,
+                    message: result.message,
+                };
+                fetch(`${base}/api/log_event`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        user_id: user_id,
+                        event_source: 'teaching',
+                        event_type: 'proceeding_stop',
+                        details: details,
+                    })
+                });
                 return;
             }
         }
