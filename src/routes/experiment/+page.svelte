@@ -120,7 +120,7 @@
     async function submitQuestion(e: any) {
         // Get Information
         let questionId: string = e.detail.questionId;
-        let featureName: string = e.detail.featureId;
+        let featureName: string = e.detail.feature;
 
         // Get correct question id and feature id
         let generalQuestion = general_questions.find(q => q.id === questionId);
