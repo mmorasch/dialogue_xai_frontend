@@ -55,8 +55,8 @@
             </Header>
             <div class="mx-1.5">
                 {#each general_questions as question}
-                    <QuestionButton type="general" question={question.question} questionId={question.id}
-                                    on:action={handleAction} isActive={activeQuestion === question.id}/>
+                    <QuestionButton type="general" question={question.question} questionId={question.q_id}
+                                    on:action={handleAction} isActive={activeQuestion === question.q_id}/>
                 {/each}
             </div>
         </div>
@@ -67,9 +67,9 @@
             </Header>
             <div class="mx-1.5">
                 {#each feature_questions as question}
-                    <QuestionButton type="feature" question={question.question} questionId={question.id}
+                    <QuestionButton type="feature" question={question.question} questionId={question.q_id}
                                     featureOptions={feature_questions_dropdown} on:action={handleAction}
-                                    isActive={activeQuestion === question.id}/>
+                                    isActive={activeQuestion === question.q_id}/>
                 {/each}
             </div>
         </div>
