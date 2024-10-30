@@ -54,7 +54,7 @@
      * Datapoint relevant
      */
     let current_datapoint: TDatapoint = data.datapoint;
-    let current_prediction: string = data.current_prediction;
+    let current_prediction: string = data.datapoint.current_prediction;
     let datapoint_count = 1;
     let datapoint_answer_selected: string | null = null;
     let feature_tooltips = data.feature_tooltips;
@@ -121,17 +121,18 @@
         // Get Information
         let questionId: string = e.detail.questionId;
         let featureName: string = e.detail.feature;
+        let question: string = e.detail.question;
 
         // Get correct question id and feature id
-        let generalQuestion = general_questions.find(q => q.id === questionId);
-        let featureQuestion = feature_questions.find(q => q.id === questionId);
+        let generalQuestion = general_questions.find(q => q.q_id === questionId);
+        let featureQuestion = feature_questions.find(q => q.q_id === questionId);
 
         // Create full question to log and show to user
         let full_question = '';
         if (generalQuestion) {
             full_question = generalQuestion.question.replace('[current prediction]', '<b>' + current_prediction + '</b>');
         } else if (featureQuestion && featureName) {
-            full_question = featureQuestion.question.replace('[feature selection]', featureName);
+            full_question = question;
         }
 
         // Log and show
@@ -427,7 +428,7 @@
                         class="col-start-2 col-end-4 overflow-y-scroll"
                         transition:fade={{ delay: 250, duration: 500 }}
                 >
-                    <TTMChat {messages} {study_group}
+                    <TTMChat {messages} {study_group} user_input={true}
                              on:feedbackButtonClick={handleFeedbackButtonClick}
                              on:submit={submitWrittenQuestion}
                              on:next={handleNext}
@@ -439,7 +440,7 @@
                         class="col-start-2 col-end-3 overflow-y-scroll"
                         transition:fade={{ delay: 250, duration: 500 }}
                 >
-                    <TTMChat {messages} {study_group}
+                    <TTMChat {messages} {study_group} user_input={false}
                              on:feedbackButtonClick={handleFeedbackButtonClick}
                              on:submit={submitWrittenQuestion}
                              on:next={handleNext}
