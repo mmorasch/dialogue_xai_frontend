@@ -5,7 +5,7 @@
     export let type: 'general' | 'feature';
     export let question: string;
     export let questionId: string;
-    export let featureOptions: { id: string; feature_name: string }[] = [];
+    export let featureOptions: { id: number; feature_name: string }[] = [];
 
     let activeFeature = '';
     export let isActive: boolean;
@@ -14,28 +14,31 @@
 
     // Handles button clicks for both general and feature questions
     function handleClick() {
+        // Get correct feature name from feature_id in activeFeature
+        let feature_name = featureOptions.find(f => f.id === Number(activeFeature))?.feature_name ?? '';
         // For feature questions, ensure a feature is selected
-        if (type === 'feature' && activeFeature === '') {
+        if (type === 'feature' && !feature_name) {
             console.log('Feature question requires a feature to be selected');
             return;
         }
 
-        // Dispatch an event to signify the button click, including question type, question and feature info if applicable
+        // Dispatch an event to signify the button click, including question type, question, and feature info if applicable
         dispatch('action', {
             type,
             questionId,
-            question: question.replace('[feature selection]', activeFeature),
+            question: question.replace('[feature selection]', feature_name),
             feature: activeFeature,
         });
     }
 
     function submitQuestion() {
-        console.log(activeFeature);
+        // Get correct feature name from feature_id in activeFeature
+        let feature_name = featureOptions.find(f => f.id === Number(activeFeature))?.feature_name ?? '';
         // Dispatch includes the question type to allow for differentiated handling
         dispatch('action', {
             type,
             questionId,
-            question: question.replace('[feature selection]', activeFeature),
+            question: question.replace('[feature selection]', feature_name),
             feature: activeFeature,
         });
     }
