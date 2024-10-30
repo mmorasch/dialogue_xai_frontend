@@ -14,7 +14,7 @@ import type {TDatapointResult} from '$lib/types';
  */
 export const load = (async ({url}) => {
     const user_id = url.searchParams.get('user_id');
-    let study_group = url.searchParams.get('sg') || undefined;
+    const study_group = url.searchParams.get('sg') || undefined;
     if (user_id === null) throw error(400, 'user_id is required as a query parameter');
 
     // backend returns data that is either questions or report (A/B study design)
@@ -35,7 +35,7 @@ export const load = (async ({url}) => {
 
     return {
         user_id,
-        study_group,
+        study_group: study_group,
         questions,
         feature_names,
         feature_tooltips,
