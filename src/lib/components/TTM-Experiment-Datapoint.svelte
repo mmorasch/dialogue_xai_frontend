@@ -93,10 +93,14 @@
             return;
         }
 
+        // Dispatch clicked selection event to show loading spinner if not teaching
+        if (experimentPhase !== 'teaching')
+            dispatch('clicked');
+
         // Extract feedback and confidence level if applicable
         let confidenceLevelToSend = confidence_level;
 
-        if ((isFinalTest) && event)  {
+        if ((isFinalTest) && event) {
             feedback = event?.detail?.feedback || '';
             if (feedback === '') {
                 console.log("Feedback is empty");
@@ -190,18 +194,20 @@
             <h2 style="text-align: center; color: dodgerblue; margin-top: 15px;">Introduction Phase</h2>
             <p class="mb-3 centered-text">{@html introduction_test_intro}</p>
         {/if}
-        <h2 style="text-align: center">
-            Current Person ({datapoint_count} of
-            {#if experimentPhase === 'test'}
-                {PUBLIC_TEACH_TEST_CYCLES}
-            {:else if experimentPhase === 'teaching'}
-                {PUBLIC_TEACH_TEST_CYCLES}
-            {:else if experimentPhase === 'final-test'}
-                {PUBLIC_END_TEST_CYCLES}
-            {:else if experimentPhase === 'intro-test'}
-                {PUBLIC_TEACH_TEST_CYCLES}
-            {/if})
-        </h2>
+        {#if datapoint_count !== null}
+            <h2 style="text-align: center">
+                Current Person ({datapoint_count} of
+                {#if experimentPhase === 'test'}
+                    {PUBLIC_TEACH_TEST_CYCLES}
+                {:else if experimentPhase === 'teaching'}
+                    {PUBLIC_TEACH_TEST_CYCLES}
+                {:else if experimentPhase === 'final-test'}
+                    {PUBLIC_END_TEST_CYCLES}
+                {:else if experimentPhase === 'intro-test'}
+                    {PUBLIC_TEACH_TEST_CYCLES}
+                {/if})
+            </h2>
+        {/if}
     </div>
 
     <main>

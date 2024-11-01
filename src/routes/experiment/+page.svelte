@@ -70,6 +70,7 @@
     let messages: TChatMessage[] = [];
 
     let isLoading = false;
+    let handlingNext = false;
 
     //-----------------------------------------------------------------
 
@@ -217,7 +218,7 @@
 
     async function handleNext(e: any) {
         // Check if clicked twice
-        if (isLoading) {
+        if (handlingNext) {
             return;
         }
 
@@ -254,8 +255,8 @@
             }
         }
 
+        handlingNext = true;
         just_used_proceeding_stop = false;
-        isLoading = true;
         transition_done = false;
         let next_phase = experiment_phase;
         if (experiment_phase !== 'teaching') {
@@ -302,6 +303,7 @@
         experiment_phase = next_phase;
         logNextEvent();
         isLoading = false;
+        handlingNext = false;
     }
 
     async function getDatapoint(type: TTestOrTeaching) {
@@ -377,6 +379,11 @@
             })
         });
     }
+
+    async function handleClicked() {
+        // Set loading state to true immediately upon click
+        isLoading = true;
+    }
 </script>
 
 
@@ -408,6 +415,7 @@
                 instance_prediction={ml_label_prediction}
                 prediction_choices={prediction_choices}
                 on:next={handleNext}
+                on:clicked={handleClicked}
         />
     </div>
     {#if datapoint_answer_selected}
