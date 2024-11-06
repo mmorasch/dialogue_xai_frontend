@@ -49,11 +49,11 @@
                 <p><b>Question Suggestions</b></p>
                 {#each message.followup as question}
                     <button
-                        data-value={question.id}
-                        type="button"
-                        class="btn variant-ghost-primary"
-                        style="font-size: 0.75rem;"
-                        on:click={() => buttonOnClick(question.id, question.feature)}
+                            data-value={question.id}
+                            type="button"
+                            class="btn variant-ghost-primary"
+                            style="font-size: 0.75rem;"
+                            on:click|stopPropagation={() => buttonOnClick(question.id, question.feature)}
                     >
                         {question.question}
                     </button>
