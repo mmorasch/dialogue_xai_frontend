@@ -101,6 +101,18 @@
     let initial_message: TChatMessage;
     let just_used_proceeding_stop = false;
 
+    function get_feature_id_from_name(featureName, feature_names) {
+        // Normalize the feature name by removing spaces and converting to lower case
+        const normalizedFeatureName = featureName.replace(/\s+/g, '').toLowerCase();
+
+        // Find the feature in the array, normalizing the feature_name in the same way
+        const foundFeature = feature_names.find(f => f.feature_name.replace(/\s+/g, '').toLowerCase() === normalizedFeatureName);
+
+        // Return the id or null if not found
+        return foundFeature ? foundFeature.id : null;
+    }
+
+
 
     function createAndPushMessage(text: string,
                                   isUser: boolean,
@@ -118,7 +130,7 @@
         });
     }
 
-    async function submitQuestion(e: any) {
+    export async function submitQuestion(e: any) {
         // Get Information
         let questionId: string = e.detail.questionId;
         let featureName: string = e.detail.feature;
@@ -133,8 +145,12 @@
         if (generalQuestion) {
             full_question = generalQuestion.question.replace('[current prediction]', '<b>' + current_prediction + '</b>');
         } else if (featureQuestion && featureName) {
-            full_question = question;
+            full_question = featureQuestion.question.replace('[feature selection]', '<b>' + featureName + '</b>');
         }
+
+        // get feature id by feature name
+        const feature_id = featureQuestion ? get_feature_id_from_name(featureName, feature_names) : null;
+
 
         // Log and show
         if (full_question) {
@@ -162,7 +178,7 @@
 
             let responseMessage: TChatMessage;
             setTimeout(async () => {
-                await backend.xai(user_id).get_question_selection_response(questionId, featureName)
+                await backend.xai(user_id).get_question_selection_response(questionId, feature_id)
                     .then(response => response.json())
                     .then(data => {
                         responseMessage = data;
@@ -170,6 +186,8 @@
                 messages.push(responseMessage);
                 messages = messages;
             }, 700);
+        } else {
+            console.error('Question not found');
         }
     }
 
