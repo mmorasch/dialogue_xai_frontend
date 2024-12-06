@@ -101,7 +101,6 @@
             })
         });
         goto(`${base}/attentioncheck/adult?user_id=${user_id}&sg=${study_group}`);
-        //goto(`${base}/experiment?user_id=${user_id}&sg=${study_group}`);
     }
 
     let study_group_interactive_text =
