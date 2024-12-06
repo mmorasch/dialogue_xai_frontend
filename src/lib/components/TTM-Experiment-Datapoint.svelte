@@ -93,20 +93,25 @@
             return;
         }
 
-        // Dispatch clicked selection event to show loading spinner if not teaching
-        if (experimentPhase !== 'teaching')
-            dispatch('clicked');
-
-        // Extract feedback and confidence level if applicable
-        let confidenceLevelToSend = confidence_level;
+        if (isFinalTest && confidence_level === "-1") {
+            return;
+        }
 
         if ((isFinalTest) && event) {
             feedback = event?.detail?.feedback || '';
             if (feedback === '') {
-                console.log("Feedback is empty");
                 return; // Don't log if feedback is empty in final test
             }
         }
+
+        // Dispatch clicked selection event to show loading spinner if not teaching
+        if (experimentPhase !== 'teaching') {
+            dispatch('clicked');
+            console.log("Dispatching clicked event");
+        }
+
+        // Extract feedback and confidence level if applicable
+        let confidenceLevelToSend = confidence_level;
 
         // Prepare common details object with optional properties based on the phase
         const details = {
