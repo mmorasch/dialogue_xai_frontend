@@ -33,9 +33,9 @@
                 feature_names={feature_names}
         />
     </main>
-    <div class="mx-3.5">
-        <h2 style="text-align: center">Prediction Probabilities</h2>
-        {#if prediction_probability}
+    {#if prediction_probability && prediction_probability.length > 0}
+        <div class="mx-3.5">
+            <h2 style="text-align: center">Prediction Probabilities</h2>
             {#each prediction_probability as {label, probability}}
                 <div style="display: flex; align-items: center;">
                     <p style="margin-right: 10px;">{label}</p>
@@ -44,8 +44,8 @@
                 </div>
                 <hr>
             {/each}
-        {/if}
-    </div>
+        </div>
+    {/if}
 </div>
 
 <style lang="postcss">
