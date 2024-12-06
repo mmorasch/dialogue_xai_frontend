@@ -22,32 +22,27 @@ export const load = (async ({url}) => {
         questions,
         feature_tooltips,
         feature_units,
-        prediction_choices
+        prediction_choices,
+        feature_names,
+        user_study_task_description
     } = await (await backend.xai(user_id, study_group).init()).json();
 
     // Get Initial Train Datapoint
     const {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         id,
-        initial_prompt,
-        current_prediction,
-        static_report,
         prediction_probability,
         ...datapoint
     } = await (await backend.xai(user_id).get_train_datapoint()).json() as TDatapointResult;
 
     return {
         user_id,
-        study_group,
+        study_group: study_group,
         questions,
+        feature_names,
         feature_tooltips,
         feature_units,
-        prediction_choices,
+        prediction_probability,
         datapoint,
-        initial_prompt,
-        current_prediction,
-        static_report,
-        prediction_probability
     }
-
 }) satisfies PageLoad;

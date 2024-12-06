@@ -6,137 +6,207 @@
         TChatMessage,
         TDatapoint,
         TQuestionResult,
-        TTestOrTeaching,
+        TDatapointResult
     } from '$lib/types';
     import backend from '$lib/backend';
-    import type {PageData} from '../../../../.svelte-kit/types/src/routes';
-
-    import {goto} from '$app/navigation';
+    import type {PageData} from '../';
     import {base} from '$app/paths';
-    import {writable} from "svelte/store";
 
     /**
      * Data provided by the `+page.ts` load function in the same folder
      */
     export let data: PageData;
-    export const popupVisible = writable(false);
-    export let static_report: string;
-
     //-----------------------------------------------------------------
 
-    popupVisible.subscribe(value => {
-        $popupVisible = value;
-    });
 
     /**
      * Datapoint relevant
      */
     let current_datapoint: TDatapoint = data.datapoint;
-    let current_prediction: string = data.current_prediction;
+    let current_prediction: string = data.datapoint.current_prediction;
     let datapoint_count = 1;
     let datapoint_answer_selected: string | null = null;
     let feature_tooltips = data.feature_tooltips;
     let feature_units = data.feature_units;
     let prediction_probability = data.prediction_probability;
     let true_label: string = data.datapoint.true_label;
+    let ml_label_prediction: string = data.datapoint.ml_prediction;
     let user_id: string = data.user_id;
+    let new_datapoint: TDatapoint;
     //-----------------------------------------------------------------
 
     /**
      * Chat relevant
      */
-    let messages: TChatMessage[] = [{
-        isUser: false,
-        feedback: false,
-        text: data.initial_prompt,
-        id: 1000,
-        followup: []
-    }];
+    let messages: TChatMessage[] = [data.datapoint.initial_message];
+    let initial_message: TChatMessage;
 
+    let feature_names = data.feature_names;
     let {feature_questions, general_questions}: TQuestionResult = data.questions;
     delete data.datapoint.true_label;
 
-    function logEvent(details: any) {
-        fetch(`${base}/api/log_event`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                user_id: user_id,
-                event_source: 'teaching',
-                event_type: 'question',
-                details: details,
-            })
-        });
+    function get_feature_id_from_name(featureName, feature_names) {
+        // Normalize the feature name by removing spaces and converting to lower case
+        const normalizedFeatureName = featureName.replace(/\s+/g, '').toLowerCase();
+
+        // Find the feature in the array, normalizing the feature_name in the same way
+        const foundFeature = feature_names.find(f => f.feature_name.replace(/\s+/g, '').toLowerCase() === normalizedFeatureName);
+
+        // Return the id or null if not found
+        return foundFeature ? foundFeature.id : null;
     }
 
-    function createAndPushMessage(text: string, isUser: boolean, feedback: boolean, id: number) {
+    function createAndPushMessage(text: string,
+                                  isUser: boolean,
+                                  feedback: boolean,
+                                  id: number,
+                                  feature_id?: number,
+                                  followup?: []) {
         messages.push({
             text: text,
             isUser: isUser,
             feedback: feedback,
             id: id,
-            followup: []
+            feature_id: feature_id,
+            followup: followup
         });
     }
 
     async function submitQuestion(e: any) {
-        let questionId: number = parseInt(e.detail.questionId);
-        let feature: number = parseInt(e.detail.feature);
+        // Get Information
+        let questionId: string = e.detail.questionId;
+        let featureName: string = e.detail.feature;
+        let question: string = e.detail.question;
 
-        let generalQuestion = general_questions.find(q => q.id === questionId);
-        let featureQuestion = feature_questions.find(q => q.id === questionId);
-        let featureName = feature_names.find(f => f.id === feature);
+        // Get correct question id and feature id
+        let generalQuestion = general_questions.find(q => q.q_id === questionId);
+        let featureQuestion = feature_questions.find(q => q.q_id === questionId);
 
         let full_question = '';
-        if (generalQuestion) {
-            full_question = generalQuestion.question.replace('[current prediction]', '<b>' + current_prediction + '</b>');
-        } else if (featureQuestion && featureName) {
-            full_question = featureQuestion.question.replace('[feature selection]', featureName.feature_name);
+        // Check if question is not null
+        if (question) {
+            full_question = question;
+        } else {
+            // Create full question to log and show to user
+            if (generalQuestion) {
+                full_question = generalQuestion.question.replace('[current prediction]', '<b>' + current_prediction + '</b>');
+            } else if (featureQuestion && featureName) {
+                full_question = featureQuestion.question.replace('[feature selection]', '<b>' + featureName + '</b>');
+            }
         }
 
+        // get feature id by feature name if featureName is not a number as string
+        let feature_id = null;
+        if (isNaN(Number(featureName))) {
+            // featureName is not a number, so get feature ID by feature name
+            feature_id = get_feature_id_from_name(featureName, feature_names);
+        } else {
+            // featureName is a number (or numeric string)
+            feature_id = featureName;
+        }
+
+
+        // Log and show
         if (full_question) {
             const details = {
                 datapoint_count: datapoint_count,
                 question: full_question,
                 question_id: questionId
             };
-            logEvent(details);
+            fetch(`${base}/api/log_event`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    user_id: user_id,
+                    event_source: 'teaching',
+                    event_type: 'question',
+                    details: details,
+                })
+            });
 
+            // Push user question to chat
             createAndPushMessage(full_question, true, false, questionId);
             messages = messages;
 
+            let responseMessage: TChatMessage;
             setTimeout(async () => {
-                let response = await backend.xai(user_id).get_question_selection_response(questionId, feature);
-                let text = await response.text();
-
-                createAndPushMessage(text, false, true, questionId);
+                await backend.xai(user_id).get_question_selection_response(questionId, feature_id)
+                    .then(response => response.json())
+                    .then(data => {
+                        responseMessage = data;
+                    });
+                messages.push(responseMessage);
                 messages = messages;
             }, 700);
-
+        } else {
+            console.error('Question not found');
         }
     }
 
-    async function handleNext(e: any) {
-        /**
-         * Change from test to teach or vice versa
-         */
-        let id: string = '';
-        let initial_prompt: string = '';
-        let new_datapoint: TDatapoint;
+    async function submitWrittenQuestion(e: any) {
+        const user_message = e.detail.message;
+        createAndPushMessage(user_message, true, false, "0");
+        messages = messages;
+        let question_id;
+        let feature_id;
+        let responseData;
 
-        // Get the next datapoint
-        ({id, current_prediction, initial_prompt, prediction_probability, ...new_datapoint} = await (
-            await backend.xai(user_id).get_train_datapoint()
-        ).json());
+        // Get Response
+        setTimeout(async () => {
+            await backend.xai(user_id).get_user_message_response(user_message)
+                .then(response => response.json())
+                .then(data => {
+                    responseData = data;
+                });
+            messages.push(responseData);
+            question_id = responseData.id;
+            feature_id = responseData.feature_id;
+            messages = messages;
 
-        messages = [{isUser: false, feedback: false, text: initial_prompt, id: 1000}];
+            // Log event
+            const details = {
+                datapoint_count: datapoint_count,
+                user_question: user_message,
+                message: responseData,
+                question_id: question_id,
+                feature_id: feature_id,
+            };
+            fetch(`${base}/api/log_event`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    user_id: user_id,
+                    event_source: 'teaching',
+                    event_type: 'question',
+                    details: details,
+                })
+            });
+        }, 700);
+    }
+
+
+    function setNewCurrentDatapoint() {
+        messages = [initial_message];
+        true_label = <string>new_datapoint.true_label;
+        ml_label_prediction = <string>new_datapoint.ml_prediction;
         delete new_datapoint.true_label;
+        delete new_datapoint.ml_prediction;
         current_datapoint = new_datapoint;
+        datapoint_answer_selected = null; // Reset selected answer
+    }
 
+    async function handleNext(e: any) {
+        // Get the next datapoint
+        let result = await (await backend.xai(user_id).get_train_datapoint()).json() as TDatapointResult;
+        initial_message = result.initial_message;
+        current_datapoint = result;
         //-----------------------------------------------------------------
         datapoint_answer_selected = null;
+        setNewCurrentDatapoint();
     }
 
     function handleFeedbackButtonClick(event) {
@@ -178,7 +248,14 @@
     />
 </div>
 <div class="col-start-2 col-end-3 overflow-y-scroll">
-    <TTMChat {messages} on:feedbackButtonClick={handleFeedbackButtonClick}/>
+
+    <TTMChat {messages} user_input={true}
+             on:feedbackButtonClick={handleFeedbackButtonClick}
+             on:submit={submitWrittenQuestion}
+             on:next={handleNext}
+             on:questionClick={submitQuestion}
+    />
+
 </div>
 <div class="col-start-3 col-end-4">
     <TTMQuestions
