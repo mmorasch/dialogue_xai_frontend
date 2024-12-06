@@ -4,7 +4,7 @@
     import {userId} from '$lib/shared';
     import {PUBLIC_DATASET_NAME} from '$env/static/public';
 
-    let show_tool = false;
+    let show_tool = true;
 
     function newExperiment() {
         userId.set(crypto.randomUUID());
