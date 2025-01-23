@@ -237,7 +237,7 @@
 
 <div class={"col-start-1 col-end-2"}>
     <TTMDatapoint
-            data={current_datapoint}
+            data={current_datapoint.displayable_features}
             bind:selected_prediction={datapoint_answer_selected}
             bind:datapoint_count
             feature_names={feature_names}
