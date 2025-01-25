@@ -25,7 +25,7 @@ export const load = (async ({url}) => {
         prediction_choices,
         feature_names,
         user_study_task_description
-    } = await (await backend.xai(user_id, study_group).init()).json();
+    } = await (await backend.xai(user_id, study_group, "low").init()).json();
 
     // Get Initial Train Datapoint
     const {

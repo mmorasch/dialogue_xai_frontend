@@ -15,6 +15,7 @@ import type {TDatapointResult} from '$lib/types';
 export const load = (async ({url}) => {
     const user_id = url.searchParams.get('user_id');
     const study_group = url.searchParams.get('sg') || undefined;
+    const user_ml_knowledge = url.searchParams.get('user_ml_knowledge') || undefined;
     if (user_id === null) throw error(400, 'user_id is required as a query parameter');
 
     // backend returns data that is either questions or report (A/B study design)
@@ -25,7 +26,7 @@ export const load = (async ({url}) => {
         prediction_choices,
         feature_names,
         user_study_task_description
-    } = await (await backend.xai(user_id, study_group).init()).json();
+    } = await (await backend.xai(user_id, study_group, user_ml_knowledge).init()).json();
 
     const {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -1,8 +1,8 @@
 import {PUBLIC_BACKEND_URL} from "$env/static/public";
 
 export default {
-    xai: (user_id: string, study_group = 'A') => ({
-        init: () => fetch(`${PUBLIC_BACKEND_URL}init?user_id=${user_id}&study_group=${study_group}`),
+    xai: (user_id: string, study_group = 'A', user_ml_knowledge = "low") => ({
+        init: () => fetch(`${PUBLIC_BACKEND_URL}init?user_id=${user_id}&study_group=${study_group}&ml_knowledge=${user_ml_knowledge}`),
         get_user_correctness: () => fetch(`${PUBLIC_BACKEND_URL}get_user_correctness?user_id=${user_id}`),
         get_proceeding_okay: () => fetch(`${PUBLIC_BACKEND_URL}get_proceeding_okay?user_id=${user_id}`),
         finish: () => fetch(PUBLIC_BACKEND_URL + "finish" + "?user_id=" + user_id, {method: 'DELETE',}),

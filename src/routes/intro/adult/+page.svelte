@@ -91,7 +91,7 @@
                 prolific_id: prolific_id
             })
         });
-        goto(`${base}/attentioncheck/adult?user_id=${user_id}&sg=${study_group}`);
+        goto(`${base}/attentioncheck/adult?user_id=${user_id}&sg=${study_group}&ml_knowledge=${fam_ml_val}`);
         //goto(`${base}/experiment?user_id=${user_id}&sg=${study_group}`);
     }
 

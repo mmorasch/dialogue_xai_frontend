@@ -4,21 +4,22 @@
     import {base} from "$app/paths";
     import '../../../global.css';
     import {onMount} from 'svelte';
-    import {userId, studyGroup} from '$lib/shared.ts';
+    import {userId, studyGroup, userMLKnowledge} from '$lib/shared.ts';
     import Spinner from '$lib/components/Spinner.svelte';
     import {logAttentionCheck} from '$lib/attentioncheck.ts';
     import SubmitButton from '$lib/components/SubmitButton.svelte';
 
     let user_id;
     let study_group;
+    let user_ml_knowledge;
 
     let isLoading = false;
 
     onMount(async () => {
         user_id = await userId.get();
         study_group = await studyGroup.get();
+        user_ml_knowledge = await userMLKnowledge.get();
     });
-
 
     let selected_statement = ""; // To store the user's selection
     const statements = [
@@ -38,7 +39,7 @@
             isLoading = true;
             logAttentionCheck(user_id, attention_check_counter, selected_statement, correct_statement);
             // Use correct function or method for redirection
-            await goto(`${base}/experiment?user_id=${user_id}&sg=${study_group}`);
+            await goto(`${base}/experiment?user_id=${user_id}&sg=${study_group}&user_ml_knowledge=${user_ml_knowledge}`);
             isLoading = false;
             return; // Prevent further execution
         }
@@ -81,7 +82,7 @@
         {/each}
     </select>
     <SubmitButton next={handleSelection}
-                  customStyle="padding: 10px; margin-top: 10px;" />
+                  customStyle="padding: 10px; margin-top: 10px;"/>
 </div>
 
 <style>

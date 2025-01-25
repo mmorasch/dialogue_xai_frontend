@@ -11,6 +11,11 @@ export const studyGroup = {
     set: setStudyGroupInUrl
 };
 
+export const userMLKnowledge = {
+    get: getUserMLKnowledgeFromUrl,
+    set: setUserMLKnowledgeInUrl
+};
+
 function getUserIdOnPage(): string | null {
     const user_id = window.localStorage.getItem('user_id');
     if (user_id == null) {
@@ -36,6 +41,23 @@ function getStudyGroupFromUrl(): string | null {
 function setStudyGroupInUrl(sg: string): void {
     const urlParams = new URLSearchParams(window.location.search);
     urlParams.set('sg', sg);
+    // Update the URL without reloading the page
+    window.history.pushState({}, '', `${window.location.pathname}?${urlParams}`);
+}
+
+function getUserMLKnowledgeFromUrl(): string | null {
+    const urlParams = new URLSearchParams(window.location.search);
+    const knowledge = urlParams.get('ml_knowledge');
+    if (knowledge == null) {
+        // Optionally redirect if ml_knowledge is not present; adjust as needed
+        goto(base + '/');
+    }
+    return knowledge;
+}
+
+function setUserMLKnowledgeInUrl(knowledge: string): void {
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set('ml_knowledge', knowledge);
     // Update the URL without reloading the page
     window.history.pushState({}, '', `${window.location.pathname}?${urlParams}`);
 }
