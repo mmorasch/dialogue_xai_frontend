@@ -1,30 +1,35 @@
 // typewriter.ts
 
 export function typewriter(node: HTMLElement, initialSpeed = 80): {
-    update: (newSpeed: number) => void;
-    destroy: () => void;
+  update: (newSpeed: number) => void;
+  destroy: () => void;
 } {
-    const words = (node.innerHTML || "").split(" ");
-    node.innerHTML = "";
+  // Capture the original text from the node.
+  const text = node.textContent || "";
+  // Clear the node's content so we can type it out.
+  node.textContent = "";
 
-    let i = 0;
-    let speed = initialSpeed;
+  let i = 0;
+  let speed = initialSpeed;
+  let timeoutId: ReturnType<typeof setTimeout>;
 
-    function type() {
-        if (i < words.length) {
-            node.innerHTML += words[i++] + " ";  // Add a space after each word
-            setTimeout(type, speed);
-        }
+  function type() {
+    if (i < text.length) {
+      // Append the next character.
+      node.textContent += text.charAt(i);
+      i++;
+      timeoutId = setTimeout(type, speed);
     }
+  }
 
-    type();
+  type();
 
-    return {
-        update(newSpeed: number) {
-            speed = newSpeed;
-        },
-        destroy() {
-            // any cleanup logic if necessary
-        }
-    };
+  return {
+    update(newSpeed: number) {
+      speed = newSpeed;
+    },
+    destroy() {
+      clearTimeout(timeoutId);
+    }
+  };
 }

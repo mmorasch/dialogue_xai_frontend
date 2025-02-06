@@ -147,7 +147,9 @@
 
     async function submitWrittenQuestion(e: any) {
         const user_message = e.detail.message;
-        createAndPushMessage(user_message, true, false, "0");
+        // Set message id as timestamp but as integer
+        let message_id = parseInt((new Date().getTime() / 1000).toFixed(0));
+        createAndPushMessage(user_message, true, false, message_id);
         messages = messages;
         let question_id;
         let feature_id;
@@ -160,6 +162,10 @@
                 .then(data => {
                     responseData = data;
                 });
+
+            // Set id of responseData
+            let message_id = parseInt((new Date().getTime() / 1000).toFixed(0));
+            responseData.id = message_id;
             messages.push(responseData);
             question_id = responseData.id;
             feature_id = responseData.feature_id;

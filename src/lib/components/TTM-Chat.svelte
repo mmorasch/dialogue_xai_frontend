@@ -3,6 +3,7 @@
     import {afterUpdate, beforeUpdate} from 'svelte';
     import Header from './Header.svelte';
     import Message from './Message.svelte';
+    import ProgressMessage from './ProgressMessage.svelte'; // Import our new component
     import {createEventDispatcher} from 'svelte';
     import SubmitButton from "$lib/components/SubmitButton.svelte";
 
@@ -20,7 +21,7 @@
         dispatch('feedbackButtonClick', event.detail);
     }
 
-     function forwardQuestionClick(event) {
+    function forwardQuestionClick(event) {
         dispatch('questionClick', event.detail);
     }
 
@@ -32,9 +33,7 @@
     }
 
     function sendMessage() {
-        if (inputMessage.trim() === '') {
-            return;
-        }
+        if (inputMessage.trim() === '') return;
         dispatch('submit', {message: inputMessage});
         inputMessage = '';
     }
@@ -58,18 +57,19 @@
     });
 </script>
 
-<div
-        class="ttm flex h-full"
->
+<div class="ttm flex h-full">
     <Header>Chatbot</Header>
-    <main
-            bind:this={element}
-            class="flex-1 overflow-y-auto h-full p-3"
-    >
-        {#each messages as message}
+    <main bind:this={element} class="flex-1 overflow-y-auto h-full p-3">
+        {#each messages as message (message.id)}
             <Message {message} on:feedbackButtonClick={forwardEvent} on:questionClick={forwardQuestionClick}/>
         {/each}
+
+        <!-- Conditionally render the progress message if the last message is from the user -->
+        {#if messages.length && messages[messages.length - 1].isUser}
+            <ProgressMessage/>
+        {/if}
     </main>
+
     {#if user_input}
         <div class="input-area">
             <input class="variant-ghost-surface" bind:value={inputMessage} type="text" placeholder="Ask a question..."
