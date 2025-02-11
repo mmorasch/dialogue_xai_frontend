@@ -70,7 +70,6 @@
     function feedbackClicked(event) {
         feedback = event.detail.feedback;
         // Check if feedback and confidence level are set
-        console.log("Checking");
         const checks = [
             {condition: confidence_level === "-1", message: 'Please select your confidence before proceeding.'},
             {condition: feedback === "", message: 'Please describe why you made the decision.'}
@@ -166,7 +165,6 @@
                 })
             });
             confidence_level = "-1";
-            console.log("Dispatching next event");
             dispatch('next');
             return;
         }
