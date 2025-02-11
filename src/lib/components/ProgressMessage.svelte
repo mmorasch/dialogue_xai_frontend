@@ -3,21 +3,7 @@
     import {typewriter} from '$lib/typewriter';
 
     // Define the list of progress labels.
-    const states = [
-        '...',
-        'thinking',
-        '...',
-        'analyzing data',
-        '...',
-        'preparing response',
-        '...',
-        'preparing response',
-        '...',
-        '...',
-        '...',
-        '...',
-        '...'
-    ];
+    const states = new Array(30).fill('...');
 
     let currentStateIndex = 0;
     let currentState = states[currentStateIndex];
@@ -27,7 +13,7 @@
     // Holds the reference to the typewriter action instance.
     let typewriterAction: { update: (newSpeed: number) => void; destroy: () => void } | null = null;
     // Holds the interval ID for cycling states.
-    let stateInterval: number;
+    let stateInterval: ReturnType<typeof setInterval>;
 
     /**
      * Initializes the typewriter effect.
