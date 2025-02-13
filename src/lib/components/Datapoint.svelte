@@ -38,6 +38,10 @@
 
 <div class="table-container w-[90%] mx-auto">
     <table class="table table-hover">
+        <colgroup>
+            <col style="width: 55%;"/>
+            <col style="width: 45%;"/>
+        </colgroup>
         <thead>
         <tr>
             {#each header as col, i}
@@ -73,10 +77,23 @@
 
 
 <style lang="postcss">
+    .table {
+        width: 100%; /* Ensure the table takes up the full width */
+        table-layout: fixed; /* Enables control over column widths */
+        border-collapse: collapse; /* Removes unnecessary spacing between table cells */
+    }
+
     .table tbody td {
         padding: 0.2rem;
+        vertical-align: middle;
+        position: relative;
+        word-break: break-word; /* Break long words */
         min-width: 150px;
         max-width: 150px;
+    }
+
+    table tbody td:first-child {
+        padding-left: 0.5rem; /* or however big you want the indent */
     }
 
     /* Ensuring the tooltip is not clipped */
@@ -85,12 +102,7 @@
     }
 
     .tooltipIcon {
-        margin: 15px; /* Adjust as needed */
-    }
-
-    .highlighted {
-        background-color: purple; /* or any light color for highlighting */
-        color: white;
+        margin: 5px;
     }
 
     s {
@@ -101,5 +113,10 @@
     strong {
         color: #000; /* Black or a bold color for the new value */
         font-weight: bold;
+    }
+
+    .highlighted {
+        background-color: purple; /* or any light color for highlighting */
+        color: white;
     }
 </style>
