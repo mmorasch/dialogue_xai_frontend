@@ -5,7 +5,6 @@
     import Datapoint from './Datapoint.svelte';
     import type {TInteractiveOrStatic, TTestOrTeaching} from '$lib/types';
     import {base} from "$app/paths";
-    import backend from "$lib/backend";
     import FeedbackWindow from "$lib/components/FeedbackWindow.svelte";
     import {createEventDispatcher} from "svelte";
     import '$lib/../global.css';
@@ -57,8 +56,22 @@
     // Extract values from prediction_choices dictionary to list and append "I don't know" option
     export let options = Object.values(prediction_choices).concat(["I don't know"]);
 
-    // get event categories
-    export let selected_prediction: string | null = null;
+    export let selected_prediction = null;
+    let predictionLocked = false;
+
+    // Reset when a new datapoint loads
+    $: if (datapoint) {
+        selected_prediction = null;
+        predictionLocked = false;
+    }
+
+    function handleClick(option: string) {
+        if (!predictionLocked) {
+            selected_prediction = option;
+            predictionLocked = true;
+            logPrediction();
+        }
+    }
 
     $: {
         if (confidence_level !== "-1" && experimentPhase === 'intro-test') {
@@ -106,7 +119,6 @@
         // Dispatch clicked selection event to show loading spinner if not teaching
         if (experimentPhase !== 'teaching') {
             dispatch('clicked');
-            console.log("Dispatching clicked event");
         }
 
         // Extract feedback and confidence level if applicable
@@ -139,8 +151,9 @@
 
         // Check if user_id and selected_prediction are not null and log
         if (user_id !== null && selected_prediction !== null) {
-            await backend.xai(user_id).set_user_prediction(selected_prediction);
+            dispatch('user_predicted', {user_prediction: selected_prediction});
         }
+
         // Reset confidence level and dispatch next event if not in teaching.
         if (experimentPhase !== 'teaching' && experimentPhase !== "final-test") {
             confidence_level = "-1";
@@ -216,7 +229,7 @@
     <main>
         <Datapoint
                 header={['Attribute', 'Value']}
-                body={Object.entries(datapoint).map(([key, value]) => {
+                body={Object.entries(datapoint.displayable_features).map(([key, value]) => {
                 // Check if the value is an object with 'current' and 'old' properties
                 if (value && typeof value === 'object' && 'current' in value) {
                     // Format the value to include both current and old information
@@ -263,17 +276,25 @@
                     <h2 style="text-align: center">Make a prediction</h2>
                     <p class="mb-3 center-text text-xs centered-text">{prediction_question}</p>
                     <div class="variant-ghost-surface w-fit mx-auto">
-                        <ListBox
-                                active="variant-filled-primary"
-                                hover="hover:variant-soft-primary"
-                                display="flex-col">
-                            {#each options as option, index}
-                                <ListBoxItem class="text-sm" bind:group={selected_prediction} name="justify"
-                                             value={option}
-                                             on:click={() => {selected_prediction = option; logPrediction();}}
-                                >{option}</ListBoxItem>
-                            {/each}
-                        </ListBox>
+                        {#if predictionLocked}
+                            <!-- Static view once a prediction is locked -->
+                            <div class="static-prediction">
+                                <h2 style="text-align: center">Prediction: {selected_prediction}</h2>
+                            </div>
+                        {:else}
+                            <!-- Interactive ListBox when no prediction has been made -->
+                            <ListBox active="variant-filled-primary" hover="hover:variant-soft-primary"
+                                     display="flex-col">
+                                {#each options as option}
+                                    <ListBoxItem
+                                            class="text-sm"
+                                            value={option}
+                                            on:click={() => handleClick(option)}>
+                                        {option}
+                                    </ListBoxItem>
+                                {/each}
+                            </ListBox>
+                        {/if}
                     </div>
                 </div>
             </form>

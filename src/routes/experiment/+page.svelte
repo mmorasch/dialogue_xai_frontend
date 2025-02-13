@@ -364,6 +364,23 @@
         datapoint_answer_selected = null; // Reset selected answer
     }
 
+    async function setUserPrediction(event) {
+        try {
+            const response = await backend.xai(user_id).set_user_prediction(
+                experiment_phase,
+                datapoint_count,
+                event.detail.user_prediction);
+            const data = await response.json();
+
+            // Only push a message if "initial_message" exists in the response
+            if (data.initial_message) {
+                pushMessage(data.initial_message);
+            }
+        } catch (error) {
+            console.error("Error setting user prediction:", error);
+        }
+    }
+
     function logNextEvent() {
         const details = {datapoint_count_new: datapoint_count};
         fetch(`${base}/api/log_event`, {
@@ -434,6 +451,7 @@
                 prediction_choices={prediction_choices}
                 on:next={handleNext}
                 on:clicked={handleClicked}
+                on:user_predicted={setUserPrediction}
         />
     </div>
     {#if datapoint_answer_selected}
