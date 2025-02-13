@@ -113,14 +113,15 @@
     }
 
 
-
     function createAndPushMessage(text: string,
                                   isUser: boolean,
                                   feedback: boolean,
                                   id: string,
                                   feature_id?: number,
                                   followup?: (TGeneralQuestion | TFeatureQuestion)[]) {
-        messages.push({
+        let message_id = crypto.randomUUID();
+        messages.push(<TChatMessage>{
+            id: message_id,
             text: text,
             isUser: isUser,
             feedback: feedback,
@@ -128,6 +129,15 @@
             feature_id: feature_id,
             followup: followup
         });
+        messages = [...messages]; // Creates a new reference
+        console.log(messages);
+    }
+
+    function pushMessage(message: TChatMessage) {
+        let message_id = crypto.randomUUID();
+        message.id = message_id;
+        messages = [...messages, message]; // Creates a new reference
+        console.log(messages);
     }
 
     export async function submitQuestion(e: any) {
@@ -174,7 +184,6 @@
 
             // Push user question to chat
             createAndPushMessage(full_question, true, false, questionId);
-            messages = messages;
 
             let responseMessage: TChatMessage;
             setTimeout(async () => {
@@ -183,8 +192,7 @@
                     .then(data => {
                         responseMessage = data;
                     });
-                messages.push(responseMessage);
-                messages = messages;
+                pushMessage(responseMessage);
             }, 700);
         } else {
             console.error('Question not found');
@@ -194,7 +202,6 @@
     async function submitWrittenQuestion(e: any) {
         const user_message = e.detail.message;
         createAndPushMessage(user_message, true, false, "0");
-        messages = messages;
         let question_id;
         let feature_id;
         let responseData;
@@ -206,10 +213,9 @@
                 .then(data => {
                     responseData = data;
                 });
-            messages.push(responseData);
-            question_id = responseData.id;
+            pushMessage(responseData);
+            question_id = responseData.question_id;
             feature_id = responseData.feature_id;
-            messages = messages;
 
             // Log event
             const details = {
@@ -249,8 +255,7 @@
             };
             if (!result.proceeding_okay) {
                 // Send message to user stating that they need to ask more questions and include follow-up questions
-                messages.push(result.message);
-                messages = messages;
+                pushMessage(result.message);
                 just_used_proceeding_stop = true;
                 // log event
                 const details = {
