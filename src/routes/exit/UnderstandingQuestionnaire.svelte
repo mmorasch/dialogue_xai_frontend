@@ -11,12 +11,16 @@
     let most_imp_val = "";
     let lest_imp_val = "";
     let decision_rules_text = "";
+    let unexpedted_text = "";
 
     let study_questions = [
-        "1. Which attribute was, on average, the <b>most important</b> for the model’s decision?",
-        "2. Which attribute was, on average, the <b>least important</b> for the model’s decision?",
-        "3. What <b>rules</b> do you think the model uses to <b>differentiate between\n" +
-        "                individuals</b> earning over 50k and under 50k?"
+        "1. The model made predictions based on the data it was trained with. In this data, each person was captured by " +
+        "certain attributes. Which attribute was often the <b>most important</b> for the model’s decision?",
+        "2. Which attribute was never the <b>least important</b> for the model’s decision, but taken into account for the prediction?" +
+        "The model looked at this attribute to make the prediction but it had usually no influence.",
+        "3. What <b>rules</b> do you think the model uses to <b>decide between\n" +
+        "                individuals</b> earning over 50k and under 50k? While the model uses complex patterns, what rules or patterns could you spot?",
+        "4. (Optional) Is there anything <b>surprising or unexpected</b> you found in the model? Or something you <b>did not understand</b> despite the explanations?"
     ];
 
     // Validate form before submitting
@@ -43,7 +47,7 @@
                 body: JSON.stringify({
                     user_id: user_id,
                     questions: study_questions,
-                    answers: [most_imp_val, lest_imp_val, decision_rules_text],
+                    answers: [most_imp_val, lest_imp_val, decision_rules_text, unexpedted_text],
                     correct_answers: ["maritalStatus", "workLifeBalance", "..."],
                     questionnaire_name: 'understanding'
                 })
@@ -65,9 +69,9 @@
                     <select bind:value={most_imp_val} class="select py-1">
                         <option value="" selected>- Select -</option>
                         <option value="age">Age</option>
-                        <option value="maritalStatus">Marital Status</option>
-                        <option value="workExperience">Work Experience</option>
                         <option value="gender">Gender</option>
+                        <option value="maritalStatus">Marital Status</option>
+                        <option value="yearOfCareerStart">Year of Career Start</option>
                         <option value="workLifeBalance">Work Life Balance</option>
                     </select>
                 </label>
@@ -76,10 +80,10 @@
                     <select bind:value={lest_imp_val} class="select py-1">
                         <option value="" selected>- Select -</option>
                         <option value="age">Age</option>
-                        <option value="investmentOutcome">Investment Outcome</option>
-                        <option value="workLifeBalance">Work Life Balance</option>
                         <option value="gender">Gender</option>
-                        <option value="workExperience">Work Experience</option>
+                        <option value="maritalStatus">Marital Status</option>
+                        <option value="yearOfCareerStart">Year of Career Start</option>
+                        <option value="workLifeBalance">Work Life Balance</option>
                     </select>
                 </label>
             </div>
@@ -87,6 +91,10 @@
             <span>{@html study_questions[2]}</span>
             <textarea bind:value={decision_rules_text} class="textarea-full-width"
                       placeholder="I found that the model uses... I think the model distinguishes by..."></textarea>
+            <br>
+            <span>{@html study_questions[3]}</span>
+            <textarea bind:value={unexpedted_text} class="textarea-full-width"
+                      placeholder="It was unexpected that ... I did not understand ..."></textarea>
             <div class="button-container">
                 <SubmitButton next={onComplete} label="Submit" customStyle="padding: 15px; margin-top: 10px;"/>
             </div>
