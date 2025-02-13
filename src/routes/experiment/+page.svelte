@@ -347,20 +347,19 @@
         }
 
         if (type === 'teaching') {
-            let result = await (await backend.xai(user_id).get_train_datapoint()).json() as TDatapointResult;
-            initial_message = result.initial_message;
+            let result = await (await backend.xai(user_id).get_train_datapoint(datapoint_count)).json() as TDatapointResult;
             current_prediction = result.current_prediction;
             static_report = result.static_report;
             new_datapoint = result;
         } else {
-            ({current_prediction, initial_message, ...new_datapoint} = await (
-                await backend.xai(user_id)[endpoint]()
+            ({current_prediction, ...new_datapoint} = await (
+                await backend.xai(user_id)[endpoint](datapoint_count)
             ).json());
         }
     }
 
     function setNewCurrentDatapoint() {
-        messages = [initial_message];
+        messages = [];
         true_label = <string>new_datapoint.true_label;
         ml_label_prediction = <string>new_datapoint.ml_prediction;
         delete new_datapoint.true_label;
