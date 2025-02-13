@@ -1,20 +1,25 @@
 type TGeneralQuestion = {
-    id: string;
+    question_id: string;
     question: string;
 };
 
-type TFeatureQuestion = TGeneralQuestion;
+type TFeatureQuestion = {
+    question_id: string;
+    question: string;
+    feature_id: number;
+}
 
 type TFeatureName = {
-    id: string;
+    feature_id: string;
     feature_name: string;
 };
 
 type TChatMessage = {
+    id: string;
     text: string;
     isUser: boolean;
     feedback: boolean;
-    id: string;
+    question_id: string;
     feature_id: number;
     followup: (TGeneralQuestion | TFeatureQuestion)[];
     reasoning: string;
@@ -45,7 +50,6 @@ type PredictionProbability = {
 
 type TDatapointResult = TDatapoint & {
     current_prediction: string;
-    initial_message: TChatMessage;
     static_report: StaticReport;
     true_label: string;
     prediction_probability: PredictionProbability[];
@@ -63,13 +67,6 @@ type TQuestionResult = {
     feature_questions: TFeatureQuestion[];
 };
 
-type TTestingQuestion = {
-    id: number;
-    question: string;
-    answer: string;
-    feature_id: number;
-};
-
 type TTestOrTeaching = 'test' | 'teaching' | 'final-test' | 'intro-test';
 
 type TInteractiveOrStatic = 'static' | 'interactive' | 'chat';
@@ -83,7 +80,6 @@ export type {
     TGeneralQuestion,
     TInitResult,
     TQuestionResult,
-    TTestingQuestion,
     TTestOrTeaching,
     StaticReport,
     TInteractiveOrStatic,

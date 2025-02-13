@@ -116,7 +116,7 @@
     function createAndPushMessage(text: string,
                                   isUser: boolean,
                                   feedback: boolean,
-                                  id: string,
+                                  question_id: string,
                                   feature_id?: number,
                                   followup?: (TGeneralQuestion | TFeatureQuestion)[]) {
         let message_id = crypto.randomUUID();
@@ -125,7 +125,7 @@
             text: text,
             isUser: isUser,
             feedback: feedback,
-            id: id,
+            question_id: question_id,
             feature_id: feature_id,
             followup: followup
         });
@@ -144,7 +144,7 @@
         // Get Information
         let questionId: string = e.detail.questionId;
         let featureName: string = e.detail.feature;
-        let question: string = e.detail.question;
+        let full_question: string = e.detail.question;
 
         // Get correct question id and feature id
         let generalQuestion = general_questions.find(q => q.q_id === questionId);
