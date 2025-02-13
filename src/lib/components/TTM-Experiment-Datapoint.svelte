@@ -116,6 +116,11 @@
             }
         }
 
+        // Check if user_id and selected_prediction are not null and log
+        if (user_id !== null && selected_prediction !== null) {
+            dispatch('user_predicted', {user_prediction: selected_prediction});
+        }
+
         // Dispatch clicked selection event to show loading spinner if not teaching
         if (experimentPhase !== 'teaching') {
             dispatch('clicked');
@@ -147,11 +152,6 @@
                     details: details,
                 })
             });
-        }
-
-        // Check if user_id and selected_prediction are not null and log
-        if (user_id !== null && selected_prediction !== null) {
-            dispatch('user_predicted', {user_prediction: selected_prediction});
         }
 
         // Reset confidence level and dispatch next event if not in teaching.
