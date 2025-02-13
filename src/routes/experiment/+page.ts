@@ -32,7 +32,7 @@ export const load = (async ({url}) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         id,
         ...datapoint
-    } = await (await backend.xai(user_id).get_intro_test_datapoint()).json() as TDatapointResult;
+    } = await (await backend.xai(user_id).get_intro_test_datapoint(1)).json() as TDatapointResult;
 
     return {
         user_id,
