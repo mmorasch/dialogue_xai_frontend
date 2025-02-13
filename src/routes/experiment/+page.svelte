@@ -98,7 +98,6 @@
     delete data.datapoint.true_label;
     delete data.datapoint.ml_prediction;
     let new_datapoint: TDatapoint;
-    let initial_message: TChatMessage;
     let just_used_proceeding_stop = false;
 
     function get_feature_id_from_name(featureName, feature_names) {
@@ -130,14 +129,12 @@
             followup: followup
         });
         messages = [...messages]; // Creates a new reference
-        console.log(messages);
     }
 
     function pushMessage(message: TChatMessage) {
         let message_id = crypto.randomUUID();
         message.id = message_id;
         messages = [...messages, message]; // Creates a new reference
-        console.log(messages);
     }
 
     export async function submitQuestion(e: any) {
@@ -252,6 +249,7 @@
     }
 
     async function handleNext(e: any) {
+        console.log("Handling Next", experiment_phase, datapoint_count);
         // Check if clicked twice
         if (handlingNext) {
             return;
@@ -380,6 +378,7 @@
     }
 
     async function setUserPrediction(event) {
+        console.log("Setting Prediction", experiment_phase, datapoint_count, event.detail.user_prediction);
         try {
             const response = await backend.xai(user_id).set_user_prediction(
                 experiment_phase,
