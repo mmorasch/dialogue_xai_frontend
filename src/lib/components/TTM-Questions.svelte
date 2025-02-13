@@ -51,21 +51,13 @@
     <form class="grid">
         <div class="row-[1]">
             <Header>
-                <p>General Questions</p>
+                <p>Questions</p>
             </Header>
             <div class="mx-1.5">
                 {#each general_questions as question}
                     <QuestionButton type="general" question={question.question} questionId={question.q_id}
                                     on:action={handleAction} isActive={activeQuestion === question.q_id}/>
                 {/each}
-            </div>
-        </div>
-
-        <div class="row-[2]">
-            <Header>
-                <p>Attribute Related Questions</p>
-            </Header>
-            <div class="mx-1.5">
                 {#each feature_questions as question}
                     <QuestionButton type="feature" question={question.question} questionId={question.q_id}
                                     featureOptions={feature_questions_dropdown} on:action={handleAction}
