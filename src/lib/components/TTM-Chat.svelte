@@ -17,11 +17,11 @@
 
     const dispatch = createEventDispatcher();
 
-    function forwardEvent(event) {
+    function forwardFeedback(event) {
         dispatch('feedbackButtonClick', event.detail);
     }
 
-    function forwardQuestionClick(event) {
+     function forwardQuestionClick(event) {
         dispatch('questionClick', event.detail);
     }
 
@@ -60,8 +60,8 @@
 <div class="ttm flex h-full">
     <Header>Chatbot</Header>
     <main bind:this={element} class="flex-1 overflow-y-auto h-full p-3">
-        {#each messages as message (message.id)}
-            <Message {message} on:feedbackButtonClick={forwardEvent} on:questionClick={forwardQuestionClick}/>
+        {#each messages as message}
+            <Message {message} on:feedbackButtonClick={forwardFeedback} on:questionClick={forwardQuestionClick}/>
         {/each}
 
         <!-- Conditionally render the progress message if the last message is from the user -->
