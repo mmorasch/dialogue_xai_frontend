@@ -150,17 +150,28 @@
         let generalQuestion = general_questions.find(q => q.q_id === questionId);
         let featureQuestion = feature_questions.find(q => q.q_id === questionId);
 
+
+        // Set full_question to empty string if not found
+        if (full_question.length === 0) {
+            full_question = '';
+        }
+
+        // get feature id by feature name
+        let feature_id = featureQuestion ? get_feature_id_from_name(featureName, feature_names) : null;
+
+        // if feature id is not found, make feature name to int and assign to id
+        if (!feature_id && featureQuestion) {
+            feature_id = parseInt(featureName);
+            // Then get feature name by feature id
+            featureName = feature_names.find(f => f.id === feature_id).feature_name;
+        }
+
         // Create full question to log and show to user
-        let full_question = '';
         if (generalQuestion) {
             full_question = generalQuestion.question.replace('[current prediction]', '<b>' + current_prediction + '</b>');
         } else if (featureQuestion && featureName) {
             full_question = featureQuestion.question.replace('[feature selection]', '<b>' + featureName + '</b>');
         }
-
-        // get feature id by feature name
-        const feature_id = featureQuestion ? get_feature_id_from_name(featureName, feature_names) : null;
-
 
         // Log and show
         if (full_question) {

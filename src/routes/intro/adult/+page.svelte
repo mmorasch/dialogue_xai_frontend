@@ -172,6 +172,7 @@
                 Machine Learning can be used to recognize patterns from past years of census data.<br/><br/>
 
                 In this experiment, you will <b>discover why Machine Learning model's predict a specific outcome</b>.
+                The model was trained <b>on 1994 data</b>, so the situation differs from today's reality.
             </p>
         </Step>
         <Step>
@@ -182,14 +183,14 @@
             <img src="{base}/adult_datapoint.png" alt="Adult Datapoint img" style="width: 25vw;">
             <p>
                 The trained Machine Learning can accurately <b>predict</b> whether this individual has an income
-                of <b>more than 50k</b> a year or less.
+                of <b>more than 50k</b> a year or less, based on what it learned from the data.
             </p>
         </Step>
         <Step>
             <h2 class="text-2xl">Experiment Structure</h2>
             <div class="container">
                 <div>
-                    <h3><b style="color: dodgerblue;">Introduction Phase:</b> Using information about an indididual, <b>try
+                    <h3><b style="color: dodgerblue;">Introduction Phase:</b> Using information about an individual, <b>try
                         to guess the yearly income to the best of your knowledge</b>.</h3>
                     <img alt="Step1 gif" src={step1_gif_path} style="height: 50vh;"/>
                 </div>

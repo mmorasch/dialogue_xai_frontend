@@ -38,7 +38,7 @@
 
     export let test_intro =
         "<b>Test your knowledge</b> about the model. <br> What do you think the model will predict for this case? <br> </b> <b>Note</b>: You will not receive \n" +
-        "explanations this time. <br> <b><span style=\"color: purple;\">Purple rows</span></b> indicate changes in the attribute values with the old value (the one in the previous training phase) struck through.";
+        "explanations this time. <br> <b><span style=\"color: purple;\">Purple rows</span></b> indicate changes in the attribute values with the old value (previous screen) struck through.";
 
     export let final_test_intro =
         "Final test of your knowledge about the <b>model's decision process</b>.<br> Based on what you learned before, what do you think the <b>model will predict</b> for this case? <br> <b>Note:</b> You will not receive \n" +

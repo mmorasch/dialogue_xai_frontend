@@ -17,8 +17,8 @@
     }
 
     // Function to handle button click for questions
-    function buttonOnClick(questionId: string, feature: string) {
-        dispatch('questionClick', { questionId, feature });
+    function buttonOnClick(questionId: string, feature: string, question: string) {
+        dispatch('questionClick', { questionId, feature, question});
     }
 
     // Function to toggle message size
@@ -46,14 +46,14 @@
         <br/>
         {#if message.followup && message.followup.length > 0}
             <div class="follow-up-questions">
-                <p><b>Question Suggestions</b></p>
+                <p><b>Clarification Question</b></p>
                 {#each message.followup as question}
                     <button
                             data-value={question.id}
                             type="button"
                             class="btn variant-ghost-primary"
                             style="font-size: 0.75rem;"
-                            on:click|stopPropagation={() => buttonOnClick(question.id, question.feature)}
+                            on:click|stopPropagation={() => buttonOnClick(question.question_id, question.feature_id, question.question)}
                     >
                         {question.question}
                     </button>

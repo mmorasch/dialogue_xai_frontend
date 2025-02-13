@@ -59,14 +59,14 @@
     function createAndPushMessage(text: string,
                                   isUser: boolean,
                                   feedback: boolean,
-                                  id: number,
+                                  question_id: number,
                                   feature_id?: number,
                                   followup?: []) {
-        messages.push({
+        messages.push(<TChatMessage>{
             text: text,
             isUser: isUser,
             feedback: feedback,
-            id: id,
+            question_id: question_id,
             feature_id: feature_id,
             followup: followup
         });
