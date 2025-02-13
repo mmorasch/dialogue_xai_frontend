@@ -20,18 +20,30 @@
 
     let interactive_group_questions = [
         'The chatbot is cooperative.',
-        'I like the Chatbot.',
+        'I like the chatbot.',
+        "While explaining, the chatbot met me halfway.",
         'The chatbot has no clue of what it is doing.',
+        "The chatbot intended to provide me with the opportunity to build an understanding of the topic by asking questions.",
+        "The chatbot encouraged me to continuously think about further details of the topic.",
         'The chatbot always gives good advice.',
         'The chatbot can collaborate in a productive way.',
+        "The chatbot considered my understanding.",
         'The chatbot acts truthfully.',
         'The chatbots appears confused.',
+        "While explaining, it was important for the chatbot to monitor whether I understood everything.",
+        "The chatbot responded when I signaled non-understanding.",
         'The chatbot interacts socially with me.',
-        'I pay attention. Select -1 to prove it.',
+        "The chatbot took my statements into account.",
         'The chatbot acts intentionally',
-        'I can see myself using the Chatbot in the future.',
+        'I can see myself using the chatbot in the future.',
+        'When finishing to read this sentence, select Strongly Disagree to prove that you pay attention.',
+        "When learning about a new topic, it’s better to think about details yourself, rather than having everything fully explained.",
+        "While explaining, it was important for the chatbot to continuously consider whether I understood the explanation.",
+        "The chatbot encouraged me to visualize the different processes of the topic.",
         'I can rely on the chatbot.',
-        'The Chatbot is easy to use.',
+        'The chatbot is easy to use.',
+        "The explanation was meant to encourage me to question my understanding.",
+        "The chatbot carefully adapted its utterances to my responses."
     ];
 
     let static_group_questions = [
@@ -102,9 +114,8 @@
     <Stepper {currentStep} stepTerm="Questions" on:step={onNext} on:complete={onComplete}>
         {#each chunks as chunk, chunkIndex}
             <Step>
-                <h1 class="center-text text-xl">You are done with the tasks. Thank you.</h1>
-                <h1 class="center-text text-xl">Please answer the following questions and give us feedback to
-                    improve.</h1>
+                <h1 class="center-text text-xl">You are done <b>with the tasks</b>. <b>Thank you!</b></h1>
+                <h1 class="center-text text-xl">Lastly, we are interested in <b>how you liked to work with the Chatbot</b> to understand the models decisions.</h1>
                 {#each chunk as question, i}
                     <div class="flex">
                         <div class="question-column">
@@ -152,7 +163,7 @@
     .flex {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 20px; /* adjust this value to create more space between the rows */
+        margin-bottom: 9px; /* adjust this value to create more space between the rows */
         align-items: center;
     }
 
@@ -162,8 +173,8 @@
     }
 
     .question-column {
-        flex: 0.25; /* this will make the question column take up 25% of the total width */
-        margin-right: 20px;
+        flex: 0.80; /* this will make the question column take up 25% of the total width */
+        margin-right: 10px;
         align-items: center;
     }
 
